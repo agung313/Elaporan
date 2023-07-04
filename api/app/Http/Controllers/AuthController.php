@@ -36,13 +36,18 @@ class AuthController extends Controller
 
         $cekEmail = User::where('email', $credentials['email'])->first();
 
+        $deviceNow = $request->header('User-Agent');
+
+        if ($cekEmail->device !== $deviceNow) {
+            return response()->json(['error' => 'Device tidak cocok'], 401);
+        }
+
         if (!$cekEmail) {
             return response()->json([
                 'messages' => 'maaf email tidak terdaftar'
             ],402);
 
         } else if (Auth::attempt($credentials)) {
-
             $authUser = Auth::user();
             $success['token'] =  $authUser->createToken('MyAuthApp')->plainTextToken;
             $success['email'] = $authUser->email;
@@ -54,7 +59,7 @@ class AuthController extends Controller
                 'messages' => 'Loggin successfully',
                 'data' => $success
             ]);
-        }else {
+        }else { 
             return response()->json([
                 'messages' => 'maaf password yang anda masukkan salah'
             ],402);
@@ -67,7 +72,8 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|min:6',
-            'password_confirmation' => 'required|min:6|same:password'
+            'password_confirmation' => 'required|min:6|same:password',
+            'jabatan' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -77,11 +83,21 @@ class AuthController extends Controller
             ]);
         }
 
+        $userAgent = $request->header('User-Agent');
+
+        $existingUser = User::where('device', $userAgent)->first();
+
+        if ($existingUser) {
+            return response()->json(['error' => 'Device sudah terdaftar'], 422);
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'user',
+            'jabatan' => $request->jabatan,
+            'device' => $userAgent,
             'menu' => json_encode(['tes','test'])
         ]);
 

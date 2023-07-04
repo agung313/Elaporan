@@ -8,24 +8,16 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function index(Request $request)
-    {
-        if($request->jabatan){
-            $user = User::where('jabatan', $request->jabatan)->get();
-        }else if ($request->isActive){
-            $user  = User::where('isActive', $request->isActive)->get();
-        }else{
-            $user = User::where('isActive', true)->paginate(10);
-        }
-    }
 
     public function update(Request $request, $id)
     {
-        
+        $user = User::findorNew($id);
+        $user->foto = $request->foto;
+        $user->save();
     }
 
     public function destroy($id)
     {
-        //
+        
     }
 }
