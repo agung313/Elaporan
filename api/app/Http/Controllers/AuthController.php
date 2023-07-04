@@ -34,7 +34,15 @@ class AuthController extends Controller
             'password' => $request->password
         ];
 
-        if (Auth::attempt($credentials)) {
+        $cekEmail = User::where('email', $credentials['email'])->first();
+
+        if (!$cekEmail) {
+            return response()->json([
+                'messages' => 'maaf email tidak terdaftar'
+            ],402);
+
+        } else if (Auth::attempt($credentials)) {
+
             $authUser = Auth::user();
             $success['token'] =  $authUser->createToken('MyAuthApp')->plainTextToken;
             $success['email'] = $authUser->email;
@@ -46,9 +54,9 @@ class AuthController extends Controller
                 'messages' => 'Loggin successfully',
                 'data' => $success
             ]);
-        } else {
+        }else {
             return response()->json([
-                'messages' => 'maaf password atau email salah'
+                'messages' => 'maaf password yang anda masukkan salah'
             ],402);
         }
     }
