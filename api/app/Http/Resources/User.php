@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Profile;
+use Illuminate\Support\Facades\URL;
 
 class User extends JsonResource
 {
@@ -14,6 +16,17 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        $photo = Profile::find($this->id_profile);
+
+        return [
+            'id' => $this->id,
+            'nama' => $this->name,
+            'email' => $this->email,
+            'jabatan' => $this->jabatan,
+            'URL' => URL('storage/'. $photo->foto),
+            'latar_belakang' => $this->latar_belakang,
+            'tujuan' => $this->tujuan,
+            'ruang_lingkup' => $this->ruang_lingkup,
+        ];
     }
 }

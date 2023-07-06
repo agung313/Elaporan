@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -39,7 +40,11 @@ class AuthController extends Controller
         $deviceNow = $request->header('User-Agent');
 
         if ($cekEmail->device !== $deviceNow) {
-            return response()->json(['error' => 'Device tidak cocok'], 401);
+            return response()->json(['messages' => 'Device tidak cocok'], 401);
+        }
+
+        if ($cekEmail->isActive == false){
+            return response()->json(['messages' => 'Akun sudah di nonaktifkan'], 401);
         }
 
         if (!$cekEmail) {
@@ -58,7 +63,7 @@ class AuthController extends Controller
             return response()->json([
                 'messages' => 'Loggin successfully',
                 'data' => $success
-            ]);
+            ],200);
         }else { 
             return response()->json([
                 'messages' => 'maaf password yang anda masukkan salah'
@@ -87,9 +92,9 @@ class AuthController extends Controller
 
         $existingUser = User::where('device', $userAgent)->first();
 
-        if ($existingUser) {
-            return response()->json(['error' => 'Device sudah terdaftar'], 422);
-        }
+        // if ($existingUser) {
+        //     return response()->json(['error' => 'Device sudah terdaftar'], 422);
+        // }
 
         $user = User::create([
             'name' => $request->name,
@@ -99,6 +104,10 @@ class AuthController extends Controller
             'jabatan' => $request->jabatan,
             'device' => $userAgent,
             'menu' => json_encode(['tes','test'])
+        ]);
+
+        $profile = Profile::create([
+            'id_user' => $user->id
         ]);
 
         $token = $user->createToken('MyAuthApp')->plainTextToken;
