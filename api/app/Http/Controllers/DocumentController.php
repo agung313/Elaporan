@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use PDF;
-// use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Absensi;
 use App\Models\Laporan;
 use App\Models\Document;
