@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, MainApp, MainSplash, MainUser } from '../pages'
+import { Absensi, Agenda, Allabsensi, Detail, Edit, Laporan, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Tambah } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 
@@ -13,6 +13,12 @@ const HomeScreen = () =>{
         <Stack.Navigator>
             <Stack.Screen name='MainApp' component={MainApp} options={{headerShown:false}}/>
             <Stack.Screen name='Absensi' component={Absensi} options={{headerShown:false}}/>
+            <Stack.Screen name='Allabsensi' component={Allabsensi} options={{headerShown:false}}/>
+            <Stack.Screen name='Agenda' component={Agenda} options={{headerShown:false}}/>
+            <Stack.Screen name='Tambah' component={Tambah} options={{headerShown:false}}/>
+            <Stack.Screen name='Edit' component={Edit} options={{headerShown:false}}/>
+            <Stack.Screen name='Detail' component={Detail} options={{headerShown:false}}/>
+            <Stack.Screen name='Notif' component={Notif} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }
@@ -21,6 +27,9 @@ const AcountScreen  = () => {
     return(
         <Stack.Navigator>
             <Stack.Screen name='MainUser' component={MainUser} options={{headerShown:false}}/>
+            <Stack.Screen name='PassUsr' component={PassUsr} options={{headerShown:false}}/>
+            <Stack.Screen name='Pendahuluan' component={Pendahuluan} options={{headerShown:false}}/>
+            <Stack.Screen name='Laporan' component={Laporan} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }

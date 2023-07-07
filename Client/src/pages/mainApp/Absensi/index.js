@@ -15,6 +15,20 @@ const Absensi = ({route, navigation}) => {
     // input
     const [detail, setDetail] = useState()
 
+    // date time tanggal
+    const cekTgl = new Date
+    const localeTime = cekTgl.toLocaleTimeString()
+    
+    const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
+    const getStrDay = namaHari[cekTgl.getDay()]
+    const getDay = cekTgl.getDate()
+
+    const [monthUsed, setMonthUsed] = useState(cekTgl.getMonth()+1)
+    const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "November", "Desember"]
+    const getStrMonth = namaBulan[monthUsed]
+
+    const getYear = cekTgl.getFullYear()
+
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -33,15 +47,11 @@ const Absensi = ({route, navigation}) => {
                     </TouchableOpacity>
                     {/* <SearchBar placeholder="Type Here..." /> */}
                 </View>
-                {/* <View style={{ width: "35%", alignItems: 'flex-end' }}>
-                    <Menu >
-                        <MenuTrigger><Image source={Tab} style={styles.lgHead}/></MenuTrigger>
-                        <MenuOptions style={{ padding: 10 }}>
-                            <ModalSide/>
-                        </MenuOptions>
-                    </Menu>
-                </View> */}
+                <View style={{ width: "35%", alignItems: 'flex-end', justifyContent:"center" }}>
+                    <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
+                </View>
             </View>
+
             <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10 }}>
                     <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Detail Kehadiran</Text>
@@ -69,17 +79,22 @@ const Absensi = ({route, navigation}) => {
                                         {kehadiran==4 ? "Izin" : ""}
                                     </Text>
                                 </View>
-                                <View style={{marginBottom:10}}>
+                                {/* <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Kantor Walikota Pekanbaru</Text>
+                                </View> */}
+                                <View style={{marginBottom:10}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>08:00 wib</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
                                 </View>
                             </View>
                         </View>
                     </View>
+
                     <View style={kehadiran==1 ? {alignItems:"center"} : {display:"none"}}>
                         <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
@@ -96,7 +111,7 @@ const Absensi = ({route, navigation}) => {
 
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
                         <View style={{alignItems:"center"}}>
-                            <View style={{width:"90%", height:100, borderWidth:0.5, borderColor:"black",borderRadius:15}}>
+                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
                                         placeholder=''
                                         placeholderTextColor={"#000"}
@@ -133,7 +148,7 @@ const Absensi = ({route, navigation}) => {
 
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Izin :</Text>
                         <View style={{alignItems:"center"}}>
-                            <View style={{width:"90%", height:100, borderWidth:0.5, borderColor:"black",borderRadius:15}}>
+                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
                                         placeholder=''
                                         placeholderTextColor={"#000"}
