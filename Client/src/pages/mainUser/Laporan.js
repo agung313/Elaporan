@@ -98,9 +98,20 @@ const Laporan = ({route, navigation}) => {
             </View>
             <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
+
+                    <View style={{width:"100%", flexDirection:"row", justifyContent:"flex-end", marginTop:10}}>
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#39a339", marginBottom:15, alignItems:"center", justifyContent:"center", }}>
+                            <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Download</Text>
+                        </TouchableOpacity>
+                        <View style={{width:10}}></View>
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}}>
+                            <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <View style={{width:"100%", alignItems:"center"}}>
-                        <View style={{width:"80%"}}>
-                            <Text style={{ color: "#000", fontSize: 15, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Laporan Kegiatan Anda Pada Bulan {cekBln}</Text>
+                        <View style={{width:"100%"}}>
+                            <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Kegiatan Anda Pada Bulan {cekBln}</Text>
                         </View>
                     </View>
 
@@ -109,24 +120,22 @@ const Laporan = ({route, navigation}) => {
                             <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>No</Text>
                             </View>
-                            <View style={{width:"55%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Hari/Tanggal</Text>
                             </View>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Aksi</Text>
+                            <View style={{width:"50%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
                             </View>
                         </View>
                         <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
                             <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
                             </View>
-                            <View style={{width:"55%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
                             </View>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <TouchableOpacity style={{width:"85%", height:30, backgroundColor:"#0060cb", borderRadius:15, justifyContent:"center", alignItems:"center"}}>
-                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12}}>Detail</Text>
-                                </TouchableOpacity>
+                            <View style={{width:"50%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Kehadiran</Text>
                             </View>
                         </View>
                     </View>

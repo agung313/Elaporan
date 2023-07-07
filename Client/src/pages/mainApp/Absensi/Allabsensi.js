@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React, { useState } from 'react'
-import { AbsensiKurang, Agenda, BackIcon, LgBappeda, SakitIzin, TidakHadir } from '../../../assets/images'
+import { AbsensiKurang, Agenda, BackIcon, LgBappeda, SakitIcont, SakitIzin, TidakHadir } from '../../../assets/images'
 import SearchBar from 'react-native-dynamic-search-bar';
 
 
@@ -81,7 +81,7 @@ const Allabsensi = ({navigation}) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10}}>
                             <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Rabu, 22 Juni 2023</Text>
                             <Text style={{ color:"black",  fontSize:10}}>Anda sedang sakit</Text>

@@ -61,9 +61,9 @@ const MainApp = ({ navigation}) => {
                            </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{marginTop:30, marginLeft:15, flexDirection:'row', alignItems:"center"}}>
-                        <Image source={ExFoto} style={{width:90, height:90, borderRadius:50,}} resizeMode='cover'/>
-                        <View style={{marginLeft:15}}>
+                    <View style={{marginTop:10, marginLeft:15, alignItems:"center"}}>
+                        <Image source={ExFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
+                        <View style={{marginLeft:15, alignItems:"center"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Muhammad Agung Sholihhudin, S.T</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : Programmer</Text>
                         </View>
