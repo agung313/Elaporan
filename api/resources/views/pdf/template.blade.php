@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan</title>
+    <style>
+        .tabell {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+    </style>
+</head>
+<body style="margin-left: 300px; margin-right: 300px;">
+    <div style="text-align: center;">
+        <h2>LAPORAN KERJA HARIAN</h2>
+        <h2>PROGRAMMER BAPPEDA KOTA PEKANBARU TA.2023</h2>
+    </div>
+    <div style="margin-top: 50px;">
+        <table>
+            <tr>
+                <td>Unit</td>
+                <td>: Programmer</td>
+            </tr>
+            <tr>
+                <td>Tempat</td>
+                <td>: Badan Perencanaan  Pembangunan  Daerah  Kota  Pekanbaru</td>
+            </tr>
+            <tr>
+                <td>Nama</td>
+                <td>: Muhammad Agung Sholihhudin, S.T</td>
+            </tr>
+            <tr>
+                <td>Periode</td>
+                <td>: Juli 2023</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top:50px;">
+        <h3>A. PENDAHULUAN</h3>
+        
+        <table style="margin: auto;" class="tabell">
+            <tr class="tabell">
+                <td class="tabell" style="width: 200px; text-align: center;">Latar Belakang</td>
+                <td class="tabell" style="width: 600px; padding: 10px; text-align: justify;">Perkembangan Teknologi Informasi (Information Technology, IT), khususnya dibidang Programming. Pemanfaatan berbagai program oleh instansi Pemerintah merupakan salah satu inovasi dengan memaksimalkan teknologi. Memacu kebutuhan akan data dan informasi lebih tertata dalam penunjang mobilitas kegiatan Bappeda Kota pekanbaru.</td>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="width: 200px; text-align: center;">Maksud dan Tujuan</td>
+                <td class="tabell" style="width: 600px; padding: 10px; text-align: justify;">Teknologi Informasi dalam bidang pemrograman menunjang percepatan dan maintenance dalam berbagai pekerjaan Badan Perencanaan  Pembangunan  Daerah  Kota  Pekanbaru.</td>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="width: 200px; text-align: center;">Ruang Lingkup</td>
+                <td class="tabell" style="width: 600px; padding: 10px; text-align: justify;">
+                    <table>
+                        <tr>
+                            <td>1.</td>
+                            <td>Pengembangan system Bappeda Kota Pekanbaru</td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>Maintenance terhadap system dan aplikasi Bappeda Kota Pekanbaru</td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td>Melakukan konfigurasi dan update system informasi Bappeda Kota Pekanbaru</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="margin-top:50px; margin-bottom: 100px;">
+        <h3>B. ISI LAPORAN</h3>
+        <p style="margin-left: 20PX;">1. URAIAN KEGIATAN</p>
+        
+        <table style="margin: auto; margin-bottom: 50px;" class="tabell">
+            <tr class="tabell">
+                <th class="tabell" style="text-align: center; height: 50px; width: 50px;">No.</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 250px;">Hari/Tanggal</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 260px;">Jenis Kegiatan</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 260px;">Uraian Kegiatan</th>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">1.</td>
+                <td class="tabell" style="text-align: center; width: 200px; padding: 10px;">Jumat, 7 Juli 2023</td>
+                <td class="tabell" style="width: 230px; padding: 10px;">
+                    <table>
+                        <tr>
+                            <td>1.</td>
+                            <td>Kehadiran</td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>Membangun Frontend Aplikasi</td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="tabell" style="width: 230px; padding: 10px;">
+                    <table>
+                        <tr>
+                            <td>1.</td>
+                            <td>Kehadiran</td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>Membangun Frontend Aplikasi</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+        <p style="margin-left: 20PX;">2. KENDALA</p>
+        
+        <table style="margin: auto;" class="tabell">
+            <tr class="tabell">
+                <th class="tabell" style="text-align: center; height: 50px; width: 50px;">No.</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 390px;">Jenis Kendala</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 390px;">Solusi</th>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">1.</td>
+                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">2.</td>
+                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">3.</td>
+                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+            </tr>
+        </table>
+        <div style="height: 50px;"></div>
+        <table style="margin: auto;">
+            <tr >
+                <td style="text-align: center; vertical-align: text-top;">
+                    <p>PROGRAMMER</p>
+                    <p>BAPPEDA KOTA PEKANBARU</p>
+                    <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold;">MUHAMMAD AGUNG SHOLIHHUDIN, S.T</p>
+                </td>
+                <td style="width: 300px;"></td>
+                <td style="text-align: center; vertical-align: text-top;">
+                    <p>DIKETAHUI</p>
+                    <p>KASUBAG UMUM</p>
+                    <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>
+                    <p style="margin-top: -10px;">NIP. 19840118 200212 1 004</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
