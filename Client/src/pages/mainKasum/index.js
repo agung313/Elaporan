@@ -84,15 +84,19 @@ const Kasum = ({ navigation}) => {
                         </View>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
-                    <TouchableOpacity style={styles.menuBar} >
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("LaporanKasum")}>
                         <Image source={CekLaporan} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Laporan</Text>
+                        <View style={{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}}>
+                            <Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>10</Text>
+                        </View>
                     </TouchableOpacity>
+                    
                     
                 </View>
 
                 <View style={styles.barMenu}>
-                    <TouchableOpacity style={styles.menuBar} >
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
                         <Image source={DataThl} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>THL-IT</Text>
                     </TouchableOpacity>
@@ -114,7 +118,8 @@ export default Kasum
 const styles = StyleSheet.create({
     barMenu: {
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        marginBottom:50
     },
     menuBar: {
         alignItems: 'center',

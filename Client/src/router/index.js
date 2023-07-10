@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, Agenda, Allabsensi, Detail, Edit, Kasum, Laporan, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, Tambah } from '../pages'
+import { Absensi, Agenda, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, Tambah, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 
@@ -31,11 +31,27 @@ const HomeKasum = () => {
         <Stack.Navigator>
             <Stack.Screen name='MainKasum' component={Kasum} options={{headerShown:false}}/>
             <Stack.Screen name='PengajuanKasum' component={Pengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailPengajuan' component={DetailPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='LaporanKasum' component={LaporanKasum} options={{headerShown:false}}/>
+            <Stack.Screen name='ThlIt' component={ThlIt} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailThlIt' component={DetailThlIt} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailLaporanKasum' component={DetailLaporanKasum} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }
 
 const AcountScreen  = () => {
+    return(
+        <Stack.Navigator>
+            <Stack.Screen name='MainUser' component={MainUser} options={{headerShown:false}}/>
+            <Stack.Screen name='PassUsr' component={PassUsr} options={{headerShown:false}}/>
+            <Stack.Screen name='Pendahuluan' component={Pendahuluan} options={{headerShown:false}}/>
+            <Stack.Screen name='Laporan' component={Laporan} options={{headerShown:false}}/>
+        </Stack.Navigator>
+    )
+}
+
+const AcountKasumScreen  = () => {
     return(
         <Stack.Navigator>
             <Stack.Screen name='MainUser' component={MainUser} options={{headerShown:false}}/>

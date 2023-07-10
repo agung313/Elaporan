@@ -137,6 +137,20 @@ const Absensi = ({route, navigation}) => {
                                 <Image source={AddImg} style={{width:100, height:100}}/>
                             </TouchableOpacity>
                         </View>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Sakit :</Text>
+                        <View style={{alignItems:"center"}}>
+                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
+                                <TextInput
+                                        placeholder=''
+                                        placeholderTextColor={"#000"}
+                                        value={detail}
+                                        keyboardType= "default"
+                                        onChangeText={(text) => setDetail(text)}
+                                        style={{ color: "#000" }}
+                                        multiline
+                                    />
+                            </View>
+                        </View>
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>

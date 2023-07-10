@@ -16,5 +16,10 @@ import LoginSide from './splashScreen/Login'
 // kasum
 import Kasum from './mainKasum'
 import Pengajuan from './mainKasum/Pengajuan'
+import DetailPengajuan from './mainKasum/DetailPengajuan'
+import LaporanKasum from './mainKasum/LaporanKasum'
+import ThlIt from './mainKasum/ThlIt'
+import DetailThlIt from './mainKasum/DetailThlIt'
+import DetailLaporanKasum from './mainKasum/DetailLaporanKasum'
 
-export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan}
+export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan, DetailPengajuan, LaporanKasum, ThlIt, DetailThlIt, DetailLaporanKasum}

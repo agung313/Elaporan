@@ -1,13 +1,15 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React, {useState} from 'react'
-import { BackIcon, LgBappeda, SakitIcont, SakitIzin } from '../../assets/images'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
+import React, { useState } from 'react'
+import { BackIcon, ExFoto, LgBappeda, PasFoto } from '../../assets/images';
 import SearchBar from 'react-native-dynamic-search-bar';
 
-const Pengajuan = ({navigation}) => {
-
+const ThlIt = ({navigation}) => {
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
+
+    // input
+    const [detail, setDetail] = useState("Saya mengalami sakit diare, sehingga disarankan dokter untuk beristirahat selama tiga hari")
 
     // date time tanggal
     const cekTgl = new Date
@@ -29,7 +31,6 @@ const Pengajuan = ({navigation}) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
-
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -42,8 +43,8 @@ const Pengajuan = ({navigation}) => {
                             <Image source={LgBappeda} style={styles.lgHead}/>
                         </View>
                         <View>
-                            <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, }}>PENGAJUAN</Text>
-                            <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>Sakit dan Izin</Text>
+                            <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, }}>THL-IT</Text>
+                            <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>Kehadiran dan Laporan</Text>
                         </View>
                     </TouchableOpacity>
                     {/* <SearchBar placeholder="Type Here..." /> */}
@@ -60,21 +61,29 @@ const Pengajuan = ({navigation}) => {
                         style={{marginBottom:20, width:"100%"}}
                     />
 
-                    <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data Pengajuan Kehadiran THL-IT</Text>
+                    <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data THL-IT</Text>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
-                        <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
+                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt')}>
+                        <Image source={ExFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                         <View style={{marginLeft:10}}>
                             <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : Rabu, 22 Juni 2023</Text>
+                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
-                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
+                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                         <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : Rabu, 22 Juni 2023</Text>
+                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Ondri Nurdiansyah, S.T</Text>
+                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
+                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                        <View style={{marginLeft:10}}>
+                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>M. Azhwan, S.T</Text>
+                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -83,7 +92,7 @@ const Pengajuan = ({navigation}) => {
     )
 }
 
-export default Pengajuan
+export default ThlIt
 
 const styles = StyleSheet.create({
     header: {
