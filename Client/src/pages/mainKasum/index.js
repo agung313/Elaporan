@@ -52,7 +52,7 @@ const Kasum = ({ navigation}) => {
 
                         <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:20, marginHorizontal:100}}>E - Laporan</Text>
 
-                        <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif")}>
+                        <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("AllPengajuan")}>
                             <Image source={NotifIcont} style={{width:28, height:28}}/>
                             <View style={{marginLeft:-15, marginRight:-7}}>
                                 <Image source={WarningIcont} style={{width:20, height:20,}}/>
@@ -98,10 +98,10 @@ const Kasum = ({ navigation}) => {
                 <View style={styles.barMenu}>
                     <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
                         <Image source={DataThl} style={styles.menuImage}/>
-                        <Text style={styles.labelMenu}>THL-IT</Text>
+                        <Text style={styles.labelMenu}>Data ASN</Text>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
-                    <TouchableOpacity style={styles.menuBar} >
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("AcountScreen")}>
                         <Image source={ProfileKasum} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Profile</Text>
                     </TouchableOpacity>

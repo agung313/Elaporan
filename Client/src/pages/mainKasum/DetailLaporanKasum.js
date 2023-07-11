@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React, {useState} from 'react'
-import { BackIcon, CloseIcont, ExFoto, LgBappeda } from '../../assets/images';
+import { BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf';
 
@@ -31,6 +31,12 @@ const DetailLaporanKasum = ({navigation}) => {
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
+    }
+
+    const [isModalVisible2, setModalVisible2] = useState(false);
+
+    const toggleModal2 = () => {
+        setModalVisible2(!isModalVisible2);
     }
     return (
         <ScrollView>
@@ -91,32 +97,72 @@ const DetailLaporanKasum = ({navigation}) => {
 
                     <View style={{flexDirection:"row", marginBottom:5}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
-                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:30}} onPress={toggleModal}>
+                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:120}} onPress={toggleModal}>
                             <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Lihat Laporan</Text>
                         </TouchableOpacity>
                     </View>
 
                     <View style={{width:"100%",marginBottom:15}}>
                         <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
-                            <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>No</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Hari/Tanggal</Text>
                             </View>
-                            <View style={{width:"50%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
+                            </View>
+                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Detail</Text>
                             </View>
                         </View>
                         <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
-                            <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  padding:5, alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
                             </View>
-                            <View style={{width:"50%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Kehadiran</Text>
+                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
+                            </View>
+                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <TouchableOpacity style={{width:60, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={toggleModal2}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Detail</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+
+                    <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
+                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:160}} onPress={toggleModal}>
+                            <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
+                        </TouchableOpacity>
+                        
+                    </View>
+                    <View style={{width:"100%",marginBottom:15}}>
+                        <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
+                            <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>No</Text>
+                            </View>
+                            <View style={{width:"60%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Catatan</Text>
+                            </View>
+                            <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Aksi</Text>
+                            </View>
+                        </View>
+                        <View style={{flexDirection:"row", backgroundColor:"#fff"}}>
+                            <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1</Text>
+                            </View>
+                            <View style={{width:"60%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
+                            </View>
+                            <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center", flexDirection:"row"}}>
+                                <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit")}>
+                                    <Image source={EditIcont} style={{width:25, height:25}} />
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={toggleModal}>
+                                    <Image source={DeletedIcont} style={{width:30, height:30}} />
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>
@@ -142,6 +188,50 @@ const DetailLaporanKasum = ({navigation}) => {
                                 style={{width:"100%", height:450}}
                                 // renderActivityIndicator={loadSpinner}
                             />
+                        </View>
+                    </View>
+                </ReactNativeModal>
+
+                <ReactNativeModal isVisible={isModalVisible2} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalVisible(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "95%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                        <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal2}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Detail Kegiatan</Text>
+                        </View>
+
+                        <View>
+                            <View style={{marginBottom:20}}>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan:</Text>
+                                <View style={{alignItems:"center"}}>
+                                    <View style={{width:"90%", minHeight:30, borderColor:"black", borderBottomWidth:0.5, }}>
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{marginBottom:20}}>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Uraian Kegiatan:</Text>
+                                <View style={{alignItems:"center"}}>
+                                    <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{marginBottom:20}}>
+                                <View style={{flexDirection:"row", marginBottom:10,  }}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
+                                    <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:100}}>
+                                        <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Download</Text>
+                                    </TouchableOpacity>
+                                    
+                                </View>
+                                <View style={{alignItems:"center"}}>
+                                    <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                        <Image source={ExSakit} style={{width:"100%", height:"100%"}}/>
+                                    </View>
+                                </View>
+                            </View>
                         </View>
                     </View>
                 </ReactNativeModal>

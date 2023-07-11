@@ -1,11 +1,20 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { AddImg, BackIcon, ExFoto, LgBappeda } from '../../../assets/images'
+import MapView, { Marker } from 'react-native-maps'
 
 
 const Absensi = ({route, navigation}) => {
-    const {kehadiran} = route.params
-    console.log(kehadiran, "<====  status kehadiran")
+    const {kehadiran, posisi} = route.params
+    // console.log(posisi, "<==== si")
+    // console.log(kehadiran, "<====  status kehadiran")
+
+    // lokasi
+    const latitudePosisi = JSON.parse(posisi).coords.latitude
+    const longitudePosisi = JSON.parse(posisi).coords.longitude
+    console.log(latitudePosisi, "<==== latitude")
+    console.log(longitudePosisi, "<==== longitude")
+
     const [cekStatus, setCekStatus] = useState(kehadiran)
 
     // width heigh
@@ -93,6 +102,25 @@ const Absensi = ({route, navigation}) => {
                                 </View>
                             </View>
                         </View>
+                    </View>
+                    <View>
+                        <MapView
+                            style={{width:"100%", height:300}}
+                            initialRegion={{
+                                
+                                latitude: 0.5170908981315071, 
+                                longitude: 101.54134025306783,
+                                // latitude: latitudePosisi,
+                                // longitude: longitudePosisi,
+                                latitudeDelta: 0.009,
+                                longitudeDelta: 0.004,
+                            }}
+                        >
+                            <Marker
+                            style={{width:"100%", height:300}}
+                            coordinate={{latitude: 0.5170908981315071, longitude: 101.54134025306783}}
+                        />
+                        </MapView>
                     </View>
 
                     <View style={kehadiran==1 ? {alignItems:"center"} : {display:"none"}}>
