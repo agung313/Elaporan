@@ -1,12 +1,21 @@
-import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
+import Geolocation from '@react-native-community/geolocation';
 
 
 const MainApp = ({ navigation}) => {
-    
+
+    useEffect(()=>{
+        requestLocationPermission(),
+        calculateDistance()
+    })
+
+    const [posisi, setPosisi] = useState()
+    // console.log(JSON.parse(posisi).coords.latitude, "<==== si")
+    // console.log(posisi, "<==== si")
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -33,14 +42,81 @@ const MainApp = ({ navigation}) => {
 
     // picker
     const [kehadiran, setKehadiran] = useState()
-    console.log(kehadiran, "<==== kehadiran")
+    // console.log(kehadiran, "<==== kehadiran")
 
     // showcontent
     const [showContent, setShowContent] = useState(1)
     const toggleContent = (e)=>{
       setShowContent(e);
     }
+
+    // get location
     
+    const requestLocationPermission = async () => {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+            {
+              title: 'Izinkan sistem mengambil data lokasi anda',
+              message:
+                'Izinkan sistem mengambil data lokasi untuk kehadiran',
+              buttonNeutral: 'Ask Me Later',
+              buttonNegative: 'Cancel',
+              buttonPositive: 'OK',
+            },
+          );
+        //   jika telah diberikan akses lokasi
+          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+            console.log('Lokasi berhasil di akses');
+            // ambil lokasi
+            Geolocation.getCurrentPosition(
+                lokasi =>{
+                    const posisiAwal = JSON.stringify(lokasi)
+                    setPosisi(posisiAwal)
+                }, 
+                // error=>
+                //     Alert,alert(
+                //         'Posisi tidak ditemukan', 
+                //         JSON.stringify(error)
+                //     ),
+                console.log('erorrrrrrrrrr'),
+                {enableHighAccuracy: true}
+                )
+          } else {
+            console.log('Lokasi gagal di akses');
+          }
+        } catch (err) {
+          console.warn(err);
+        }
+    };
+    // chat latitude
+    const [lat1, setLat1] = useState(0.5156318370565821);
+    const [lon1, setLon1] = useState(101.54085748175679);
+
+    // lokasi kantor
+    const [lat2, setLat2] = useState(0.5170908981315071);
+    const [lon2, setLon2] = useState(101.54134025306783);
+    const [distance, setDistance] = useState('');
+  
+    const calculateDistance = () => {
+      const R = 6371; // radius bumi dalam kilometer
+      const dLat = toRad(lat2 - lat1);
+      const dLon = toRad(lon2 - lon1);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const calculatedDistance = R * c;
+      setDistance(calculatedDistance.toFixed(2)); // jarak diambil dengan 2 desimal
+  
+      // Fungsi konversi derajat ke radian
+      function toRad(Value) {
+        return (Value * Math.PI) / 180;
+      }
+    };
+
+    console.log(distance, '<===== selisih jarak')
+
     return (
         <ScrollView>
             <ImageBackground source={BgApp} style={{flex:1}}>
@@ -61,9 +137,9 @@ const MainApp = ({ navigation}) => {
                            </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{marginTop:30, marginLeft:15, flexDirection:'row', alignItems:"center"}}>
-                        <Image source={ExFoto} style={{width:90, height:90, borderRadius:50,}} resizeMode='cover'/>
-                        <View style={{marginLeft:15}}>
+                    <View style={{marginTop:10, marginLeft:15, alignItems:"center"}}>
+                        <Image source={ExFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
+                        <View style={{marginLeft:15, alignItems:"center"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Muhammad Agung Sholihhudin, S.T</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : Programmer</Text>
                         </View>
@@ -131,7 +207,7 @@ const MainApp = ({ navigation}) => {
                                     </Picker>
                                 </View>
                                 <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                                    <TouchableOpacity style={kehadiran>0 ? {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Absensi', {kehadiran:kehadiran})}>
+                                    <TouchableOpacity style={kehadiran>0 ? {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Absensi', {kehadiran:kehadiran, posisi:posisi})}>
                                         <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                                     </TouchableOpacity>
                                 </View>

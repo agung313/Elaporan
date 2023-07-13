@@ -1,11 +1,20 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { AddImg, BackIcon, ExFoto, LgBappeda } from '../../../assets/images'
+import MapView, { Marker } from 'react-native-maps'
 
 
 const Absensi = ({route, navigation}) => {
-    const {kehadiran} = route.params
-    console.log(kehadiran, "<====  status kehadiran")
+    const {kehadiran, posisi} = route.params
+    // console.log(posisi, "<==== si")
+    // console.log(kehadiran, "<====  status kehadiran")
+
+    // lokasi
+    const latitudePosisi = JSON.parse(posisi).coords.latitude
+    const longitudePosisi = JSON.parse(posisi).coords.longitude
+    console.log(latitudePosisi, "<==== latitude")
+    console.log(longitudePosisi, "<==== longitude")
+
     const [cekStatus, setCekStatus] = useState(kehadiran)
 
     // width heigh
@@ -94,6 +103,25 @@ const Absensi = ({route, navigation}) => {
                             </View>
                         </View>
                     </View>
+                    <View>
+                        <MapView
+                            style={{width:"100%", height:300}}
+                            initialRegion={{
+                                
+                                latitude: 0.5170908981315071, 
+                                longitude: 101.54134025306783,
+                                // latitude: latitudePosisi,
+                                // longitude: longitudePosisi,
+                                latitudeDelta: 0.009,
+                                longitudeDelta: 0.004,
+                            }}
+                        >
+                            <Marker
+                            style={{width:"100%", height:300}}
+                            coordinate={{latitude: 0.5170908981315071, longitude: 101.54134025306783}}
+                        />
+                        </MapView>
+                    </View>
 
                     <View style={kehadiran==1 ? {alignItems:"center"} : {display:"none"}}>
                         <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
@@ -136,6 +164,20 @@ const Absensi = ({route, navigation}) => {
                             <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
                                 <Image source={AddImg} style={{width:100, height:100}}/>
                             </TouchableOpacity>
+                        </View>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Sakit :</Text>
+                        <View style={{alignItems:"center"}}>
+                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
+                                <TextInput
+                                        placeholder=''
+                                        placeholderTextColor={"#000"}
+                                        value={detail}
+                                        keyboardType= "default"
+                                        onChangeText={(text) => setDetail(text)}
+                                        style={{ color: "#000" }}
+                                        multiline
+                                    />
+                            </View>
                         </View>
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>

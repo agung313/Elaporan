@@ -247,6 +247,15 @@ android {
 
         }
     }
+
+    packagingOptions {
+        pickFirst 'lib/x86/libc++_shared.so'
+        pickFirst 'lib/x86_64/libjsc.so'
+        pickFirst 'lib/arm64-v8a/libjsc.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/x86_64/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
+    }
 }
 
 dependencies {
@@ -277,6 +286,18 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // mapssss
+    implementation(project(':react-native-onesignal')){
+      exclude group: 'com.google.android.gms'
+    }
+
+    implementation(project(':react-native-maps')){
+        exclude group: 'com.google.android.gms'
+    }
+    implementation 'com.google.android.gms:play-services-base:18.0.1'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
 }
 
 if (isNewArchitectureEnabled()) {

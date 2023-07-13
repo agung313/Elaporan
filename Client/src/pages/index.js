@@ -11,5 +11,17 @@ import Notif from './mainApp/Absensi/Notif'
 import PassUsr from './mainUser/PassUsr'
 import Pendahuluan from './mainUser/Pendahuluan'
 import Laporan from './mainUser/Laporan'
+import LoginSide from './splashScreen/Login'
 
-export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan}
+// kasum
+import Kasum from './mainKasum'
+import Pengajuan from './mainKasum/Pengajuan'
+import DetailPengajuan from './mainKasum/DetailPengajuan'
+import LaporanKasum from './mainKasum/LaporanKasum'
+import ThlIt from './mainKasum/ThlIt'
+import DetailThlIt from './mainKasum/DetailThlIt'
+import DetailLaporanKasum from './mainKasum/DetailLaporanKasum'
+import ProfileKasum from './profileKasum'
+import AllPengajuan from './mainKasum/AllPengajuan'
+
+export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan, DetailPengajuan, LaporanKasum, ThlIt, DetailThlIt, DetailLaporanKasum, ProfileKasum, AllPengajuan}

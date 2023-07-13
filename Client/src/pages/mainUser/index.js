@@ -108,7 +108,7 @@ const MainUser = ({navigation}) => {
                         </View>
                     </TouchableOpacity>
                 
-                    <TouchableOpacity style={{flexDirection:"row", marginBottom:25, width:"100%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}}>
+                    <TouchableOpacity style={{flexDirection:"row", marginBottom:25, width:"100%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={() => navigation.navigate('MainSplash')}>
                         <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16, marginTop:5}}>Logout</Text>
                     </TouchableOpacity>
                 </View>

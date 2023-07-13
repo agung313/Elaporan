@@ -5,7 +5,7 @@ import { BgMain, LgBappeda } from '../../../assets/images'
 const MainSplash = ({navigation}) => {
     useEffect(()=>{
         setTimeout(() => {
-            navigation.replace('AppScreen')
+            navigation.replace('LoginSide')
         },3000)
     },[navigation])
 
