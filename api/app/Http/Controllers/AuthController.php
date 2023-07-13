@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\Auth as AuthResource;
 
 class AuthController extends Controller
 {
@@ -126,10 +127,8 @@ class AuthController extends Controller
     public function me()
     {
         $user = Auth::user();
-        return response()->json([
-            'messages' => 'success',
-            'data' => $user
-        ]);
+        
+        return response(new AuthResource($user));
     }
 
     public function logout()

@@ -42,8 +42,11 @@ class UserController extends Controller
                 'error' =>  $validator->errors()
             ]);
         }
+        // dd($request);
 
         $idProfile = Profile::select('id')->where('id_user', $id)->first();
+
+        // dd($idProfile);
 
         $path = $request->file('foto')->store('public');
 
@@ -52,7 +55,7 @@ class UserController extends Controller
         $user->id_user = $id;
         $user->latar_belakang = $request->latar_belakang;
         $user->tujuan = $request->tujuan;
-        $user->ruang_lingkup = $request->ruang_lingkup;
+        $user->ruang_lingkup = json_encode($request->ruang_lingkup);
         $user->isComplete = true;
         $user->save();
 

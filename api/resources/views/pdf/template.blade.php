@@ -11,16 +11,16 @@
         }
     </style>
 </head>
-<body style="margin-left: 300px; margin-right: 300px;">
+<body>
     <div style="text-align: center;">
         <h2>LAPORAN KERJA HARIAN</h2>
-        <h2>PROGRAMMER BAPPEDA KOTA PEKANBARU TA.2023</h2>
+        <h2 style="text-transform: uppercase">{{$user->jabatan}} BAPPEDA KOTA PEKANBARU TA.{{$user->tahun}}</h2>
     </div>
     <div style="margin-top: 50px;">
         <table>
             <tr>
                 <td>Unit</td>
-                <td>: Programmer</td>
+                <td>: {{$user->jabatan}}</td>
             </tr>
             <tr>
                 <td>Tempat</td>
@@ -28,11 +28,11 @@
             </tr>
             <tr>
                 <td>Nama</td>
-                <td>: Muhammad Agung Sholihhudin, S.T</td>
+                <td>: {{$user->name}}</td>
             </tr>
             <tr>
                 <td>Periode</td>
-                <td>: Juli 2023</td>
+                <td>: {{$user->bulan}} {{$user->tahun}}</td>
             </tr>
         </table>
     </div>
@@ -43,28 +43,23 @@
         <table style="margin: auto;" class="tabell">
             <tr class="tabell">
                 <td class="tabell" style="width: 200px; text-align: center;">Latar Belakang</td>
-                <td class="tabell" style="width: 600px; padding: 10px; text-align: justify;">Perkembangan Teknologi Informasi (Information Technology, IT), khususnya dibidang Programming. Pemanfaatan berbagai program oleh instansi Pemerintah merupakan salah satu inovasi dengan memaksimalkan teknologi. Memacu kebutuhan akan data dan informasi lebih tertata dalam penunjang mobilitas kegiatan Bappeda Kota pekanbaru.</td>
+                <td class="tabell" style="width: 400px; padding: 10px; text-align: justify;">{{$user->latar_belakang}}</td>
             </tr>
             <tr class="tabell">
                 <td class="tabell" style="width: 200px; text-align: center;">Maksud dan Tujuan</td>
-                <td class="tabell" style="width: 600px; padding: 10px; text-align: justify;">Teknologi Informasi dalam bidang pemrograman menunjang percepatan dan maintenance dalam berbagai pekerjaan Badan Perencanaan  Pembangunan  Daerah  Kota  Pekanbaru.</td>
+                <td class="tabell" style="width: 400px; padding: 10px; text-align: justify;">{{$user->tujuan}}</td>
             </tr>
             <tr class="tabell">
                 <td class="tabell" style="width: 200px; text-align: center;">Ruang Lingkup</td>
-                <td class="tabell" style="width: 600px; padding: 10px; text-align: justify;">
+                <td class="tabell" style="width: 400px; padding: 10px; text-align: justify;">
                     <table>
-                        <tr>
-                            <td>1.</td>
-                            <td>Pengembangan system Bappeda Kota Pekanbaru</td>
-                        </tr>
-                        <tr>
-                            <td>2.</td>
-                            <td>Maintenance terhadap system dan aplikasi Bappeda Kota Pekanbaru</td>
-                        </tr>
-                        <tr>
-                            <td>3.</td>
-                            <td>Melakukan konfigurasi dan update system informasi Bappeda Kota Pekanbaru</td>
-                        </tr>
+                        {{-- {{dd(json_decode($user->ruang_lingkup))}} --}}
+                        @foreach (json_decode($user->ruang_lingkup) as $key => $item)
+                            <tr>
+                                <td>{{$key+1 ."."}}</td>
+                                <td>{{$item}}</td>
+                            </tr>
+                        @endforeach
                     </table>
                 </td>
             </tr>
@@ -77,74 +72,66 @@
         
         <table style="margin: auto; margin-bottom: 50px;" class="tabell">
             <tr class="tabell">
-                <th class="tabell" style="text-align: center; height: 50px; width: 50px;">No.</th>
-                <th class="tabell" style="text-align: center; height: 50px; width: 250px;">Hari/Tanggal</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 30px;">No.</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 150px;">Hari/Tanggal</th>
                 <th class="tabell" style="text-align: center; height: 50px; width: 260px;">Jenis Kegiatan</th>
                 <th class="tabell" style="text-align: center; height: 50px; width: 260px;">Uraian Kegiatan</th>
             </tr>
-            <tr class="tabell">
-                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">1.</td>
-                <td class="tabell" style="text-align: center; width: 200px; padding: 10px;">Jumat, 7 Juli 2023</td>
-                <td class="tabell" style="width: 230px; padding: 10px;">
-                    <table>
-                        <tr>
-                            <td>1.</td>
-                            <td>Kehadiran</td>
-                        </tr>
-                        <tr>
-                            <td>2.</td>
-                            <td>Membangun Frontend Aplikasi</td>
-                        </tr>
-                    </table>
-                </td>
-                <td class="tabell" style="width: 230px; padding: 10px;">
-                    <table>
-                        <tr>
-                            <td>1.</td>
-                            <td>Kehadiran</td>
-                        </tr>
-                        <tr>
-                            <td>2.</td>
-                            <td>Membangun Frontend Aplikasi</td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+            @foreach ($absensi as $key => $item)
+                <tr class="tabell">
+                    <td class="tabell" style="text-align: center; width: 20px; padding: 10px;">{{$key+1 ."."}}</td>
+                    <td class="tabell" style="text-align: center; padding: 10px;">{{$item->tanggal}}</td>
+                    <td class="tabell" style="padding: 10px;">
+                        <table>
+                            @foreach ($laporan as $key => $lapor)
+                                @if ($lapor->id_absensi == $item->id)
+                                    <tr>
+                                        <td>{{$key+1}}</td>
+                                        <td>{{$lapor->judul_kegiatan}}</td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </table>
+                    </td>
+                    <td class="tabell" style=" padding: 10px;">
+                        <table>
+                            @foreach ($laporan as $key => $lapor)
+                                @if ($lapor->id_absensi == $item->id)
+                                    <tr>
+                                        <td>{{$key+1}}</td>
+                                        <td>{{$lapor->uraian_kegiatan}}</td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        </table>
+                    </td>
+                </tr>
+            @endforeach
         </table>
 
         <p style="margin-left: 20PX;">2. KENDALA</p>
         
         <table style="margin: auto;" class="tabell">
             <tr class="tabell">
-                <th class="tabell" style="text-align: center; height: 50px; width: 50px;">No.</th>
-                <th class="tabell" style="text-align: center; height: 50px; width: 390px;">Jenis Kendala</th>
-                <th class="tabell" style="text-align: center; height: 50px; width: 390px;">Solusi</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 30px;">No.</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Jenis Kendala</th>
+                <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Solusi</th>
             </tr>
             <tr class="tabell">
-                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">1.</td>
-                <td class="tabell" style="width: 370px; padding: 10px;"></td>
-                <td class="tabell" style="width: 370px; padding: 10px;"></td>
-            </tr>
-            <tr class="tabell">
-                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">2.</td>
-                <td class="tabell" style="width: 370px; padding: 10px;"></td>
-                <td class="tabell" style="width: 370px; padding: 10px;"></td>
-            </tr>
-            <tr class="tabell">
-                <td class="tabell" style="text-align: center; width: 40px; padding: 10px;">3.</td>
-                <td class="tabell" style="width: 370px; padding: 10px;"></td>
-                <td class="tabell" style="width: 370px; padding: 10px;"></td>
+                <td class="tabell" style="text-align: center; width: 30px; padding: 10px;">1.</td>
+                <td class="tabell" style="width: 250px; padding: 10px;">{{$kendala->kendala}}</td>
+                <td class="tabell" style="width: 250px; padding: 10px;">{{$kendala->solusi}}</td>
             </tr>
         </table>
         <div style="height: 50px;"></div>
         <table style="margin: auto;">
             <tr >
-                <td style="text-align: center; vertical-align: text-top;">
-                    <p>PROGRAMMER</p>
+                <td style="text-align: center; vertical-align: text-top;text-transform: uppercase">
+                    <p>{{$user->jabatan}}</p>
                     <p>BAPPEDA KOTA PEKANBARU</p>
-                    <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold;">MUHAMMAD AGUNG SHOLIHHUDIN, S.T</p>
+                    <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold;">{{$user->name}}</p>
                 </td>
-                <td style="width: 300px;"></td>
+                <td style="width: 150px;"></td>
                 <td style="text-align: center; vertical-align: text-top;">
                     <p>DIKETAHUI</p>
                     <p>KASUBAG UMUM</p>
