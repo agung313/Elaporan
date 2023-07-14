@@ -4,25 +4,33 @@ import { BgMain, EmailIcon, LgBappeda, PasswordIcon } from '../../../assets/imag
 import axios from 'axios';
 
 const LoginSide = ({navigation}) => {
-    const [username, setUserName] = useState()
-    const [password, setPassword] = useState()
+
+    const [inputs, setInputs] = useState({
+        username:'',
+        password:''
+    })
+
+    const [validationStatus, setValidationStatus] = useState({
+        username:true,
+        password: true
+    }
+    
+    // const validateInputs = () =>{
+    //     const isValid ={
+    //         name: inputs.name
+    //     }
+    // }
+
+
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
 
     const handlerLogin = async data =>{
 
-        console.log(username,"<--- username asaya")
-
-        let dataLogin = {
-            username:'azwan@laporan.com',
-            password:'123456'
-        }
-
-
         try {
-          const response =  await axios.get('http://127.0.0.1:8000/api/auth/tes');
-            console.log(response)
+          const response =  await axios.get('http://10.0.2.2:8000/api/auth/tes');
+            console.log(response.data)
            } catch (error) {
             console.log(error)
 
