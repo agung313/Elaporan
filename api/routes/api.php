@@ -18,10 +18,10 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
 
 //USER
 Route::controller(UserController::class)->prefix('user')->group(function () {
-    Route::post('/update/{id}', 'update');
     Route::post('/changePassword', 'changePassword');
     Route::get('/profile', 'profile');
     Route::get('/history', 'history');
+    Route::post('/update/{id}', 'update');
 });
 
 //ABSENSI
@@ -42,4 +42,5 @@ Route::controller(DocumentController::class)->prefix('document')->group(function
     Route::get('/', 'index');
     Route::post('/store', 'store');
     Route::post('/upload', 'upload');
+    Route::post('/approve/{id}', 'approve');
 });

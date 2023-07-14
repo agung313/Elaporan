@@ -14,12 +14,12 @@
 <body>
     <div style="text-align: center;">
         <h2>LAPORAN KERJA HARIAN</h2>
-        <h2 style="text-transform: uppercase">{{$user->jabatan}} BAPPEDA KOTA PEKANBARU TA.{{$user->tahun}}</h2>
+        <h2 style="text-transform: uppercase">NON ASN BAPPEDA KOTA PEKANBARU TA.{{$user->tahun}}</h2>
     </div>
     <div style="margin-top: 50px;">
         <table>
             <tr>
-                <td>Unit</td>
+                <td>Jabatan</td>
                 <td>: {{$user->jabatan}}</td>
             </tr>
             <tr>
@@ -83,26 +83,48 @@
                     <td class="tabell" style="text-align: center; padding: 10px;">{{$item->tanggal}}</td>
                     <td class="tabell" style="padding: 10px;">
                         <table>
-                            @foreach ($laporan as $key => $lapor)
-                                @if ($lapor->id_absensi == $item->id)
-                                    <tr>
-                                        <td>{{$key+1}}</td>
-                                        <td>{{$lapor->judul_kegiatan}}</td>
-                                    </tr>
-                                @endif
-                            @endforeach
+                            <tr>
+                                <td>1. </td>
+                                <td>{{$item->status}}</td>
+                            </tr>
+                            @if ($item->status == "hadir")
+                                @php $tes = 2; @endphp
+                                @foreach ($laporan as $lapor)
+                                    @if ($lapor->id_absensi == $item->id)
+                                        <tr>
+                                            <td>{{$tes ."."}}</td>
+                                            <td>{{$lapor->judul_kegiatan}}</td>
+                                        </tr>
+                                        @php $tes++; @endphp
+                                    @endif
+                                @endforeach
+                            @endif
                         </table>
                     </td>
                     <td class="tabell" style=" padding: 10px;">
                         <table>
-                            @foreach ($laporan as $key => $lapor)
-                                @if ($lapor->id_absensi == $item->id)
-                                    <tr>
-                                        <td>{{$key+1}}</td>
-                                        <td>{{$lapor->uraian_kegiatan}}</td>
-                                    </tr>
+                            <tr>
+                                <td>1. </td>
+                                @if ($item->status == "hadir")
+                                    <td>waktu hadir : {{$item->waktu_hadir}}<br>
+                                        waktu pulang : {{$item->waktu_pulang}}
+                                    </td>
+                                @else
+                                    <td>{{$item->status}}</td>
                                 @endif
-                            @endforeach
+                            </tr>
+                            @if ($item->status == "hadir")
+                                @php $tes2 = 2; @endphp
+                                @foreach ($laporan as $key => $lapor)
+                                    @if ($lapor->id_absensi == $item->id)
+                                        <tr>
+                                            <td>{{$tes2 . "."}}</td>
+                                            <td>{{$lapor->uraian_kegiatan}}</td>
+                                        </tr>
+                                        @php $tes2++; @endphp
+                                    @endif
+                                @endforeach
+                            @endif 
                         </table>
                     </td>
                 </tr>
@@ -138,6 +160,14 @@
                     <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>
                     <p style="margin-top: -10px;">NIP. 19840118 200212 1 004</p>
                 </td>
+            </tr>
+        </table>
+        <table style="margin: auto;" class="tabell">
+            <tr class="tabell">
+                <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Catatan dari KEPALA SUB BAGIAN UMUM</th>
+            </tr>
+            <tr class="tabell">
+                <td class="tabell" style="width: 250px; padding: 10px;">{{$user->catatan == null ? 'belum ada catatan' : $user->catatan}}</td>
             </tr>
         </table>
     </div>

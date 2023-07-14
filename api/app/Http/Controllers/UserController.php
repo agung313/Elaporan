@@ -33,7 +33,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'latar_belakang' => 'required|string|max:700',
             'tujuan' => 'required|string|max:700',
-            'ruang_lingkup' => 'required|string|max:700',
+            'ruang_lingkup' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -43,19 +43,24 @@ class UserController extends Controller
             ]);
         }
         // dd($request);
+        
 
         $idProfile = Profile::select('id')->where('id_user', $id)->first();
 
+        if ($request->file) {
+            $path = $request->file('foto')->store('public');
+        }
+
         // dd($idProfile);
 
-        $path = $request->file('foto')->store('public');
+        
 
         $user = Profile::findorNew($idProfile->id);
-        $user->foto = $path;
+        $user->foto = $request->foto ? $path : null;
         $user->id_user = $id;
         $user->latar_belakang = $request->latar_belakang;
         $user->tujuan = $request->tujuan;
-        $user->ruang_lingkup = json_encode($request->ruang_lingkup);
+        $user->ruang_lingkup = $request->ruang_lingkup;
         $user->isComplete = true;
         $user->save();
 
