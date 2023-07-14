@@ -14,9 +14,12 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum', ['except' => ['login','register']]);
+        $this->middleware('auth:sanctum', ['except' => ['login','tes','register']]);
     }
 
+    function tes() {
+        return json_encode(['nama'=>'ondri']);
+    }
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [

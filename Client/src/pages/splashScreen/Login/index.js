@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ImageBackground, Image, Dimensions, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { BgMain, EmailIcon, LgBappeda, PasswordIcon } from '../../../assets/images'
+import axios from 'axios';
 
 const LoginSide = ({navigation}) => {
     const [username, setUserName] = useState()
@@ -8,6 +9,26 @@ const LoginSide = ({navigation}) => {
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
+
+    const handlerLogin = async data =>{
+
+        console.log(username,"<--- username asaya")
+
+        let dataLogin = {
+            username:'azwan@laporan.com',
+            password:'123456'
+        }
+
+
+        try {
+          const response =  await axios.get('http://127.0.0.1:8000/api/auth/tes');
+            console.log(response)
+           } catch (error) {
+            console.log(error)
+
+          }
+
+    }
     return (
         <ImageBackground source={BgMain} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
             <Image source={LgBappeda} style={{width:200, height:200}}/>
@@ -61,6 +82,9 @@ const LoginSide = ({navigation}) => {
             <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={() => navigation.navigate("KasumScreen")}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>KASUM</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={handlerLogin}>
+                <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>Login</Text>
+            </TouchableOpacity>            
         </ImageBackground>
     )
 }
