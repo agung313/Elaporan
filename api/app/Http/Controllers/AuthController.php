@@ -59,7 +59,8 @@ class AuthController extends Controller
             $success['email'] = $authUser->email;
             $success['nama'] =  $authUser->name;
             $success['role'] = $authUser->role;
-            $success['menu'] = $authUser->menu;
+            $success['longitude'] = '101.540909';
+            $success['lantitude'] = '0.517099';
 
             return response()->json([
                 'messages' => 'Loggin successfully',
@@ -93,6 +94,8 @@ class AuthController extends Controller
 
         $existingUser = User::where('device', $userAgent)->first();
 
+        //cek device 
+        
         // if ($existingUser) {
         //     return response()->json(['error' => 'Device sudah terdaftar'], 422);
         // }

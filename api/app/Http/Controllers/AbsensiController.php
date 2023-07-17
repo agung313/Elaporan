@@ -30,8 +30,9 @@ class AbsensiController extends Controller
         return response(AbsenResource::collection($absen));
     }
 
-    public function store(Request $request, $id)
+    public function store(Request $request)
     {
+        $id = Auth::user()->id;
         $tanggal = Carbon::now()->toDateString();
         $waktu = Carbon::now()->toTimeString();
 
@@ -85,34 +86,28 @@ class AbsensiController extends Controller
             }
         }
     }
-    function testDaily(Request $request){
 
-        $tanggal = Carbon::now()->toDateString();
-        // Mendapatkan semua id_user yang ada di tabel absensi pada hari ini
-        $absentUserIds = Absensi::whereDate('tanggal', Carbon::today())->pluck('id_user')->all();
+    //belum jadi karena ngk nampak tampilan seperti apa
+    function absenAdmin(Request $request, $id){
+        if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
 
-        // Mendapatkan semua id_user dari tabel user
-        $allUserIds = User::pluck('id')->all();
+            $absen = Absensi::create([
+                'id_user' => $id,
+                'status' => $request->status,
+                'keterangan_hadir' => $request->keterangan_hadir,
+                'waktu_hadir' => $waktu,
+                'tanggal' => $tanggal
+            ]);
 
-        // Menemukan id_user yang tidak hadir hari ini
-        $absentTodayUserIds = array_diff($allUserIds, $absentUserIds);
-
-        // Mengambil data user berdasarkan id_user yang tidak hadir hari ini
-        $absentTodayUsers = User::whereIn('id', $absentTodayUserIds)->get();
-
-        // dd($absentTodayUsers);
-        foreach ($absentTodayUsers as $key => $absen) {
-            $absensi = new Absensi;
-            $absensi->id_user = $absen->id;
-            $absensi->status = 'tidak hadir';
-            $absensi->keterangan_hadir = 'tidak absen';
-            $absensi->tanggal = $tanggal;
-            $absensi->save();
-        }
-
-        return response()->json([
-            'messages' => 'testing succesfully'
-        ]);
+            return response()->json([
+                'messages' => 'absensi berhasil',
+                'data' => $absen
+            ],200);
+        }else{
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses',
+            ],402);
+        } 
     }
 
 }

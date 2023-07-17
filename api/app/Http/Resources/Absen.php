@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\URL;
 use App\Models\Absensi;
+use App\Models\Laporan;
 use Carbon\Carbon;
 
 class Absen extends JsonResource
@@ -23,6 +24,7 @@ class Absen extends JsonResource
         $waktu_pulang = Carbon::parse($this->waktu_pulang);
 
         $photo = Absensi::find($this->id);
+        $laporan = Laporan::where('id_absensi',$this->id)->first();
 
         return [
             'id' => $this->id,
@@ -34,8 +36,13 @@ class Absen extends JsonResource
             'tanggal' => $this->tanggal,
             'waktu_hadir' => $this->waktu_hadir,
             'waktu_pulang' => $this->waktu_pulang,
-            'ket_hadir' => $waktu_hadir->greaterThan($jamMasuk) && $waktu_hadir->lessThanOrEqualTo($jamMasuk->copy()->addMinutes(120)) ? 'Absen Terlambat' : 'Absen Tepat Waktu',
-            'ket_pulang' => $waktu_pulang->lessThan($jamPulang) ? 'Pulang cepat' : 'Pulang Tepat Waktu'
+            'ket_hadir' => $this->waktu_hadir != null 
+                    ? ($waktu_hadir->greaterThan($jamMasuk) && $waktu_hadir->lessThanOrEqualTo($jamMasuk->copy()->addMinutes(120)) 
+                    ? 'Absen Terlambat' : 'Absen Tepat Waktu') : 'tidak absen pergi',
+            'ket_pulang' => $this->waktu_pulang != null
+                    ? ($waktu_pulang->lessThan($jamPulang) 
+                    ? 'Pulang cepat' : 'Pulang Tepat Waktu'): 'tidak absen pulang',
+            'laporan' => $laporan == null ? false : true
         ];
     }
 }
