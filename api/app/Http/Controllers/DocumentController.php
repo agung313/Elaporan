@@ -27,21 +27,20 @@ class DocumentController extends Controller
         if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
             $document = Document::select('documents.*','users.name','users.jabatan')
                     ->join('Users','users.id', '=', 'documents.id_user')
-                    ->whereMonth('documents.tanggal', $request->bulan)
-                    ->where('documents.status',$request->status)
+                    ->whereMonth('documents.bulan', $request->bulan)
+                    ->where('documents.status', $request->status)
                     ->get();
+                    // dd('tessss');
         }else{
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
-                        ->whereMonth('documents.tanggal', $request->bulan)
+                        ->whereMonth('documents.bulan', $request->bulan)
                         ->where('documents.status',$request->status)
                         ->where('documents.id_user',Auth::user()->id)
                         ->get();
         }
 
-        return response()->json([
-            'data' => $document
-        ]);
+        return response(DocumentResource::collection($document));
     }
 
     public function store(Request $request)
@@ -49,7 +48,7 @@ class DocumentController extends Controller
         $idUser = Auth::user()->id;
 
         $tanggal = $request->bulan;
-        $carbon = Carbon::createFromFormat('m-Y', $tanggal);
+        $carbon = Carbon::createFromFormat('d-m-Y', $tanggal);
 
         $tahun = $carbon->year;
         $saran = $request->saran;
@@ -88,16 +87,25 @@ class DocumentController extends Controller
                     ->get();
 
         //validasi laporan
-        $laporanIds = Laporan::pluck('id_absensi')->toArray();
-        $absensiIds = Absensi::where('status', 'hadir')->whereMonth('tanggal',$request->bulan)->pluck('id')->toArray();
+        $laporanIds = Laporan::join('Absensis','absensis.id','=','laporans.id_absensi')
+                    ->join('Users','users.id', '=', 'absensis.id_user')
+                    ->where('users.id', $idUser)
+                    ->pluck('laporans.id_absensi')
+                    ->toArray();
+        $absensiIds = Absensi::where('absensis.status', 'hadir')
+                    ->join('Users','users.id', '=', 'absensis.id_user')
+                    ->whereMonth('absensis.tanggal',$request->bulan)
+                    ->where('users.id', $idUser)
+                    ->pluck('absensis.id')
+                    ->toArray();
+
         $missingIds = array_diff($absensiIds, $laporanIds);
 
-        // if ($missingIds !== null){
-
-        //     return response()->json([
-        //         'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-        //     ],400);
-        // }
+        if ($missingIds !== null){
+            return response()->json([
+                'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            ],400);
+        }
 
         $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
 

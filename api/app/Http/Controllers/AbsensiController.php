@@ -85,5 +85,34 @@ class AbsensiController extends Controller
             }
         }
     }
+    function testDaily(Request $request){
+
+        $tanggal = Carbon::now()->toDateString();
+        // Mendapatkan semua id_user yang ada di tabel absensi pada hari ini
+        $absentUserIds = Absensi::whereDate('tanggal', Carbon::today())->pluck('id_user')->all();
+
+        // Mendapatkan semua id_user dari tabel user
+        $allUserIds = User::pluck('id')->all();
+
+        // Menemukan id_user yang tidak hadir hari ini
+        $absentTodayUserIds = array_diff($allUserIds, $absentUserIds);
+
+        // Mengambil data user berdasarkan id_user yang tidak hadir hari ini
+        $absentTodayUsers = User::whereIn('id', $absentTodayUserIds)->get();
+
+        // dd($absentTodayUsers);
+        foreach ($absentTodayUsers as $key => $absen) {
+            $absensi = new Absensi;
+            $absensi->id_user = $absen->id;
+            $absensi->status = 'tidak hadir';
+            $absensi->keterangan_hadir = 'tidak absen';
+            $absensi->tanggal = $tanggal;
+            $absensi->save();
+        }
+
+        return response()->json([
+            'messages' => 'testing succesfully'
+        ]);
+    }
 
 }

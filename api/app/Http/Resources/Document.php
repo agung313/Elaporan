@@ -14,5 +14,16 @@ class Document extends JsonResource
      */
     public function toArray($request)
     {
+        return [
+            'id' => $this->id,
+            'id_user' => $this->id_user,
+            'status' => $this->status,
+            'URL' => URL('storage/'. $this->path),
+            'saran' => $this->saran,
+            'kendala' => $this->kendala,
+            'nama' => $this->name,
+            'jabatan' => $this->jabatan,
+            'isDeleted' => $this->keterangan_pulang
+        ];
     }
 }

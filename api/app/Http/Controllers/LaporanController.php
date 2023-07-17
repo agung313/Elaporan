@@ -46,7 +46,9 @@ class LaporanController extends Controller
         $jabatan = Auth::user()->role;
 
         if($jabatan == 'pimpinan' || $jabatan == 'admin'){
-            //jumlah hari yang belum terisi kegiatan pada setiap user
+            $laporanIds = Laporan::pluck('id_absensi')->toArray();
+            $absensiIds = Absensi::where('status', 'hadir')->whereMonth('tanggal',$request->bulan)->pluck('id')->toArray();
+            $missingIds = array_diff($absensiIds, $laporanIds);
         }else{
             //jumlah hari kegiatan yang belum di lengkapi
         }
