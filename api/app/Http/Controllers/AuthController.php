@@ -43,9 +43,6 @@ class AuthController extends Controller
 
         $deviceNow = $request->header('User-Agent');
 
-        if ($cekEmail->device !== $deviceNow) {
-            return response()->json(['messages' => 'Device tidak cocok'], 401);
-        }
 
         if ($cekEmail->isActive == false){
             return response()->json(['messages' => 'Akun sudah di nonaktifkan'], 401);
