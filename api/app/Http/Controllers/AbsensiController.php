@@ -110,4 +110,35 @@ class AbsensiController extends Controller
         } 
     }
 
+    function cekAbsen(Request $request) {
+        $id = Auth::user()->id;
+        $tanggal = Carbon::now()->toDateString();
+        $waktu = Carbon::now()->toTimeString();
+        $absenPulang = Carbon::parse('12:00:00');
+        $cek = Absensi::where('tanggal',$tanggal)->first();
+        $status;
+
+        if ($cek != null){
+            if ($cek->status == 'sakit' || $cek->status == 'izin'){
+                $status = 'tidak perlu absen pulang';
+            }else if (Carbon::now()->gte($absenPulang)){
+                $status = 'sudah bisa absen pulang';
+            }else{
+                $status = 'belum bisa absen pulang';
+            }
+            
+        }else{
+            $status = 'belum absen datang';
+        }
+        
+
+        if ($cek){
+            $cek->status = $status;
+        }
+
+        return response()->json([
+            'status' => $cek == null ? $status : $cek->status
+        ]);
+    }
+
 }

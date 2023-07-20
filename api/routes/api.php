@@ -29,6 +29,7 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
     Route::get('/', 'index');
     Route::post('/store', 'store');
     Route::post('/test', 'testDaily');
+    Route::get('/cekAbsen', 'cekAbsen');
 });
 
 //LAPORAN

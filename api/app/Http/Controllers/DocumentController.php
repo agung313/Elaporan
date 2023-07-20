@@ -30,7 +30,6 @@ class DocumentController extends Controller
                     ->whereMonth('documents.bulan', $request->bulan)
                     ->where('documents.status', $request->status)
                     ->get();
-                    // dd('tessss');
         }else{
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
@@ -56,7 +55,7 @@ class DocumentController extends Controller
         $bulan = $carbon->translatedFormat('F');
 
         //user
-        $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
+        $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
                     ->join('Profiles','profiles.id_user', '=', 'users.id')
                     ->where('users.id', $idUser)
                     ->first();
@@ -65,6 +64,12 @@ class DocumentController extends Controller
             $query->saran = $saran;
             $query->kendala = $kendala;
             $query->bulan = $bulan;
+        }
+
+        if ($query->isComplete == false){
+            return response()->json([
+                'messages' => 'silahkan lengkapi data profile anda terlebih dahulu'
+            ],400);
         }
 
         //absensi

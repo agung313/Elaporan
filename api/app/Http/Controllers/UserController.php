@@ -34,6 +34,7 @@ class UserController extends Controller
             'latar_belakang' => 'required|string|max:700',
             'tujuan' => 'required|string|max:700',
             'ruang_lingkup' => 'required',
+            'ttd' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -42,8 +43,6 @@ class UserController extends Controller
                 'error' =>  $validator->errors()
             ]);
         }
-        // dd($request);
-        
 
         $idProfile = Profile::select('id')->where('id_user', $id)->first();
 
@@ -51,16 +50,13 @@ class UserController extends Controller
             $path = $request->file('foto')->store('public');
         }
 
-        // dd($idProfile);
-
-        
-
         $user = Profile::findorNew($idProfile->id);
         $user->foto = $request->foto ? $path : null;
         $user->id_user = $id;
         $user->latar_belakang = $request->latar_belakang;
         $user->tujuan = $request->tujuan;
         $user->ruang_lingkup = $request->ruang_lingkup;
+        $user->ttd = $request->ttd;
         $user->isComplete = true;
         $user->save();
 
@@ -90,7 +86,6 @@ class UserController extends Controller
         $databaseOldPassword = $users->password;
 
         $isPasswordMatched = Hash::check($inputOldPassword, $databaseOldPassword);
-
 
         if($isPasswordMatched == false){
             $response = [
