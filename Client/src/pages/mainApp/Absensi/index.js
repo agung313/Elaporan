@@ -1,19 +1,11 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect,useState } from 'react'
 import { AddImg, BackIcon, ExFoto, LgBappeda } from '../../../assets/images'
 import MapView, { Marker } from 'react-native-maps'
 
 
 const Absensi = ({route, navigation}) => {
-    const {kehadiran, posisi} = route.params
-    // console.log(posisi, "<==== si")
-    // console.log(kehadiran, "<====  status kehadiran")
-
-    // lokasi
-    const latitudePosisi = JSON.parse(posisi).coords.latitude
-    const longitudePosisi = JSON.parse(posisi).coords.longitude
-    console.log(latitudePosisi, "<==== latitude")
-    console.log(longitudePosisi, "<==== longitude")
+    const {kehadiran} = route.params
 
     const [cekStatus, setCekStatus] = useState(kehadiran)
 
@@ -34,9 +26,11 @@ const Absensi = ({route, navigation}) => {
 
     const [monthUsed, setMonthUsed] = useState(cekTgl.getMonth()+1)
     const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "November", "Desember"]
-    const getStrMonth = namaBulan[monthUsed]
+    const getStrMonth = namaBulan[monthUsed] 
 
     const getYear = cekTgl.getFullYear()
+    const [posisi, setPosisi] = useState()
+
 
     return (
         <ScrollView>
@@ -110,16 +104,18 @@ const Absensi = ({route, navigation}) => {
                                 
                                 latitude: 0.5170908981315071, 
                                 longitude: 101.54134025306783,
-                                // latitude: latitudePosisi,
-                                // longitude: longitudePosisi,
-                                latitudeDelta: 0.009,
-                                longitudeDelta: 0.004,
+
                             }}
                         >
                             <Marker
                             style={{width:"100%", height:300}}
-                            coordinate={{latitude: 0.5170908981315071, longitude: 101.54134025306783}}
-                        />
+                            coordinate={{latitude: 0.5164364671183436,longitude: 101.53856151148045}}
+                            />
+
+                            <Marker
+                            style={{width:"100%", height:300}}
+                            coordinate={{latitude: myLatitude, longitude: myLongitude}}
+                            />                            
                         </MapView>
                     </View>
 

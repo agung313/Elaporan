@@ -14,9 +14,12 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum', ['except' => ['login','register']]);
+        $this->middleware('auth:sanctum', ['except' => ['login','tes','register']]);
     }
 
+    function tes() {
+        return json_encode(['nama'=>'ondri']);
+    }
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -40,9 +43,6 @@ class AuthController extends Controller
 
         $deviceNow = $request->header('User-Agent');
 
-        if ($cekEmail->device !== $deviceNow) {
-            return response()->json(['messages' => 'Device tidak cocok'], 401);
-        }
 
         if ($cekEmail->isActive == false){
             return response()->json(['messages' => 'Akun sudah di nonaktifkan'], 401);
