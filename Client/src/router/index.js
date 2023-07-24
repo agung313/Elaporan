@@ -86,6 +86,7 @@ const Router = () => {
     
     return (
         <Stack.Navigator>
+            
             {/* stack pertama akan menjadi stack yang dipanggil saat aplikasi dibuka */}
             <Stack.Screen name='MainSplash' component={MainSplash} options={{headerShown:false}}/>            
             <Stack.Screen name='AppScreen' component={AppScreen} options={{headerShown:false}}/>

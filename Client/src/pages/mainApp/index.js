@@ -41,14 +41,14 @@ const MainApp = ({ navigation}) => {
 
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
+    const [izinSakit, setIzinSakit] = useState(0)
 
     useEffect(()=>{
-
+        console.log(cekTgl.getHours(),"<--- tanggal")
         requestLocationPermission(),
         calculateDistance(),
         getMyProfile(),
         getMyHistory()
-        
         
     },[])
 
@@ -289,7 +289,7 @@ const MainApp = ({ navigation}) => {
                                     <Image source={CloseIcont} style={{width:30, height:30}}/>
                                 </TouchableOpacity>
                                 <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silakan Pilih Absensi Anda</Text>
+                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Absensi Anda</Text>
                                 </View>
                                 <View style={{alignItems:"center", width:"100%"}}>
                                     <Picker
