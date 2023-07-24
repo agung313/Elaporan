@@ -31,6 +31,8 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
     Route::post('/store', 'store');
     Route::post('/test', 'testDaily');
     Route::get('/cekAbsen', 'cekAbsen');
+    Route::post('/acceptIzin', 'acceptIzin');
+    Route::post('/absenAdmin', 'absenAdmin');
 });
 
 //LAPORAN

@@ -90,13 +90,11 @@ class AbsensiController extends Controller
     //belum jadi karena ngk nampak tampilan seperti apa
     function absenAdmin(Request $request, $id){
         if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
-
-            $absen = Absensi::create([
-                'id_user' => $id,
+            $absen = Absensi::findorNew($id)([
                 'status' => $request->status,
                 'keterangan_hadir' => $request->keterangan_hadir,
-                'waktu_hadir' => $waktu,
-                'tanggal' => $tanggal
+                'waktu_hadir' => $request->waktu,
+                'tanggal' => $request->tanggal
             ]);
 
             return response()->json([
@@ -139,6 +137,23 @@ class AbsensiController extends Controller
         return response()->json([
             'status' => $cek == null ? $status : $cek->status
         ]);
+    }
+
+    function acceptIzin() {
+        if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
+            $absen = Absensi::findorNew($id);
+            $absen->status = $request->status;
+            $absen->save();
+
+            return response()->json([
+                'messages' => 'absen create successfully',
+                'data' => $absen
+            ],200);
+        }else{
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses',
+            ],402);
+        } 
     }
 
 }
