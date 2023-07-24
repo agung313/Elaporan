@@ -37,6 +37,7 @@ const MainApp = ({ navigation}) => {
 
     const [namaUser, setNamaUser] = useState('-')
     const [jabatanUser, setJabatanUser] = useState('-')
+    const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [history, setHistory] = useState([]);
 
     // modal
@@ -44,27 +45,36 @@ const MainApp = ({ navigation}) => {
     const [izinSakit, setIzinSakit] = useState(0)
 
     useEffect(()=>{
-        console.log(cekTgl.getHours(),"<--- tanggal")
+
         requestLocationPermission(),
         calculateDistance(),
-        getMyProfile(),
+        getToday(),
         getMyHistory()
         
     },[])
 
-    const getMyProfile = async data =>{
+    const getToday = async data =>{
 
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-            const response = await axios.get(`${base_url}/user/profile`,{headers:{
+            const response = await axios.get(`${base_url}/absen/cekAbsen`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
     
-            if (response.status == 200) {
-                setNamaUser(response.data.nama)
-                setJabatanUser(response.data.jabatan)
+            var data = response.data.data
+            var status = response.data.status
+
+            setJabatanUser(data.jabatan)
+            setNamaUser(data.name)
+            console.log(status,"<--- status")
+
+            if (status !== "belum absen datang" ||  status !== "sudah bisa absen pulang") {
+                setStatusAbsensi(true)
+            }else{
+                setStatusAbsensi(false)
             }
+            
 
         } catch (error) {
             console.log(error, "error get my profile")   
@@ -272,9 +282,13 @@ const MainApp = ({ navigation}) => {
                             </Text>
                         </View> */}
                         <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={toggleModal}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
-                                Absensi Masuk
-                            </Text>
+                            {
+                                statusAbsensi &&
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
+                                    Absensi Masuk
+                                    </Text>
+
+                            }
                         </TouchableOpacity>
 
                         <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('Agenda')}>

@@ -13,6 +13,7 @@ const Absensi = ({route, navigation}) => {
     // const kehadiran=2
      const [cekStatus, setCekStatus] = useState(kehadiran)
 
+
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -43,11 +44,34 @@ const Absensi = ({route, navigation}) => {
     const [modalStore, setModalStore] = useState(false)
     const [modalSuccess, setModalSuccess] = useState(false)
 
+    const [namaUser, setNamaUser] = useState('-')
+    const [jabatanUser, setJabatanUser] = useState('-')
+
+    useEffect(() => {
+      
+        getMyProfile()
+
+    }, [navigation])
+
+
     
-    const getDetail = async data =>{
+    const getMyProfile = async data =>{
 
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
 
-        
+            const response = await axios.get(`${base_url}/user/profile`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+    
+            if (response.status == 200) {
+                setNamaUser(response.data.nama)
+                setJabatanUser(response.data.jabatan)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
     }
     const handlerHadir = async data =>{
 
@@ -147,11 +171,11 @@ const Absensi = ({route, navigation}) => {
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{namaUser}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Programmer</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{jabatanUser}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
@@ -215,7 +239,7 @@ const Absensi = ({route, navigation}) => {
                     <ReactNativeModal isVisible={modalStore} onBackdropPress={() => setModalStore(!modalStore)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                             <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                                <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=> handlerAlert('confirmAlert','close')}>
+                                <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStore(false)}} >
                                     <Image source={CloseIcont} style={{width:30, height:30}}/>
                                 </TouchableOpacity>
                                 <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
@@ -264,7 +288,7 @@ const Absensi = ({route, navigation}) => {
                     <View style={kehadiran==3 ? {display:"flex"} : {display:"none"}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Surat Keterangan Sakit :</Text>
                         <View style={{alignItems:"center", marginBottom:20}}>
-                            <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                            <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={selectImage}>
                                 <Image source={AddImg} style={{width:100, height:100}}/>
                             </TouchableOpacity>
                         </View>
@@ -284,7 +308,7 @@ const Absensi = ({route, navigation}) => {
                         </View>
 
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>
@@ -307,7 +331,7 @@ const Absensi = ({route, navigation}) => {
                             </View>
                         </View>
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>
