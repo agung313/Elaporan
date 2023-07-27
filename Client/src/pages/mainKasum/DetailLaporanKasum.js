@@ -38,6 +38,13 @@ const DetailLaporanKasum = ({navigation}) => {
     const toggleModal2 = () => {
         setModalVisible2(!isModalVisible2);
     }
+
+    const [isModalVisible3, setModalVisible3] = useState(false);
+
+    const toggleModal3 = () => {
+        setModalVisible3(!isModalVisible3);
+    }
+
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -131,7 +138,7 @@ const DetailLaporanKasum = ({navigation}) => {
 
                     <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
-                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:160}} onPress={toggleModal}>
+                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:160}} onPress={() => navigation.navigate('TambahCatatan')}>
                             <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
                         </TouchableOpacity>
                         
@@ -156,11 +163,11 @@ const DetailLaporanKasum = ({navigation}) => {
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
                             </View>
                             <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center", flexDirection:"row"}}>
-                                <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit")}>
+                                <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("EditCatatan")}>
                                     <Image source={EditIcont} style={{width:25, height:25}} />
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={toggleModal}>
+                                <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={toggleModal3}>
                                     <Image source={DeletedIcont} style={{width:30, height:30}} />
                                 </TouchableOpacity>
                             </View>
@@ -232,6 +239,33 @@ const DetailLaporanKasum = ({navigation}) => {
                                     </View>
                                 </View>
                             </View>
+                        </View>
+                    </View>
+                </ReactNativeModal>
+
+                {/* modal hapus */}
+                <ReactNativeModal isVisible={isModalVisible3} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "90%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                        <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal3}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Detail Catatan Anda</Text>
+                        </View>
+                        
+                        <View style={{marginBottom:20, borderBottomWidth:0.5, borderColor:"black"}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:10}}>Catatan :</Text>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:20,}}>Kehadiran</Text>
+                        </View>
+
+                        <View style={{flexDirection:"row",justifyContent:"center"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={toggleModal3}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={toggleModal3}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Hapus</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </ReactNativeModal>

@@ -5,9 +5,11 @@ import axios from 'axios';
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { err } from 'react-native-svg/lib/typescript/xml';
+import ApiLink from '../../../assets/ApiHelper/ApiLink';
 
-const LoginSide = ({navigation}) => {
-
+const LoginSide = ({route, navigation}) => {
+    const {errorValue} = route.params
+    // console.log(errorValue)
     const base_url = 'http://10.0.2.2:8000/api';
 
     const [inputs, setInputs] = useState({
@@ -27,33 +29,48 @@ const LoginSide = ({navigation}) => {
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
 
-    const handlerLogin = async data =>{
+    const checkPasswordValidity = value => {
+        // const isNonWhiteSpace = /^\S*$/;
+        // if (isNonWhiteSpace.test(value)) {
+        //     return 'Silakan Masukan Username dan Password Andaaaaa';
+        //   }
+      
+        //   const isContainsUppercase = /^(?=.*[A-Z]).*$/;
+        //   if (!isContainsUppercase.test(value)) {
+        //     return 'Password must have at least one Uppercase Character.';
+        //   }
+      
+        //   const isContainsLowercase = /^(?=.*[a-z]).*$/;
+        //   if (!isContainsLowercase.test(value)) {
+        //     return 'Password must have at least one Lowercase Character.';
+        //   }
+      
+        //   const isContainsNumber = /^(?=.*[0-9]).*$/;
+        //   if (!isContainsNumber.test(value)) {
+        //     return 'Password must contain at least one Digit.';
+        //   }
+      
+        //   const isValidLength = /^.{8,16}$/;
+        //   if (!isValidLength.test(value)) {
+        //     return 'Password must be 8-16 Characters Long.';
+        //   }
+      
+        //   const isContainsSymbol =
+        //     /^(?=.*[~`!@#$%^&*()--+={}\[\]|\\:;"'<>,.?/_₹]).*$/;
+        //   if (!isContainsSymbol.test(value)) {
+        //     return 'Password must contain at least one Special Symbol.';
+        //   }
+        return 'Silakan Masukan Username dan Password Anda';
+    };
 
-        try {
-            let dataLogin ={
-                email: inputs.username,
-                password: inputs.password
-            }
+    const handlerLogin = () =>{
+        const checkPassword = checkPasswordValidity(inputs.password)
 
-            let response = await axios.post('http://10.0.2.2:8000/api/auth/login', dataLogin)
-
-            console.log(response.data.data.token,"<--- response login");
-
-            await AsyncStorage.setItem('AccessToken', response.data.data.token)
-            let myToken = await AsyncStorage.getItem('AccessToken')
-            console.log(myToken, "<---- my token")
-
-            // if (res.data.data.role === 'kasum') {
-
-            //     navigation.replace('SplashLogin'); 
-
-            // }else if (res.data.data.role === 'thl') {
-            //     console.log('as', 'thl ---')
-
-                navigation.replace('AppScreen');
-            // }
-        } catch (error) {
-            console.log(error, "<--- error")
+        if (inputs.username&&inputs.password) {
+            navigation.navigate("SplashLogin", {username:inputs.username, password:inputs.password })
+        } else {
+            alert(checkPassword);
+            
         }
 
     }
@@ -99,10 +116,8 @@ const LoginSide = ({navigation}) => {
                 </View>
 
             </View>
-            <View style={{marginTop:8, alignItems:"flex-end", marginLeft:170}}>
-                <TouchableOpacity>
-                    <Text style={{color:"#000", fontSize:12, fontWeight:"bold"}}>Lupa Password ?</Text>
-                </TouchableOpacity>
+            <View style={errorValue==1 ? {marginTop:20, display:"flex"}:{display:"none"}}>
+                <Text style={{color:"red", fontSize:14, fontWeight:"bold"}}>Username atau Password anda salah !!</Text>
             </View>
             {/* <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={() => navigation.navigate("AppScreen")}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>THL</Text>

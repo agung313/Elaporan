@@ -118,8 +118,10 @@ class AbsensiController extends Controller
         $status;
 
         if ($cek != null){
-            if ($cek->status == 'sakit' || $cek->status == 'izin'){
-                $status = 'tidak perlu absen pulang';
+            if ($cek->status == 'sakit'){
+                $status = 'Anda sakit';
+            }else if($cek->status == 'izin'){
+                $status = 'Anda izin';
             }else if (Carbon::now()->gte($absenPulang)){
                 $status = 'sudah bisa absen pulang';
             }else{

@@ -13,14 +13,21 @@ const MainSplash = ({navigation}) => {
 
     const checkAccess = async ()=>{
 
-        let myToken =await AsyncStorage.getItem('AccessToken');        
+        let myToken =await AsyncStorage.getItem('AccessToken');      
+        let myRole = await AsyncStorage.getItem('RoleAcces')  
         
-        if (myToken != null) {
+        if(myToken != null) {
 
-            navigation.replace('AppScreen')
+            // navigation.replace('AppScreen')
+            if(myRole === 'kasum'){
+                navigation.replace('KasumScreen')
+            }
+            else{
+                navigation.replace('AppScreen')
+            }
             
         }else{
-            navigation.replace('LoginSide')
+            navigation.replace('LoginSide', {errorValue:0})
 
         }
     }
