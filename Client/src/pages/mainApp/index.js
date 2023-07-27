@@ -56,6 +56,7 @@ const MainApp = ({route, navigation}) => {
     const [sakit, setSakit] = useState()
     const [pulang, SetPulang] = useState()
     const [menunggu, SetMenunggu] = useState()
+    const [btAbsensi, SetBtAbsensi] = useState()
     
     useEffect(()=>{
 
@@ -131,12 +132,15 @@ const MainApp = ({route, navigation}) => {
                 setStatusAbsensi(true)   
                 setLabelStatus("Absensi Pulang")     
                 SetPulang(1)
+                SetBtAbsensi(1)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
     }
+
+    console.log(btAbsensi, "<==== tbn absne")
 
     const getMyHistory = async data =>{
 
@@ -156,7 +160,7 @@ const MainApp = ({route, navigation}) => {
         }
     }
 
-    // console.log(history, "<=== history")
+    console.log(history, "<=== history")
     
     const toggleModal = () => {
         const R = 6371; // radius bumi dalam kilometer
@@ -294,6 +298,27 @@ const MainApp = ({route, navigation}) => {
         }
 
     }
+
+    // button absen & pulang
+    const BtnAbsen = () => {
+        if(btAbsensi==undefined){
+            return(
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={()=>{statusAbsensi ? toggleModal():''}}>
+                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
+                    {labelStatus}
+                    </Text>
+                </TouchableOpacity>
+            )
+        }else{
+            return(
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang')}>
+                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
+                    {labelStatus}
+                    </Text>
+                </TouchableOpacity>
+            )
+        }
+    }
     return (
         <ScrollView>
             <ImageBackground source={BgApp} style={{flex:1}}>
@@ -365,7 +390,6 @@ const MainApp = ({route, navigation}) => {
                                     {pulang? 
                                         <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}} onPress={() => toggleContent(2)}>
                                             <Image source={Absensi} style={{width:80,height:80}}/>
-                                            {/* <Image source={offAgenda} style={{width:80,height:80}}/> */}
                                         </TouchableOpacity>
                                     :
                                         <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}}>
@@ -382,11 +406,7 @@ const MainApp = ({route, navigation}) => {
                                         <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan isi agenda anda</Text>
                                     </View>
                                 :
-                                    <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={()=>{statusAbsensi ? toggleModal():''}}>
-                                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
-                                        {labelStatus}
-                                        </Text>
-                                    </TouchableOpacity>
+                                   <BtnAbsen/>
                                 }
                                 
 
