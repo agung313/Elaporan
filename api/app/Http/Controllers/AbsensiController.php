@@ -62,7 +62,9 @@ class AbsensiController extends Controller
                     'foto' => $path,
                     'keterangan_hadir' => $request->keterangan_hadir,
                     'waktu_hadir' => $waktu,
-                    'tanggal' => $tanggal
+                    'tanggal' => $tanggal,
+                    'longtitude' => $request->longtitude,
+                    'latitude' => $request->latitude
                 ]);
 
                 return response()->json([
@@ -76,7 +78,9 @@ class AbsensiController extends Controller
                     'status' => $request->status,
                     'keterangan_hadir' => $request->keterangan_hadir,
                     'waktu_hadir' => $waktu,
-                    'tanggal' => $tanggal
+                    'tanggal' => $tanggal,
+                    'longtitude' => $request->longtitude,
+                    'latitude' => $request->latitude
                 ]);
 
                 return response()->json([
