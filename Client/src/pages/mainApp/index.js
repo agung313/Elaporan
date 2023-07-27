@@ -6,6 +6,8 @@ import { Picker } from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+
 
 
 const MainApp = ({ navigation}) => {
@@ -34,23 +36,29 @@ const MainApp = ({ navigation}) => {
     const [lon2, setLon2] = useState(101.534796);
 
     const [distance, setDistance] = useState('');
-
+    const isFocused = useIsFocused();
     const [namaUser, setNamaUser] = useState('-')
     const [jabatanUser, setJabatanUser] = useState('-')
+    const [idAbsensi, setIdAbsensi] = useState(0)
+    const [statusAbsensi, setStatusAbsensi] = useState(true)
+    const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
 
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
+    const [izinSakit, setIzinSakit] = useState(0)
 
     useEffect(()=>{
 
-        requestLocationPermission(),
-        calculateDistance(),
-        getMyProfile(),
-        getMyHistory()
+        if (isFocused) {
+            requestLocationPermission(),
+            calculateDistance(),
+            getToday(),
+            getMyProfile(),
+            getMyHistory()            
+        }
         
-        
-    },[])
+    },[navigation, isFocused])
 
     const getMyProfile = async data =>{
 
@@ -64,6 +72,39 @@ const MainApp = ({ navigation}) => {
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
+    }    
+
+    const getToday = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${base_url}/absen/cekAbsen`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+    
+            var status = response.data.status
+
+
+            if (status == 'belum absen datang') {
+                setStatusAbsensi(true)
+
+            } else if (status == 'tidak perlu absen pulang' ) {
+                setStatusAbsensi(false)
+
+            } else if(status == 'belum bisa absen pulang'){
+
+                setStatusAbsensi(false)
+                setLabelStatus("Belum Bisa Absen")             
+                
+            }else{
+                setStatusAbsensi(true)   
+                setLabelStatus("Absensi Pulang")             
             }
 
         } catch (error) {
@@ -271,15 +312,15 @@ const MainApp = ({ navigation}) => {
                                 Harap Menunggu Waktu Absensi Selanjutnya
                             </Text>
                         </View> */}
-                        <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={toggleModal}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
-                                Absensi Masuk
-                            </Text>
+                        <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={()=>{statusAbsensi ? toggleModal():''}}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
+                                    {labelStatus}
+                                    </Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('Agenda')}>
+                        <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() =>  navigation.navigate('Agenda')}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
-                                Agenda
+                                {statusAbsensi ? 'Agenda':'-'}
                             </Text>
                         </TouchableOpacity>
 
@@ -289,7 +330,7 @@ const MainApp = ({ navigation}) => {
                                     <Image source={CloseIcont} style={{width:30, height:30}}/>
                                 </TouchableOpacity>
                                 <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silakan Pilih Absensi Anda</Text>
+                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Absensi Anda</Text>
                                 </View>
                                 <View style={{alignItems:"center", width:"100%"}}>
                                     <Picker

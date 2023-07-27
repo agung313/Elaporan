@@ -1,28 +1,19 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useEffect,useState } from 'react'
-import { AddImg, BackIcon, ExFoto, LgBappeda, CloseIcont } from '../../../assets/images'
+import { AddImg, BackIcon, ExFoto, LgBappeda } from '../../../assets/images'
 import MapView, { Marker } from 'react-native-maps'
-import ReactNativeModal from 'react-native-modal'
-import axios from 'axios'
-import DocumentPicker from 'react-native-document-picker'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 
-const Absensi = ({route, navigation}) => {
-    const {kehadiran} = route.params
-    // const kehadiran=2
-     const [cekStatus, setCekStatus] = useState(kehadiran)
+const Absensi = ({navigation}) => {
 
+    const kehadiran =1
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
-    // lokasi default user
-    const [myLat, setMyLat] = useState(0.515712);
-    const [myLng, setMyng] = useState(101.534796);
 
     // input
-    const [detail, setDetail] = useState('-')
+    const [detail, setDetail] = useState()
 
     // date time tanggal
     const cekTgl = new Date
@@ -37,104 +28,7 @@ const Absensi = ({route, navigation}) => {
     const getStrMonth = namaBulan[monthUsed] 
 
     const getYear = cekTgl.getFullYear()
-    const [posisi, setPosisi] = useState()
 
-    const base_url ="http:10.0.2.2:8000/api"
-    const [fileKeterangan, setFileKeterangan] = useState()
-    const [modalStore, setModalStore] = useState(false)
-    const [modalSuccess, setModalSuccess] = useState(false)
-
-    const [namaUser, setNamaUser] = useState('-')
-    const [jabatanUser, setJabatanUser] = useState('-')
-
-    useEffect(() => {
-      
-        getMyProfile()
-
-    }, [navigation])
-
-
-    
-    const getMyProfile = async data =>{
-
-        try {
-            const myToken = await AsyncStorage.getItem('AccessToken');    
-
-            const response = await axios.get(`${base_url}/user/profile`,{headers:{
-                Authorization: `Bearer ${myToken}`
-            }});        
-    
-            if (response.status == 200) {
-                setNamaUser(response.data.nama)
-                setJabatanUser(response.data.jabatan)
-            }
-
-        } catch (error) {
-            console.log(error, "error get my profile")   
-        }
-    }
-    const handlerHadir = async data =>{
-
-        try {
-            const dataHadir ={
-                status:'hadir'
-            }
-
-            const myToken = await AsyncStorage.getItem('AccessToken');    
-
-            const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
-                Authorization: `Bearer ${myToken}`
-            }})
-            
-            setModalSuccess(true)
-        } catch (error) {
-            console.log(error,"<--- error handler hadir")            
-        }
-    }
-
-    
-    const handlerKegiatan = async ()=>{
-
-        setModalStore(false)
-        try{
-            var formData = new FormData()
-            formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
-            formData.append('status','izin')
-            formData.append('keterangan_hadir',detail)            
-
-            const myToken = await AsyncStorage.getItem('AccessToken');    
-
-            const response = await axios.post(base_url+"/absen/store", formData,{headers:{
-                Authorization: `Bearer ${myToken}`,
-                Accept: 'application/json',
-                'Content-Type': `multipart/form-data`
-            }})            
-        
-            console.log(response.data,"<--- post ")
-            setModalSuccess(true)
-
-        } catch(error){
-            console.log(error, "<= eroro")
-        }
-    }    
-
-    const selectImage = async () => {
-        try{
-
-            const doc =  await DocumentPicker.pickSingle({
-                type: [DocumentPicker.types.images],
-            })
-
-            setFileKeterangan(doc)
-
-        }catch(err){
-            if(DocumentPicker.isCancel(e)){
-                console.log(e, "<---- user canceled file")
-            }else{
-                console.log(err)
-            }
-        }
-    }    
 
     return (
         <ScrollView>
@@ -171,11 +65,11 @@ const Absensi = ({route, navigation}) => {
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{namaUser}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Muhammad Agung Sholihhudin, S.T</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{jabatanUser}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Programmer</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
@@ -202,64 +96,35 @@ const Absensi = ({route, navigation}) => {
                         </View>
                     </View>
                     <View>
-                        {/* <MapView
+                        <MapView
                             style={{width:"100%", height:300}}
                             initialRegion={{
-                                
                                 latitude: 0.5170908981315071, 
                                 longitude: 101.54134025306783,
-
                             }}
                         >
-                            
-                        </MapView> */}
-                    </View>
-                    <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => navigation.goBack()}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                            <Marker
+                            style={{width:"100%", height:300}}
+                            coordinate={{latitude: 0.5164364671183436,longitude: 101.53856151148045}}
+                            />
 
-                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.goBack()}>
-                                <Image source={CloseIcont} style={{width:30, height:30}}/>
-                            </TouchableOpacity>
-                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Absensi Berhasil.</Text>
-                            </View>
-                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.goBack()}>
-                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
-                                </TouchableOpacity>      
-                            </View>
-                        </View>
-                    </ReactNativeModal>
+                            <Marker
+                            style={{width:"100%", height:300}}
+                            coordinate={{latitude: 0.5164364671183436, longitude: 101.53856151148045}}
+                            />                            
+                        </MapView>
+                    </View>
+
                     <View style={kehadiran==1 ? {alignItems:"center"} : {display:"none"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerHadir}>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                         </TouchableOpacity>
                     </View>
-                    {/*  hadir kegiatan luar */}
-                    <ReactNativeModal isVisible={modalStore} onBackdropPress={() => setModalStore(!modalStore)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                            <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                                <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStore(false)}} >
-                                    <Image source={CloseIcont} style={{width:30, height:30}}/>
-                                </TouchableOpacity>
-                                <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lanjut Absensi ?</Text>
-                                    <Text>Pastikan Data Sudah Benar</Text>
-                                </View>
-                                <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                                    <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={handlerKegiatan}>
-                                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ya ! Lanjutkan</Text>                                        
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#d9dedb", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStore(false)}} >
-                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Batal</Text>                                        
-                                    </TouchableOpacity>                                    
-                                </View>
-                            </View>
-                    </ReactNativeModal>
                     <View style={kehadiran==2 ? {display:"flex"} : {display:"none"}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
                         <View style={{alignItems:"center", marginBottom:20}}>
-                            <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={selectImage}>
+                            <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
                                 <Image source={AddImg} style={{width:100, height:100}}/>
                             </TouchableOpacity>
                         </View>
@@ -279,7 +144,7 @@ const Absensi = ({route, navigation}) => {
                             </View>
                         </View>
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>
@@ -288,7 +153,7 @@ const Absensi = ({route, navigation}) => {
                     <View style={kehadiran==3 ? {display:"flex"} : {display:"none"}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Surat Keterangan Sakit :</Text>
                         <View style={{alignItems:"center", marginBottom:20}}>
-                            <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={selectImage}>
+                            <TouchableOpacity style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
                                 <Image source={AddImg} style={{width:100, height:100}}/>
                             </TouchableOpacity>
                         </View>
@@ -306,9 +171,8 @@ const Absensi = ({route, navigation}) => {
                                     />
                             </View>
                         </View>
-
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>
@@ -331,7 +195,7 @@ const Absensi = ({route, navigation}) => {
                             </View>
                         </View>
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>

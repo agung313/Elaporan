@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+
 
 const Agenda = ({route, navigation}) => {
-
+    const base_url ="http:10.0.2.2:8000/api"
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -23,14 +26,42 @@ const Agenda = ({route, navigation}) => {
     const [monthUsed, setMonthUsed] = useState(cekTgl.getMonth()+1)
     const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "November", "Desember"]
     const getStrMonth = namaBulan[monthUsed]
-
     const getYear = cekTgl.getFullYear()
+
+    const [namaUser, setNamaUser] = useState('-')
+    const [jabatanUser, setJabatanUser] = useState('-')
 
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
+    }
+    useEffect(() => {
+      
+        getMyProfile()
+
+    }, [navigation])
+
+
+    
+    const getMyProfile = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${base_url}/user/profile`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+    
+            if (response.status == 200) {
+                setNamaUser(response.data.nama)
+                setJabatanUser(response.data.jabatan)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
     }
 
     return (
@@ -66,11 +97,11 @@ const Agenda = ({route, navigation}) => {
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{namaUser}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Programmer</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{jabatanUser}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>

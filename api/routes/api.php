@@ -28,6 +28,7 @@ Route::controller(UserController::class)->prefix('user')->group(function () {
 //ABSENSI
 Route::controller(AbsensiController::class)->prefix('absen')->group(function () {
     Route::get('/', 'index');
+    Route::get('/detailKehadiran', 'detailKehadiran');
     Route::post('/store', 'store');
     Route::post('/test', 'testDaily');
     Route::get('/cekAbsen', 'cekAbsen');
