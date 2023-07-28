@@ -23,9 +23,13 @@ class AbsensiController extends Controller
     {
         if($request->detail){
             $absen = Absensi::where('id_user', Auth::user()->id)->where('id', $request->id)->get();
+        }else if($request->isApprove){
+            $absen = Absensi::where('isApprove', false)->get();
         }else{
             $absen = Absensi::where('id_user', Auth::user()->id)->get();
         }
+        
+        
 
         return response(AbsenResource::collection($absen));
     }
@@ -61,10 +65,11 @@ class AbsensiController extends Controller
                     'status' => $request->status,
                     'foto' => $path,
                     'keterangan_hadir' => $request->keterangan_hadir,
-                    'waktu_hadir' => $waktu,
+                    'waktu_hadir' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null,
                     'tanggal' => $tanggal,
-                    'longtitude' => $request->longtitude,
-                    'latitude' => $request->latitude
+                    'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
+                    'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
                 return response()->json([
@@ -77,10 +82,11 @@ class AbsensiController extends Controller
                     'id_user' => $id,
                     'status' => $request->status,
                     'keterangan_hadir' => $request->keterangan_hadir,
-                    'waktu_hadir' => $waktu,
+                    'waktu_hadir' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null,
                     'tanggal' => $tanggal,
-                    'longtitude' => $request->longtitude,
-                    'latitude' => $request->latitude
+                    'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
+                    'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
                 return response()->json([
@@ -146,9 +152,12 @@ class AbsensiController extends Controller
         ]);
     }
 
-    function acceptIzin() {
+    function acceptIzin(Request $request, $id) {
         if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
+
+            $cekStatus = Absensi::select('status')->where('id', $id)->first();
             $absen = Absensi::findorNew($id);
+            $absen->isApprove = true;
             $absen->status = $request->status;
             $absen->save();
 
