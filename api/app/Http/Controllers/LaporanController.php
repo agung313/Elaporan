@@ -7,19 +7,27 @@ use App\Models\Laporan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use App\Http\Resources\Lapor as LaporanResource;
 
 class LaporanController extends Controller
 {
     public function index(Request $request)
     {
-        //
+        if($request->detail){
+
+            $laporan = Laporan::where('id', $request->id_laporan)->get();        
+        }else{
+            $laporan = Laporan::where('id_absensi', $request->id_absensi)->get();        
+        }
+        
+        return response(LaporanResource::collection($laporan));
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'judul_kegiatan' => 'required|string|max:700',
-            'id_absensi' => 'required|string|max:700',
+            'id_absensi' => 'required|int|max:700',
             'uraian_kegiatan' => 'required|string|max:700',
         ]);
 
@@ -56,10 +64,12 @@ class LaporanController extends Controller
 
     public function update(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(), [
             'judul_kegiatan' => 'required|string|max:700',
             'uraian_kegiatan' => 'required|string|max:700',
         ]);
+
 
         if ($validator->fails()) {
             return response()->json([
@@ -83,6 +93,8 @@ class LaporanController extends Controller
         $delete = Laporan::findOrFail($id);
         $delete->delete();
 
-        return response()->noContent();
+        return response()->json([
+            'message' => 'kegiatan berhasil dihapus'
+        ],200);
     }
 }

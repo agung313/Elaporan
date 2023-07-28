@@ -118,7 +118,7 @@ class AbsensiController extends Controller
         $tanggal = Carbon::now()->toDateString();
         $waktu = Carbon::now()->toTimeString();
         $absenPulang = Carbon::parse('12:00:00');
-        $cek = Absensi::leftJoin('users','users.id','id_user')->where('id_user', $id)->where('tanggal',$tanggal)->first();
+        $cek = Absensi::where('tanggal',$tanggal)->first();
         $status;
 
         if ($cek != null){

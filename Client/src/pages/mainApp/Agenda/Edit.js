@@ -1,10 +1,17 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import axios from 'axios'
+import { useIsFocused } from "@react-navigation/native";
+
 
 const Edit = ({route, navigation}) => {
 
+    const {idKegiatan} = route.params
+    const base_url ="http:10.0.2.2:8000/api"
+    const isFocused = useIsFocused();
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -12,6 +19,7 @@ const Edit = ({route, navigation}) => {
     // input
     const [detail, setDetail] = useState()
     const [uraian, setUraian] = useState()
+    const [modalSuccess, setModalSuccess] = useState(false)
 
     // date time tanggal
     const cekTgl = new Date
@@ -30,9 +38,62 @@ const Edit = ({route, navigation}) => {
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
 
+
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
+
+    useEffect(() => {
+        if (isFocused) {
+            getKegiatan()            
+        }
+
+    }, [navigation])
+    
+
+    const getKegiatan = async data =>{
+
+
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const response = await axios.get(base_url+`/laporan?detail=true&id_laporan=${idKegiatan}`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                setDetail(res.data[0].judul_kegiatan)
+                setUraian(res.data[0].uraian_kegiatan)
+
+            })
+
+        } catch (error) {
+            console.log(error,"<--- error  get kegiatan ")            
+        }
+    }
+
+    const handlerUpdate = async data =>{
+
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const params ={
+                judul_kegiatan: detail,
+                uraian_kegiatan: uraian,
+                _method:'PUT'
+            }
+
+            const target_url = base_url+`/laporan/${idKegiatan}`
+
+            await axios.post(target_url,params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+
+                setModalSuccess(true)
+            })
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
+    }    
 
     return (
         <ScrollView>
@@ -92,13 +153,29 @@ const Edit = ({route, navigation}) => {
                         </View>
                     </View>
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#0060cb", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={() => navigation.navigate("Agenda")}>
+                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#0060cb", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdate}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Edit Kegiatan</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
-            
+            {/* Modal Alert Sukess */}
+            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => navigation.goBack()}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.goBack()}>
+                                <Image source={CloseIcont} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Kegiatan Berhasil Diubah.</Text>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.goBack()}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                                </TouchableOpacity>      
+                            </View>
+                        </View>
+            </ReactNativeModal>            
             {/* modal hapus */}
             <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>

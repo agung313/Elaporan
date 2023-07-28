@@ -13,7 +13,6 @@ import ApiLink from '../../assets/ApiHelper/ApiLink';
 const MainApp = ({route, navigation}) => {
 
     const {agendaValue} = route.params || {}
-    // console.log(agendaValue, "<==== agenda value")
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -39,7 +38,7 @@ const MainApp = ({route, navigation}) => {
     const [lat2, setLat2] = useState();
     const [lon2, setLon2] = useState();
 
-    // console.log(lat2, "<===== latitude")
+
 
     const [distance, setDistance] = useState('');
     const isFocused = useIsFocused();
@@ -59,6 +58,7 @@ const MainApp = ({route, navigation}) => {
     const [btAbsensi, SetBtAbsensi] = useState()
     
     useEffect(()=>{
+
 
         if (isFocused) {
             requestLocationPermission(),
@@ -99,9 +99,14 @@ const MainApp = ({route, navigation}) => {
             }});        
     
             var status = response.data.status
-            console.log(status, "<==== status")
-
+            var data = response.data.data
             
+
+            if (data) {
+                setIdAbsensi(data.id)
+            }
+
+
             if (status == 'belum absen datang') {
                 setStatusAbsensi(true)
 
@@ -140,8 +145,6 @@ const MainApp = ({route, navigation}) => {
         }
     }
 
-    console.log(btAbsensi, "<==== tbn absne")
-
     const getMyHistory = async data =>{
 
         try {
@@ -160,7 +163,6 @@ const MainApp = ({route, navigation}) => {
         }
     }
 
-    console.log(history, "<=== history")
     
     const toggleModal = () => {
         const R = 6371; // radius bumi dalam kilometer
@@ -230,8 +232,6 @@ const MainApp = ({route, navigation}) => {
         }
     };
 
-    console.log(distance, "<=== jarak km")
-
     // picker
     const [kehadiran, setKehadiran] = useState()
 
@@ -242,13 +242,13 @@ const MainApp = ({route, navigation}) => {
     }
 
 
-    const statusHadir = (index) =>{
+    const statusHadir = (item,index) =>{
         return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
+            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
 
                 <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
                 <View style={{marginLeft:10, width:"75%"}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
+                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                     <Text style={{ color:"black",  fontSize:10}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
                 </View>                
             </TouchableOpacity>            
@@ -256,13 +256,14 @@ const MainApp = ({route, navigation}) => {
         )
     }
 
-    const statusTelat = (index) =>{
+    const statusTelat = (item,index) =>{
+
         return(
             
-            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
+            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                 <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                 <View style={{marginLeft:10, width:"75%"}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                     <Text style={{ color:"black",  fontSize:10}}>Maaf ! Absensi Anda Kurang / Telat </Text>
                 </View>
             </TouchableOpacity>
@@ -270,31 +271,31 @@ const MainApp = ({route, navigation}) => {
         )
     }    
 
-    const statusAlfa = (index) =>{
+    const statusAlfa = (item,index) =>{
         return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
+            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                 <Image source={TidakHadir} style={{width:40,height:40, marginLeft:15}}/>            
                 <View style={{marginLeft:10, width:"75%"}}>
-                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Kamis, 23 Juni 2023</Text>
+                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                 <Text style={{ color:"black",  fontSize:10}}>Anda tidak hadir</Text>
                 </View>
              </TouchableOpacity>
         )
-    }        
+    }   
         
 
     const rowHistory = (item, index) =>{
 
         if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
 
-            return(statusHadir(index)) 
+            return(statusHadir(item,index)) 
 
         } else if(item.ket_hadir ==="Tidak Hadir"){
 
-            return (statusAlfa(index))
+            return (statusAlfa(item,index))
         
         }else{
-            return (statusTelat(index))
+            return (statusTelat(item,index))
         }
 
     }
@@ -410,7 +411,7 @@ const MainApp = ({route, navigation}) => {
                                 }
                                 
 
-                                <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() =>  navigation.navigate('Agenda')}>
+                                <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() =>  navigation.navigate('Agenda',{idAbsensi:idAbsensi})}>
                                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
                                         Buat Agenda
                                     </Text>
@@ -466,7 +467,7 @@ const MainApp = ({route, navigation}) => {
                         </View>
                         {
                             history.length > 0 &&
-                            history.map((item, index) =>(
+                            (history.slice(0,4)).map((item, index) =>(
                                 rowHistory(item,index)
                             ))
                         }

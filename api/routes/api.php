@@ -41,6 +41,8 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
     Route::get('/', 'index');
     Route::post('/store', 'store');
     Route::post('/upload', 'upload');
+    Route::put('/{id}','update');
+    Route::delete('/{id}', 'destroy');
 });
 
 //DOCUMENT LAPORAN
