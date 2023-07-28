@@ -48,7 +48,7 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
-
+    console.log(history)
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
     const [izinSakit, setIzinSakit] = useState()
@@ -155,7 +155,7 @@ const MainApp = ({route, navigation}) => {
             }});        
     
             if (response.status == 200) {
-                setHistory(response.data);
+                setHistory(response.data.slice(0,3).sort((a, b) => a > b ? 1 : -1));
             }
 
         } catch (error) {
@@ -240,62 +240,86 @@ const MainApp = ({route, navigation}) => {
     const toggleContent = (e)=>{
       setShowContent(e);
     }
-
-
-    const statusHadir = (item,index) =>{
-        return(
-            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-
-                <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
-                <View style={{marginLeft:10, width:"75%"}}>
-                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                    <Text style={{ color:"black",  fontSize:10}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
-                </View>                
-            </TouchableOpacity>            
-            
-        )
-    }
-
-    const statusTelat = (item,index) =>{
-
-        return(
-            
-            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-                <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
-                <View style={{marginLeft:10, width:"75%"}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                    <Text style={{ color:"black",  fontSize:10}}>Maaf ! Absensi Anda Kurang / Telat </Text>
-                </View>
-            </TouchableOpacity>
-                        
-        )
-    }    
-
-    const statusAlfa = (item,index) =>{
-        return(
-            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-                <Image source={TidakHadir} style={{width:40,height:40, marginLeft:15}}/>            
-                <View style={{marginLeft:10, width:"75%"}}>
-                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                <Text style={{ color:"black",  fontSize:10}}>Anda tidak hadir</Text>
-                </View>
-             </TouchableOpacity>
-        )
-    }   
         
 
     const rowHistory = (item, index) =>{
 
-        if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
+        // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
+        if (item.ket_hadir === 'Datang Tepat Waktu') {
 
-            return(statusHadir(item,index)) 
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+    
+                    <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
+                    </View>                
+                </TouchableOpacity>            
+                
+            ) 
 
-        } else if(item.ket_hadir ==="Tidak Hadir"){
+        } 
+        else if(item.ket_hadir ==="tidak absen pergi"){
 
-            return (statusAlfa(item,index))
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                    <Image source={TidakHadir} style={{width:40,height:40, marginLeft:15}}/>            
+                    <View style={{marginLeft:10, width:"75%"}}>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                    <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda tidak hadir</Text>
+                    </View>
+                 </TouchableOpacity>
+            )
         
-        }else{
-            return (statusTelat(item,index))
+        }
+        else if(item.ket_hadir ==="Absen Terlambat"){
+            const blmAbsenPulang = item.ket_pulang 
+            return(
+            
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                    <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, Absensi Anda Telat </Text>
+                    </View>
+                    {blmAbsenPulang== "tidak absen pulang" ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} /> : <View></View>}
+                </TouchableOpacity>
+                            
+            )
+        }
+        else if(item.status == "Sakit"){
+            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
+                <View style={{marginLeft:10, width:"75%"}}>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                    <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
+                </View>
+            </TouchableOpacity>
+        }
+        else if(item.status == "izin"){
+            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                <View style={{marginLeft:10, width:"75%"}}>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                    <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
+                </View>
+            </TouchableOpacity>
+        }
+        else{
+            const blmAbsenPulang = item.ket_pulang 
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+    
+                    <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum melakukan absensi Pulang</Text>
+                    </View>              
+                    {blmAbsenPulang== "tidak absen pulang" ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} /> : <View></View>} 
+                </TouchableOpacity>            
+                
+            )
         }
 
     }
@@ -312,7 +336,7 @@ const MainApp = ({route, navigation}) => {
             )
         }else{
             return(
-                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang')}>
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang', {idAbsensi:idAbsensi})}>
                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
                     {labelStatus}
                     </Text>
@@ -476,7 +500,7 @@ const MainApp = ({route, navigation}) => {
                             <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
                             <View style={{marginLeft:10, width:"75%"}}>
                                 <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
-                                <Text style={{ color:"black",  fontSize:10}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
+                                <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
                             </View>
                             <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
                         </TouchableOpacity>
@@ -485,7 +509,7 @@ const MainApp = ({route, navigation}) => {
                             <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                             <View style={{marginLeft:10}}>
                                 <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Jumat, 23 Juni 2023</Text>
-                                <Text style={{ color:"black",  fontSize:10}}>Maaf, anda belum melakukan absensi sore</Text>
+                                <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum melakukan absensi sore</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -493,7 +517,7 @@ const MainApp = ({route, navigation}) => {
                             <Image source={TidakHadir} style={{width:40,height:40, marginLeft:15}}/>
                             <View style={{marginLeft:10, width:"75%"}}>
                                 <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Kamis, 23 Juni 2023</Text>
-                                <Text style={{ color:"black",  fontSize:10}}>Anda tidak hadir</Text>
+                                <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda tidak hadir</Text>
                             </View>
                         </TouchableOpacity> */}
 
