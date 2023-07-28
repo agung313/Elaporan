@@ -26,7 +26,7 @@ class AbsensiController extends Controller
         }else if($request->isApprove){
             $absen = Absensi::where('isApprove', false)->get();
         }else{
-            $absen = Absensi::where('id_user', Auth::user()->id)->get();
+            $absen = Absensi::where('id_user', Auth::user()->id)->orderBy('tanggal','DESC')->get();
         }
         
         
