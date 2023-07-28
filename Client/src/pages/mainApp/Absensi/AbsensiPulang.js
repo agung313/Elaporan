@@ -10,6 +10,7 @@ import ApiLink from '../../../assets/ApiHelper/ApiLink'
 
 
 const AbsensiPulang = ({route, navigation}) => {
+    const {idAbsensi} = route.params
     
     // // const kehadiran=2
     //  const [cekStatus, setCekStatus] = useState(kehadiran)
@@ -95,51 +96,7 @@ const AbsensiPulang = ({route, navigation}) => {
     //     } catch (error) {
     //         console.log(error,"<--- error handler hadir")            
     //     }
-    // }
-
-    
-    // const handlerKegiatan = async ()=>{
-
-        
-    //     try{
-    //         var formData = new FormData()
-
-    //         if(kehadiran == 2){
-    //             formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
-    //             formData.append('status','hadir kegiatan')
-    //             formData.append('keterangan_hadir',detail) 
-    //             formData.append('longitude',longtit) 
-    //             formData.append('latitude',latit) 
-    //         }
-    //         else if(kehadiran == 3){
-    //             formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
-    //             formData.append('status','sakit')
-    //             formData.append('keterangan_hadir',detail) 
-    //         }
-    //         else {
-    //             formData.append('status','izin')
-    //             formData.append('keterangan_hadir',detail) 
-    //         }
-            
-            
-                       
-
-    //         const myToken = await AsyncStorage.getItem('AccessToken');    
-
-    //         const response = await axios.post(base_url+"/absen/store", formData,{headers:{
-    //             Authorization: `Bearer ${myToken}`,
-    //             Accept: 'application/json',
-    //             'Content-Type': `multipart/form-data`
-    //         }})            
-        
-    //         console.log(response.data,"<--- post ")
-    //         // setModalStore(false)
-    //         setModalSuccess(true)
-
-    //     } catch(error){
-    //         console.log(error, "<= eroro")
-    //     }
-    // }    
+    // } 
 
     const selectImage = async () => {
         try{

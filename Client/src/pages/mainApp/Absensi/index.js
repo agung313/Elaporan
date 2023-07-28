@@ -110,8 +110,8 @@ const Absensi = ({route, navigation}) => {
                 formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
                 formData.append('status','hadir kegiatan')
                 formData.append('keterangan_hadir',detail) 
-                formData.append('longitude',longtit) 
-                formData.append('latitude',latit) 
+                formData.append('longitude',myLo) 
+                formData.append('latitude',myLa) 
             }
             else if(kehadiran == 3){
                 formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
