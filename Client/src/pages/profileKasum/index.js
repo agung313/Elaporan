@@ -3,6 +3,10 @@ import React, { useState } from 'react'
 import { BackIcon, BgApp, CloseIcont, EmailIcon, ExFoto, LaporProfile, LgBappeda, LogOut, NextIcont, PassProfile, PasswordIcon, Pendahuluan } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import ApiManager from '../../assets/ApiHelper/ApiManager';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const ProfileKasum = ({navigation}) => {
     const [userName, setUserName] = useState('IwanKurniawan')
@@ -34,6 +38,38 @@ const ProfileKasum = ({navigation}) => {
         setModalVisible(!isModalVisible);
     }
 
+    const HeandleLogout = async () => {
+        try {
+          const dataToken = await AsyncStorage.getItem('AccessToken');
+      
+          if (!dataToken) {
+            // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
+            navigation.replace('MainSplash');
+            return;
+          }
+      
+          // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
+          const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+              headers: {
+                Authorization: `Bearer ${dataToken}`,
+              },
+            }
+          );
+      
+          if (response.status === 200) {
+            // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+            await AsyncStorage.removeItem('AccessToken');
+            navigation.replace('MainSplash');
+          } else {
+            // Tangani respons yang tidak diharapkan jika diperlukan
+            console.log('Logout tidak berhasil.');
+          }
+        } catch (error) {
+          // Tangani error yang terjadi saat melakukan permintaan logout
+          console.log(error, '<= error logout');
+        }
+    };
+
     return (
         <ScrollView>
             <ImageBackground source={BgApp} style={{width:WindowWidth, height:265}}>
@@ -55,7 +91,7 @@ const ProfileKasum = ({navigation}) => {
                     </View>
                     <View style={{ width: "35%", alignItems: 'flex-end', justifyContent:"center" }}>
                         {/* <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text> */}
-                        <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate('MainSplash')}>
+                        <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}} onPress={HeandleLogout}>
                             <Image source={LogOut} style={{width:20, height:20}}/>
                             <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700", marginLeft:5}}>LogOut</Text>
                         </TouchableOpacity>

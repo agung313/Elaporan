@@ -2,9 +2,13 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image
 import React, { useState } from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const Tambah = ({route, navigation}) => {
 
+    const {idAbsensi} = route.params
+    const base_url ="http:10.0.2.2:8000/api"
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -29,11 +33,33 @@ const Tambah = ({route, navigation}) => {
 
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
-
+    const [modalSuccess, setModalSuccess] = useState(false)
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
+    const handlerStore = async data =>{
 
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const params ={
+                judul_kegiatan: detail,
+                uraian_kegiatan: uraian,
+                id_absensi: idAbsensi
+            }
+            const response = await axios.post(base_url+"/laporan/store",params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+
+                setModalSuccess(true)
+            })
+
+
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -92,13 +118,28 @@ const Tambah = ({route, navigation}) => {
                         </View>
                     </View>
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#0060cb", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={() => navigation.navigate("Agenda")}>
+                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#0060cb", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={handlerStore}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tambah Kegiatan</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </View>
-            
+            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => navigation.goBack()}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.goBack()}>
+                                <Image source={CloseIcont} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Kegiatan/ Agenda Berhasil Ditambahkan.</Text>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.goBack()}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                                </TouchableOpacity>      
+                            </View>
+                        </View>
+            </ReactNativeModal>            
             {/* modal hapus */}
             <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>

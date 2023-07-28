@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, Agenda, AllPengajuan, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, ProfileKasum, Tambah, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Agenda, AllPengajuan, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 
@@ -19,9 +19,8 @@ const HomeScreen = () =>{
             <Stack.Screen name='Edit' component={Edit} options={{headerShown:false}}/>
             <Stack.Screen name='Detail' component={Detail} options={{headerShown:false}}/>
             <Stack.Screen name='Notif' component={Notif} options={{headerShown:false}}/>
+            <Stack.Screen name='AbsensiPulang' component={AbsensiPulang} options={{headerShown:false}}/>
 
-            {/* kasum */}
-            <Stack.Screen name='Kasum' component={Kasum} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }
@@ -37,6 +36,8 @@ const HomeKasum = () => {
             <Stack.Screen name='DetailThlIt' component={DetailThlIt} options={{headerShown:false}}/>
             <Stack.Screen name='DetailLaporanKasum' component={DetailLaporanKasum} options={{headerShown:false}}/>
             <Stack.Screen name='AllPengajuan' component={AllPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='TambahCatatan' component={TambahCatatan} options={{headerShown:false}}/>
+            <Stack.Screen name='EditCatatan' component={EditCatatan} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }
@@ -89,6 +90,7 @@ const Router = () => {
             
             {/* stack pertama akan menjadi stack yang dipanggil saat aplikasi dibuka */}
             <Stack.Screen name='MainSplash' component={MainSplash} options={{headerShown:false}}/>            
+            <Stack.Screen name='SplashLogin' component={SplashLogin} options={{headerShown:false}}/>            
             <Stack.Screen name='AppScreen' component={AppScreen} options={{headerShown:false}}/>
             <Stack.Screen name='KasumScreen' component={KasumScreen} options={{headerShown:false}}/>
             <Stack.Screen name='LoginSide' component={LoginSide} options={{headerShown:false}}/>

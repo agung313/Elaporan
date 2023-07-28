@@ -1,10 +1,17 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions, ImageBackground } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BackIcon, BgApp, CloseIcont, EmailIcon, ExFoto, LaporProfile, LgBappeda, NextIcont, PassProfile, Pendahuluan } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const MainUser = ({navigation}) => {
+    useEffect(()=>{
+        getMyProfile()
+    })
+
     const [bulan, setBulan] = useState()
     // console.log(bulan, "<==== bulan")
     // width heigh
@@ -31,6 +38,62 @@ const MainUser = ({navigation}) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
+
+
+    // profile api
+    const [namaUser, setNamaUser] = useState()
+    const [jabatanUser, setJabatanUser] = useState()
+
+    const getMyProfile = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${ApiLink}/api/user/profile`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+    
+            if (response.status == 200) {
+                setNamaUser(response.data.nama)
+                setJabatanUser(response.data.jabatan)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
+    }    
+
+    const HeandleLogout = async () => {
+        try {
+          const dataToken = await AsyncStorage.getItem('AccessToken');
+      
+          if (!dataToken) {
+            // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
+            navigation.replace('MainSplash');
+            return;
+          }
+      
+          // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
+          const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+              headers: {
+                Authorization: `Bearer ${dataToken}`,
+              },
+            }
+          );
+      
+          if (response.status === 200) {
+            // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+            await AsyncStorage.removeItem('AccessToken');
+            navigation.replace('MainSplash');
+          } else {
+            // Tangani respons yang tidak diharapkan jika diperlukan
+            console.log('Logout tidak berhasil.');
+          }
+        } catch (error) {
+          // Tangani error yang terjadi saat melakukan permintaan logout
+          console.log(error, '<= error logout');
+        }
+    };
 
     return (
         <ScrollView>
@@ -59,8 +122,8 @@ const MainUser = ({navigation}) => {
                     <View style={{alignItems:"center", marginTop:20}}>
                         <Image source={ExFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>
                         <View style={{marginLeft:15, alignItems:"center", marginTop:15}}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : Programmer</Text>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{namaUser}</Text>
+                            <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
                         </View>
                     </View>
                 </View>
@@ -108,7 +171,7 @@ const MainUser = ({navigation}) => {
                         </View>
                     </TouchableOpacity>
                 
-                    <TouchableOpacity style={{flexDirection:"row", marginBottom:25, width:"100%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={() => navigation.navigate('MainSplash')}>
+                    <TouchableOpacity style={{flexDirection:"row", marginBottom:50, width:"100%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={HeandleLogout}>
                         <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16, marginTop:5}}>Logout</Text>
                     </TouchableOpacity>
                 </View>
