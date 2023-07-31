@@ -8,9 +8,7 @@ import ApiLink from '../../assets/ApiHelper/ApiLink';
 import ReactNativeModal from 'react-native-modal'
 
 const Pendahuluan = ({navigation}) => {
-    const [latarBelakang, setLatarBelakang] = useState('Perkembangan Teknologi Informasi (Information Technology, IT), khususnya dibidang Programming. Pemanfaatan berbagai program oleh instansi Pemerintah merupakan salah satu inovasi dengan memaksimalkan teknologi. Memacu kebutuhan akan data dan informasi lebih tertata dalam penunjang mobilitas kegiatan Bappeda Kota pekanbaru. ')
-    const [maksudTujuan, setMaksudTujuan] = useState('Teknologi Informasi dalam bidang pemrograman menunjang percepatan dan maintenance dalam berbagai pekerjaan Badan Perencanaan  Pembangunan  Daerah  Kota  Pekanbaru.')
-
+    
     const [ruangLingkup, setRuangLingkup] = useState()
 
     // width heigh
