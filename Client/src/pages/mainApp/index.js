@@ -134,7 +134,8 @@ const MainApp = ({route, navigation}) => {
 
                 setStatusAbsensi(false)
                 setLabelStatus("Harap Menunggu Waktu Pulang")             
-                SetMenunggu(1)
+                // SetMenunggu(1)
+                SetBtAbsensi(1)
                 SetPulang(1)
             }
             // memenuhi jam

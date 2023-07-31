@@ -7,6 +7,7 @@ import axios from 'axios'
 import DocumentPicker from 'react-native-document-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
+import { Circle } from 'react-native-animated-spinkit'
 
 
 const AbsensiPulang = ({route, navigation}) => {
@@ -47,6 +48,7 @@ const AbsensiPulang = ({route, navigation}) => {
     const [imgKeterangan, setImgKeterangan] = useState()
     const [modalStore, setModalStore] = useState(false)
     const [modalSuccess, setModalSuccess] = useState(false)
+    const [modalLoad, setModalLoad] = useState(false)
 
     const [namaUser, setNamaUser] = useState('-')
     const [jabatanUser, setJabatanUser] = useState('-')
@@ -77,26 +79,26 @@ const AbsensiPulang = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }
     }
-    // const handlerHadir = async data =>{
+    const handlerHadir = async data =>{
+        setModalLoad(true)
 
-    //     try {
-    //         const dataHadir ={
-    //             status:'hadir',
-    //             longitude: longtit,
-    //             latitude: latit
-    //         }
+        try {
+            const dataHadir ={
+                keterangan_pulang : detail
+            }
 
-    //         const myToken = await AsyncStorage.getItem('AccessToken');    
+            const myToken = await AsyncStorage.getItem('AccessToken');    
 
-    //         const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
-    //             Authorization: `Bearer ${myToken}`
-    //         }})
-            
-    //         setModalSuccess(true)
-    //     } catch (error) {
-    //         console.log(error,"<--- error handler hadir")            
-    //     }
-    // } 
+            const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }})
+            setModalLoad(false)
+            setModalSuccess(true)
+            // console.log(response.data, "<===== ini komeng")
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
+    } 
 
     const selectImage = async () => {
         try{
@@ -207,15 +209,9 @@ const AbsensiPulang = ({route, navigation}) => {
                     </View>
                     
                     <View >
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
-                        <View style={{alignItems:"center", marginBottom:20}}>
-                            <View style={{width:"90%", height:200, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}} >
-                                 <Image source={AddImg} style={{width:100, height:100}}/>
-                                
-                            </View>
-                        </View>
 
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginLeft:15}}>Keterangan Pulang :</Text>
+                        <Text style={{color:"#b5b5b5", fontSize:9,  fontWeight:"900", marginBottom:10, marginLeft:15}}>Silakan Isi Jika Anda Pulang Cepat Sebelum Waktunya</Text>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
@@ -230,7 +226,7 @@ const AbsensiPulang = ({route, navigation}) => {
                             </View>
                         </View>
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => setModalSuccess(true)}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerHadir}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>
@@ -253,6 +249,11 @@ const AbsensiPulang = ({route, navigation}) => {
                                 </TouchableOpacity>      
                             </View>
                         </View>
+                    </ReactNativeModal>
+
+                    {/* modal Loading */}
+                    <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <Circle size={100} color="white"/>
                     </ReactNativeModal>
 
                 </View>

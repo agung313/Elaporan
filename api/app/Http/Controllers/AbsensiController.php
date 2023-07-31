@@ -45,10 +45,10 @@ class AbsensiController extends Controller
             ->first();
         
         if($absensi !== null){
+    
             $absen = Absensi::updateOrCreate(
                 ['id_user' => $id, 'tanggal' => $tanggal],
-                ['waktu_pulang' => $waktu],
-                ['keterangan_pulang' => $request->keterangan_pulang]
+                ['waktu_pulang' => $waktu,'keterangan_pulang' => $request->keterangan_pulang]
             );
 
             return response()->json([
