@@ -161,6 +161,7 @@ const MainApp = ({route, navigation}) => {
             var waktuPulang = data.waktu_pulang
             setStatusApprove(data.isApprove)
             // console.log(data.isApprove,"<===== status")
+            var approve = data.isApprove
             
 
             if (data) {

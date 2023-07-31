@@ -25,6 +25,7 @@ class LaporanController extends Controller
 
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'judul_kegiatan' => 'required|string|max:700',
             'id_absensi' => 'required|int|max:700',
