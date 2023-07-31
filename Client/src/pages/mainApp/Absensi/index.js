@@ -11,7 +11,7 @@ import { Circle } from 'react-native-animated-spinkit'
 
 
 const Absensi = ({route, navigation}) => {
-    const {kehadiran, latit, longtit, jarak} = route.params
+    const {kehadiran, latit, longtit, jarak, idAbsensi} = route.params
     console.log(jarak, "<==============jaraka meter")
     
     // const kehadiran=2
@@ -104,6 +104,18 @@ const Absensi = ({route, navigation}) => {
             const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
+            console.log(response.data.data, "<===== respon data")
+
+            const params ={
+                judul_kegiatan: "Kehadiran",
+                uraian_kegiatan: "Waktu Masuk : " + response.data.data.waktu_hadir + "{'\n'} Waktu Pulang : " + null,
+                id_absensi: response.data.data.id
+            }
+            await axios.post(base_url+"/laporan/store",params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                console.log(res.data, "<==================== res")
+            })
             
             setModalLoad(false)
             setModalSuccess(true)

@@ -48,6 +48,7 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
+    // console.log(history)
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
     const [izinSakit, setIzinSakit] = useState()
@@ -64,7 +65,8 @@ const MainApp = ({route, navigation}) => {
             // calculateDistance(),
             getToday(),
             getMyProfile(),
-            getMyHistory()            
+            getMyHistory(),
+            getMyPengajuan()          
         }
         
     },[navigation, isFocused])
@@ -92,6 +94,26 @@ const MainApp = ({route, navigation}) => {
     const [cekApprove, setCekApprove] = useState()
     console.log(cekApprove, "cel approve")
 
+    const getMyPengajuan = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${base_url}/absen/countNoAcc`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+    
+            if (response.status == 200) {
+                setCekApprove(response.data.data)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
+    }    
+
+
+
     const getToday = async data =>{
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -104,7 +126,7 @@ const MainApp = ({route, navigation}) => {
             var data = response.data.data
             var approve = data.isApprove
             console.log(data,"<===== status")
-            setCekApprove(approve)
+            
 
             if (data) {
                 setIdAbsensi(data.id)
@@ -143,6 +165,11 @@ const MainApp = ({route, navigation}) => {
                 setLabelStatus("Absensi Pulang")     
                 SetPulang(1)
                 SetBtAbsensi(1)
+            }
+            else{
+                setStatusAbsensi(false)
+                setLabelStatus("Tidak Perlu Absen")
+                setIzinSakit(1)
             }
 
         } catch (error) {
@@ -523,7 +550,7 @@ const MainApp = ({route, navigation}) => {
                         </View>
                         <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'#0060cb', borderRadius:15, elevation:5, alignItems:"center", flexDirection:'row',}} onPress={() => navigation.navigate('PengajuanHadir')}>
                             <View style={{width:"30%",  height:"100%", marginLeft:20, alignItems:"center", justifyContent:"center"}}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:30}}>50</Text>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:30}}>{cekApprove}</Text>
                                 <Text style={{fontWeight:'500', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:12, marginTop:-5}}>Pengajuan</Text>
                             </View>
                             <View style={{justifyContent:"center"}}>
