@@ -150,7 +150,7 @@ const MainUser = ({navigation}) => {
                             <Image source={Pendahuluan} style={{width:60, height:60}} />
                         </View>
                         <View style={{marginLeft:8, justifyContent:"center", width:"70%"}}>
-                            {/* <Text style={{color:"#c3c4c5", fontSize:14, fontWeight:"bold"}}>Username</Text> */}
+
                             <Text style={{color:"#000", fontSize:16, fontWeight:"600"}}>Pendahuluan Laporan</Text>
                         </View>
                         <View style={{justifyContent:"center"}}>

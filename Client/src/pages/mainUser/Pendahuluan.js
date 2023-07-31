@@ -1,6 +1,11 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput  } from 'react-native'
-import React, { useState } from 'react'
-import { BackIcon, EmailIcon, LgBappeda, PasswordIcon } from '../../assets/images';
+import React, { useState, useEffect } from 'react'
+import { BackIcon, DotAksi,CloseIcont, EmailIcon, LgBappeda, PasswordIcon } from '../../assets/images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import ReactNativeModal from 'react-native-modal'
 
 const Pendahuluan = ({navigation}) => {
     const [latarBelakang, setLatarBelakang] = useState('Perkembangan Teknologi Informasi (Information Technology, IT), khususnya dibidang Programming. Pemanfaatan berbagai program oleh instansi Pemerintah merupakan salah satu inovasi dengan memaksimalkan teknologi. Memacu kebutuhan akan data dan informasi lebih tertata dalam penunjang mobilitas kegiatan Bappeda Kota pekanbaru. ')
@@ -26,6 +31,67 @@ const Pendahuluan = ({navigation}) => {
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
+    const base_url =ApiLink+"/api";
+    const isFocused = useIsFocused();
+
+    const [profile, setProfile] = useState({
+        latarBelakang:'-',
+        maksudTujuan:'-',
+        ruangLingkup:[]
+    })
+
+    useEffect(() => {
+
+        if (isFocused) {
+            getMyProfile()            
+        }
+
+    }, [navigation, isFocused])
+    
+
+    const getMyProfile = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            await axios.get(`${base_url}/user/profile`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                setProfile({
+                    latarBelakang:res.data.latar_belakang,
+                    maksudTujuan:res.data.tujuan,
+                    ruangLingkup:res.data.ruang_lingkup
+                })
+            })        
+    
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
+    }    
+
+    const handlerChange = (key, value) => {
+        setProfile(prevState => ({
+            ...prevState, 
+            [key]:value
+        }))
+    };
+
+
+    const rowRuangLingkup =(data) =>{
+
+        return(
+                <View style={{width:"90%", minHeight:50 }}>
+                    <View style={{flexDirection:"row"}}>
+                        <TouchableOpacity onPress={()=> modalAksi(data) } style={{ flexDirection: 'row' }}>
+                            <Image source={DotAksi} style={{width:20, height:20, marginLeft:7}} />
+                        </TouchableOpacity>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>{data}</Text>
+                    </View>
+
+                </View>   
+        )
+    }
 
     return (
         <ScrollView>
@@ -60,9 +126,9 @@ const Pendahuluan = ({navigation}) => {
                                 <TextInput
                                         placeholder=''
                                         placeholderTextColor={"#000"}
-                                        value={latarBelakang}
+                                        value={profile.latarBelakang}
                                         keyboardType= "default"
-                                        onChangeText={(text) => setLatarBelakang(text)}
+                                        onChangeText={(text) => handlerChange('latarBelakang', text)}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -77,9 +143,9 @@ const Pendahuluan = ({navigation}) => {
                                 <TextInput
                                         placeholder=''
                                         placeholderTextColor={"#000"}
-                                        value={maksudTujuan}
+                                        value={profile.maksudTujuan}
                                         keyboardType= "default"
-                                        onChangeText={(text) => setMaksudTujuan(text)}
+                                        onChangeText={(text) => handlerChange('maksudTujuan', text)}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -89,38 +155,20 @@ const Pendahuluan = ({navigation}) => {
 
                     <View style={{marginBottom:25}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
-                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"center", marginBottom:15 }}>
-                            <View style={{width:WindowHeight*0.3, minHeight:30, borderBottomWidth:0.5, borderColor:"black"}}>
-                                <TextInput
-                                    placeholder='Input here'
-                                    placeholderTextColor={"#000"}
-                                    value={ruangLingkup}
-                                    keyboardType= "default"
-                                    onChangeText={(text) => setRuangLingkup(text)}
-                                    style={{ color: "#000" }}
-                                    multiline
-                                />
-                            </View>
-                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={() => navigation.navigate("Tambah")}>
+                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"flex-end", marginBottom:15 }}>
+
+                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={() => navigation.navigate("TambahLingkup")}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
-                            </TouchableOpacity>
-                            
+                            </TouchableOpacity>                            
                         </View>
+                        {
+                            profile.ruangLingkup.length > 0 &&
+                            profile.ruangLingkup.map((data)=>(
+                              rowRuangLingkup(data)
+                            ))
+                        }
                         <View >
-                            <View style={{width:"90%", minHeight:50 }}>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}}>1.</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>Pengembangan system Bappeda Kota Pekanbaru</Text>
-                                </View>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}}>2.</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>Maintenance terhadap system dan aplikasi Bappeda Kota Pekanbaru</Text>
-                                </View>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}}>3.</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>Melakukan konfigurasi dan update system informasi Bappeda Kota Pekanbaru</Text>
-                                </View>
-                            </View>
+
                         </View>
                     </View>
                     
