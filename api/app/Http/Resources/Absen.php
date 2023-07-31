@@ -42,8 +42,8 @@ class Absen extends JsonResource
             'waktu_hadir' => $this->waktu_hadir,
             'waktu_pulang' => $this->waktu_pulang,
             'ket_hadir' => $this->waktu_hadir != null 
-                    ? ($waktu_hadir->greaterThan($jamMasuk) && $waktu_hadir->lessThanOrEqualTo($jamMasuk->copy()->addMinutes(120)) 
-                    ? 'Absen Terlambat' : 'Absen Tepat Waktu') : ($this->status == 'Izin'  ? 'Izin' : ($this->status == 'Sakit' ? 'Sakit' : 'Tidak Absen Pergi')),
+                ? ($waktu_hadir->lessThan($jamMasuk->copy()->subMinutes(60)) || $waktu_hadir->lessThanOrEqualTo($jamMasuk->copy()->addMinutes(30)) 
+                ? 'Absen Tepat Waktu' : 'Absen Terlambat') : ($this->status == 'Izin'  ? 'Izin' : ($this->status == 'Sakit' ? 'Sakit' : 'Tidak Absen Pergi')),
             'ket_pulang' => $this->waktu_pulang != null
                     ? ($waktu_pulang->lessThan($jamPulang) 
                     ? 'Pulang cepat' : 'Pulang Tepat Waktu'): 'Tidak Absen Pulang',
