@@ -56,6 +56,7 @@ const MainApp = ({route, navigation}) => {
     const [izinSakit, setIzinSakit] = useState()
     const [sakit, setSakit] = useState()
     const [pulang, SetPulang] = useState()
+    const [noApprove, setNoApprove] = useState(0)
     const [menunggu, SetMenunggu] = useState()
     const [btAbsensi, SetBtAbsensi] = useState(null)
     
@@ -72,7 +73,7 @@ const MainApp = ({route, navigation}) => {
         }
         
     },[navigation, isFocused])
-
+    
 
     const getMyProfile = async data =>{
 
@@ -315,7 +316,6 @@ const MainApp = ({route, navigation}) => {
     const rowHistory = (item, index) =>{
 
         // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
-        // console.log(item.ket_hadir, "<====== ket hadir")
         if (item.ket_hadir === 'Absen Tepat Waktu') {
             
             if(item.laporan == false){
