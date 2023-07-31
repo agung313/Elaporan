@@ -90,6 +90,9 @@ const MainApp = ({route, navigation}) => {
         }
     }    
 
+    const [cekApprove, setCekApprove] = useState()
+    console.log(cekApprove, "cel approve")
+
     const getToday = async data =>{
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -100,7 +103,9 @@ const MainApp = ({route, navigation}) => {
     
             var status = response.data.status
             var data = response.data.data
-            
+            var approve = data.isApprove
+            console.log(data,"<===== status")
+            setCekApprove(approve)
 
             if (data) {
                 setIdAbsensi(data.id)
@@ -112,14 +117,14 @@ const MainApp = ({route, navigation}) => {
 
             } 
             //  sakit
-            else if (status == 'Anda sakit' ) {
+            else if (status == 'Anda sakit'  ) {
                 setStatusAbsensi(false)
                 setLabelStatus("Tidak Perlu Absen")
                 setIzinSakit(1)
                 setSakit(1)
             } 
             //  izin
-            else if (status == 'Anda izin' ) {
+            else if (status == 'Anda izin'  ) {
                 setStatusAbsensi(false)
                 setLabelStatus("Tidak Perlu Absen")
                 setIzinSakit(1)
@@ -133,7 +138,7 @@ const MainApp = ({route, navigation}) => {
                 SetPulang(1)
             }
             // memenuhi jam
-            else{
+            else if(status == "sudah bisa absen pulang" ){
                 setStatusAbsensi(true)   
                 setLabelStatus("Absensi Pulang")     
                 SetPulang(1)
@@ -245,7 +250,8 @@ const MainApp = ({route, navigation}) => {
     const rowHistory = (item, index) =>{
 
         // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
-        if (item.ket_hadir === 'Datang Tepat Waktu') {
+        console.log(item.ket_hadir)
+        if (item.ket_hadir === 'Absen Tepat Waktu') {
 
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
@@ -288,23 +294,27 @@ const MainApp = ({route, navigation}) => {
                             
             )
         }
-        else if(item.status == "Sakit"){
-            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-                <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
-                <View style={{marginLeft:10, width:"75%"}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                    <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
-                </View>
-            </TouchableOpacity>
+        else if(item.ket_hadir === "Sakit"){
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                    <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
+                    </View>
+                </TouchableOpacity>
+            )
         }
-        else if(item.status == "izin"){
-            <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-                <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
-                <View style={{marginLeft:10, width:"75%"}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                    <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
-                </View>
-            </TouchableOpacity>
+        else if(item.ket_hadir === "Izin"){
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                    <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan izin</Text>
+                    </View>
+                </TouchableOpacity>
+            )
         }
         else{
             const blmAbsenPulang = item.ket_pulang 
@@ -343,6 +353,27 @@ const MainApp = ({route, navigation}) => {
                 </TouchableOpacity>
             )
         }
+    }
+
+    // keterangan approve
+    const KetApprove = () =>{
+        if(cekApprove==false){
+            return(
+                <>
+                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>pengajuan {sakit? 'sakit':'izin'} anda sedang diproses</Text>
+                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>harap menunggu persetujuan kasubag umum</Text>
+                </>
+                
+            )
+        }else{
+            return(
+                <>
+                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Anda telah berhasil mengajukan {sakit? 'sakit':'izin'}</Text>
+                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{sakit? 'Semoga Lekas Sembuh' : 'Selamat beraktifitas'}</Text>
+                </>
+            )
+        }
+        
     }
     return (
         <ScrollView>
@@ -392,8 +423,9 @@ const MainApp = ({route, navigation}) => {
                                         
                                     </View>
                                 </View>
-                                <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Anda telah berhasil mengajukan {sakit? 'sakit':'izin'}</Text>
-                                <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{sakit? 'Semoga Lekas Sembuh' : 'Selamat beraktifitas'}</Text>
+                                
+                                <KetApprove/>
+                                
 
                             </View>
                         :
@@ -426,7 +458,7 @@ const MainApp = ({route, navigation}) => {
                                 </View>
 
                                 {menunggu?
-                                    <View style={{alignItems:"center"}}>
+                                    <View style={showContent==1 ? {alignItems:"center"} : {display:"none"}}>
                                         <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Harap Menunggu Waktu absensi pulang</Text>
                                         <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan isi agenda anda</Text>
                                     </View>
@@ -485,7 +517,24 @@ const MainApp = ({route, navigation}) => {
                         </ReactNativeModal>
                     </View>
 
-                    <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:40, alignItems:"center"}}>
+                    <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:30, alignItems:"center"}}>
+                        <View style={{width:WindowWidth*0.9, marginBottom:10}}><Text style={{fontWeight:'700', color:"black",  fontSize:14}}>
+                        Pengajuan kehadiran</Text>
+                        </View>
+                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'#0060cb', borderRadius:15, elevation:5, alignItems:"center", flexDirection:'row',}} onPress={() => navigation.navigate('PengajuanHadir')}>
+                            <View style={{width:"30%",  height:"100%", marginLeft:20, alignItems:"center", justifyContent:"center"}}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:30}}>50</Text>
+                                <Text style={{fontWeight:'500', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:12, marginTop:-5}}>Pengajuan</Text>
+                            </View>
+                            <View style={{justifyContent:"center"}}>
+                                <Text style={{fontWeight:'500', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:12, textTransform:"capitalize"}}>Sedang menunggu persetujuan</Text>
+                                <Text style={{fontWeight:'500', color:"white", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,  fontSize:12, textTransform:"capitalize"}}>kasubag umum</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+
+                    <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:30, alignItems:"center"}}>
                         <View style={{width:WindowWidth*0.9, marginBottom:10}}><Text style={{fontWeight:'700', color:"black",  fontSize:14}}>
                         Riwayat Absensi</Text>
                         </View>

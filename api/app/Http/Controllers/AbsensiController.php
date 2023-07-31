@@ -128,9 +128,9 @@ class AbsensiController extends Controller
         $status;
 
         if ($cek != null){
-            if ($cek->status == 'sakit'){
+            if ($cek->status == 'Sakit'){
                 $status = 'Anda sakit';
-            }else if($cek->status == 'izin'){
+            }else if($cek->status == 'Izin'){
                 $status = 'Anda izin';
             }else if (Carbon::now()->gte($absenPulang)){
                 $status = 'sudah bisa absen pulang';

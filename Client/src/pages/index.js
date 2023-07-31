@@ -14,6 +14,7 @@ import Laporan from './mainUser/Laporan'
 import LoginSide from './splashScreen/Login'
 import SplashLogin from './splashScreen/Login/SplashLogin'
 import AbsensiPulang from './mainApp/Absensi/AbsensiPulang'
+import PengajuanHadir from './mainApp/PengajuanHadir'
 
 // kasum
 import Kasum from './mainKasum'
@@ -29,4 +30,5 @@ import TambahCatatan from './mainKasum/TambahCatatan'
 import EditCatatan from './mainKasum/EditCatatan'
 
 
-export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan, DetailPengajuan, LaporanKasum, ThlIt, DetailThlIt, DetailLaporanKasum, ProfileKasum, AllPengajuan, TambahCatatan, EditCatatan, SplashLogin, AbsensiPulang}
+
+export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan, DetailPengajuan, LaporanKasum, ThlIt, DetailThlIt, DetailLaporanKasum, ProfileKasum, AllPengajuan, TambahCatatan, EditCatatan, SplashLogin, AbsensiPulang, PengajuanHadir}

@@ -115,11 +115,11 @@ const Absensi = ({route, navigation}) => {
             }
             else if(kehadiran == 3){
                 formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
-                formData.append('status','sakit')
+                formData.append('status','Sakit')
                 formData.append('keterangan_hadir',detail) 
             }
             else {
-                formData.append('status','izin')
+                formData.append('status','Izin')
                 formData.append('keterangan_hadir',detail) 
             }
             

@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, AbsensiPulang, Agenda, AllPengajuan, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Agenda, AllPengajuan, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 
@@ -20,6 +20,7 @@ const HomeScreen = () =>{
             <Stack.Screen name='Detail' component={Detail} options={{headerShown:false}}/>
             <Stack.Screen name='Notif' component={Notif} options={{headerShown:false}}/>
             <Stack.Screen name='AbsensiPulang' component={AbsensiPulang} options={{headerShown:false}}/>
+            <Stack.Screen name='PengajuanHadir' component={PengajuanHadir} options={{headerShown:false}}/>
 
         </Stack.Navigator>
     )
