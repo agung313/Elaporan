@@ -7,10 +7,11 @@ import axios from 'axios'
 import DocumentPicker from 'react-native-document-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
+import { Circle } from 'react-native-animated-spinkit'
 
 
 const Absensi = ({route, navigation}) => {
-    const {kehadiran, latit, longtit, jarak} = route.params
+    const {kehadiran, latit, longtit, jarak, idAbsensi} = route.params
     console.log(jarak, "<==============jaraka meter")
     
     // const kehadiran=2
@@ -46,8 +47,14 @@ const Absensi = ({route, navigation}) => {
     const base_url =ApiLink+"/api"
     const [fileKeterangan, setFileKeterangan] = useState()
     const [imgKeterangan, setImgKeterangan] = useState()
+
     const [modalStore, setModalStore] = useState(false)
+    const [modalStoreSakit, setModalStoreSakit] = useState(false)
+    const [modalStoreIzin, setModalStoreIzin] = useState(false)
+
+
     const [modalSuccess, setModalSuccess] = useState(false)
+    const [modalLoad, setModalLoad] = useState(false)
 
     const [namaUser, setNamaUser] = useState('-')
     const [jabatanUser, setJabatanUser] = useState('-')
@@ -80,6 +87,11 @@ const Absensi = ({route, navigation}) => {
     }
     const handlerHadir = async data =>{
 
+        setModalLoad(true)
+        setModalStore(false)
+        setModalStoreSakit(false)
+        setModalStoreIzin(false)
+
         try {
             const dataHadir ={
                 status:'hadir',
@@ -92,7 +104,20 @@ const Absensi = ({route, navigation}) => {
             const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
+            console.log(response.data.data, "<===== respon data")
+
+            const params ={
+                judul_kegiatan: "Kehadiran",
+                uraian_kegiatan: "Waktu Masuk : " + response.data.data.waktu_hadir + "{'\n'} Waktu Pulang : " + null,
+                id_absensi: response.data.data.id
+            }
+            await axios.post(base_url+"/laporan/store",params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                console.log(res.data, "<==================== res")
+            })
             
+            setModalLoad(false)
             setModalSuccess(true)
         } catch (error) {
             console.log(error,"<--- error handler hadir")            
@@ -102,7 +127,7 @@ const Absensi = ({route, navigation}) => {
     
     const handlerKegiatan = async ()=>{
 
-        
+        setModalLoad(true)
         try{
             var formData = new FormData()
 
@@ -115,15 +140,13 @@ const Absensi = ({route, navigation}) => {
             }
             else if(kehadiran == 3){
                 formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
-                formData.append('status','sakit')
+                formData.append('status','Sakit')
                 formData.append('keterangan_hadir',detail) 
             }
             else {
-                formData.append('status','izin')
+                formData.append('status','Izin')
                 formData.append('keterangan_hadir',detail) 
-            }
-            
-            
+            }           
                        
 
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -135,7 +158,8 @@ const Absensi = ({route, navigation}) => {
             }})            
         
             console.log(response.data,"<--- post ")
-            setModalStore(false)
+            
+            setModalLoad(false)
             setModalSuccess(true)
 
         } catch(error){
@@ -347,35 +371,139 @@ const Absensi = ({route, navigation}) => {
                             </View>
                         </View>
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStoreIzin(true)}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
 
-                    {/* response absen */}
+                    {/* response absen store*/}
 
-                    <ReactNativeModal isVisible={modalStore} onBackdropPress={() => setModalStore(false)}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                        <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                    <ReactNativeModal isVisible={modalStore} onBackdropPress={() => setModalStore(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10, }}>
 
                             <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStore(false)}} >
                                 <Image source={CloseIcont} style={{width:30, height:30}}/>
                             </TouchableOpacity>
-                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lanjut Absensi ?</Text>
-                                <Text>Pastikan Data Sudah Benar</Text>
-                            </View>
-                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={handlerKegiatan}>
-                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ya ! Lanjutkan</Text>                                        
-                                </TouchableOpacity>
-                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#d9dedb", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStore(false)}} >
-                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Batal</Text>                                        
-                                </TouchableOpacity>                                    
-                            </View>
+
+                            {fileKeterangan||detail ?
+                                <View>
+                                    <View style={{width:"100%", marginTop:10, alignItems:"center",}}>
+                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lanjut Absensi ?</Text>
+                                        <Text>Pastikan Data Sudah Benar</Text>
+                                    </View>
+                                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={handlerKegiatan}>
+                                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ya ! Lanjutkan</Text>                                        
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#d9dedb", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStore(false)}} >
+                                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Batal</Text>                                        
+                                        </TouchableOpacity>                                    
+                                    </View>
+                                </View>
+                            :
+                                <View style={{marginTop:30}}>
+                                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Data Anda Tidak Lengkap</Text>
+                                        <Text>Harap Lengkapi Semua Data Kehadiran</Text>
+                                    </View>
+                                    <View style={{width:"100%", alignItems:"center",  marginTop:5,}}>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#fcc419", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStore(false)}} >
+                                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lengkapi</Text>                                        
+                                        </TouchableOpacity>                                    
+                                    </View>
+                                </View>
+                            }
+
+                            
                         </View>
                     </ReactNativeModal>
 
+                    {/* response absen sakit*/}
+
+                    <ReactNativeModal isVisible={modalStoreSakit} onBackdropPress={() => setModalStoreSamodalStoreSakit(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10, }}>
+
+                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStoreSakit(false)}} >
+                                <Image source={CloseIcont} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+
+                            {fileKeterangan||detail ?
+                                <View>
+                                    <View style={{width:"100%", marginTop:10, alignItems:"center",}}>
+                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lanjut Absensi ?</Text>
+                                        <Text>Pastikan Data Sudah Benar</Text>
+                                    </View>
+                                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={handlerKegiatan}>
+                                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ya ! Lanjutkan</Text>                                        
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#d9dedb", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStoreSakit(false)}} >
+                                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Batal</Text>                                        
+                                        </TouchableOpacity>                                    
+                                    </View>
+                                </View>
+                            :
+                                <View style={{marginTop:30}}>
+                                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Data Anda Tidak Lengkap</Text>
+                                        <Text>Harap Lengkapi Semua Data Kehadiran</Text>
+                                    </View>
+                                    <View style={{width:"100%", alignItems:"center",  marginTop:5,}}>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#fcc419", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStoreSakit(false)}} >
+                                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lengkapi</Text>                                        
+                                        </TouchableOpacity>                                    
+                                    </View>
+                                </View>
+                            }
+
+                            
+                        </View>
+                    </ReactNativeModal>
+
+                    {/* response absen IZIN*/}
+
+                    <ReactNativeModal isVisible={modalStoreIzin} onBackdropPress={() => setModalStoreIzin(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10, }}>
+
+                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStoreIzin(false)}} >
+                                <Image source={CloseIcont} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+
+                            {detail ?
+                                <View>
+                                    <View style={{width:"100%", marginTop:10, alignItems:"center",}}>
+                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lanjut Absensi ?</Text>
+                                        <Text>Pastikan Data Sudah Benar</Text>
+                                    </View>
+                                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={handlerKegiatan}>
+                                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ya ! Lanjutkan</Text>                                        
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#d9dedb", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStoreIzin(false)}} >
+                                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Batal</Text>                                        
+                                        </TouchableOpacity>                                    
+                                    </View>
+                                </View>
+                            :
+                                <View style={{marginTop:30}}>
+                                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Data Anda Tidak Lengkap</Text>
+                                        <Text>Harap Lengkapi Semua Data Kehadiran</Text>
+                                    </View>
+                                    <View style={{width:"100%", alignItems:"center",  marginTop:5,}}>
+                                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#fcc419", marginTop:10, alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={()=>{setModalStoreIzin(false)}} >
+                                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lengkapi</Text>                                        
+                                        </TouchableOpacity>                                    
+                                    </View>
+                                </View>
+                            }
+
+                            
+                        </View>
+                    </ReactNativeModal>
+
+                    {/* modal succes */}
                     <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => setModalSuccess(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                         <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, alignItems:"center", justifyContent:"center" }}>
 
@@ -391,6 +519,11 @@ const Absensi = ({route, navigation}) => {
                                 </TouchableOpacity>      
                             </View>
                         </View>
+                    </ReactNativeModal>
+
+                    {/* modal Loading */}
+                    <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <Circle size={100} color="white"/>
                     </ReactNativeModal>
 
                 </View>

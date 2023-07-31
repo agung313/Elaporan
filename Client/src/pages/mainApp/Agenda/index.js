@@ -11,7 +11,6 @@ const Agenda = ({route, navigation}) => {
     const {idAbsensi} = route.params
 
     const isFocused = useIsFocused();
-
     const base_url ="http:10.0.2.2:8000/api"
     // width heigh
     const WindowWidth = Dimensions.get('window').width;

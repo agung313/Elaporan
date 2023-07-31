@@ -98,7 +98,8 @@ const Detail = ({route, navigation}) => {
 
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
-            }}).then((res)=>{                
+            }}).then((res)=>{     
+                console.log(res.data[0].foto)           
                 setAbsen({
                     status:res.data[0].status,
                     waktuMasuk: res.data[0].waktu_hadir,
@@ -107,7 +108,8 @@ const Detail = ({route, navigation}) => {
                     keteranganAbsensin:res.data[0].keterangan_hadir,                    
                 })
             }) 
-    
+            
+
 
         } catch (error) {
             console.log(error, "error get absensi")   

@@ -32,6 +32,7 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
     Route::post('/store', 'store');
     Route::post('/test', 'testDaily');
     Route::get('/cekAbsen', 'cekAbsen');
+    Route::get('/countNoAcc', 'countNoAcc');
     Route::post('/acceptIzin/{id}', 'acceptIzin');
     Route::post('/absenAdmin', 'absenAdmin');
 });

@@ -26,12 +26,24 @@ class AbsensiController extends Controller
         }else if($request->isApprove){
             $absen = Absensi::where('isApprove', false)->get();
         }else{
-            $absen = Absensi::where('id_user', Auth::user()->id)->get();
+            $absen = Absensi::where('id_user', Auth::user()->id)->orderBy('tanggal','DESC')->get();
         }
-        
         
 
         return response(AbsenResource::collection($absen));
+    }
+
+    // get jumlah pengajuan sakit/izin belum di approve
+    function countNoAcc(Request $request){
+        $id = Auth::user()->id; 
+        $data = Absensi::where('id_user', $id)->where('isApprove',0)->where(function($query){
+            $query->where('status','sakit')->orWhere('status','izin');
+        })->count();
+        
+        return response()->json([
+            'messages' => 'success',
+            'data' => $data
+        ]);
     }
 
     public function store(Request $request)
@@ -45,10 +57,10 @@ class AbsensiController extends Controller
             ->first();
         
         if($absensi !== null){
+    
             $absen = Absensi::updateOrCreate(
                 ['id_user' => $id, 'tanggal' => $tanggal],
-                ['waktu_pulang' => $waktu],
-                ['keterangan_pulang' => $request->keterangan_pulang]
+                ['waktu_pulang' => $waktu,'keterangan_pulang' => $request->keterangan_pulang]
             );
 
             return response()->json([
@@ -59,6 +71,7 @@ class AbsensiController extends Controller
         }else{
             if($request->foto){
                 $path = $request->file('foto')->store('public');
+                $path = preg_replace('/public/','', $path);
 
                 $absen = Absensi::create([
                     'id_user' => $id,
@@ -128,9 +141,9 @@ class AbsensiController extends Controller
         $status;
 
         if ($cek != null){
-            if ($cek->status == 'sakit'){
+            if ($cek->status == 'Sakit'){
                 $status = 'Anda sakit';
-            }else if($cek->status == 'izin'){
+            }else if($cek->status == 'Izin'){
                 $status = 'Anda izin';
             }else if (Carbon::now()->gte($absenPulang)){
                 $status = 'sudah bisa absen pulang';
