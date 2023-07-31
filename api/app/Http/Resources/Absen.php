@@ -35,7 +35,7 @@ class Absen extends JsonResource
             'status' => $this->status,
             'keterangan' => $this->keterangan,
             'keterangan_pulang' => $this->keterangan_pulang,
-            'URL' => URL('storage/'. $photo->foto),
+            'foto' => URL('storage/'. $photo->foto),
             'hari' => $hari,
             // 'tanggal' => Carbon::parse($this->tanggal)->format('d-m-Y'),
             'tanggal' => $tanggal,
@@ -48,6 +48,7 @@ class Absen extends JsonResource
                     ? ($waktu_pulang->lessThan($jamPulang) 
                     ? 'Pulang cepat' : 'Pulang Tepat Waktu'): 'Tidak Absen Pulang',
             'laporan' => $laporan == null ? false : true
+
         ];
     }
 }

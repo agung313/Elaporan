@@ -71,6 +71,7 @@ class AbsensiController extends Controller
         }else{
             if($request->foto){
                 $path = $request->file('foto')->store('public');
+                $path = preg_replace('/public/','', $path);
 
                 $absen = Absensi::create([
                     'id_user' => $id,
