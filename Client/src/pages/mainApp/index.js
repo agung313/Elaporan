@@ -48,7 +48,6 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
-    console.log(history)
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
     const [izinSakit, setIzinSakit] = useState()
@@ -161,7 +160,7 @@ const MainApp = ({route, navigation}) => {
             }});        
     
             if (response.status == 200) {
-                setHistory(response.data.slice(0,3).sort((a, b) => a > b ? 1 : -1));
+                setHistory(response.data.slice(0,4));
             }
 
         } catch (error) {
