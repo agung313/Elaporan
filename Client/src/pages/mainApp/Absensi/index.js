@@ -104,18 +104,6 @@ const Absensi = ({route, navigation}) => {
             const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
-            console.log(response.data.data, "<===== respon data")
-
-            const params ={
-                judul_kegiatan: "Kehadiran",
-                uraian_kegiatan: "Waktu Masuk : " + response.data.data.waktu_hadir + "{'\n'} Waktu Pulang : " + null,
-                id_absensi: response.data.data.id
-            }
-            await axios.post(base_url+"/laporan/store",params,{headers:{
-                Authorization: `Bearer ${myToken}`
-            }}).then((res)=>{
-                console.log(res.data, "<==================== res")
-            })
             
             setModalLoad(false)
             setModalSuccess(true)
@@ -261,7 +249,7 @@ const Absensi = ({route, navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Anda Belum Absen Pulang</Text>
                                 </View>
                             </View>
                         </View>

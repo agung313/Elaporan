@@ -5,12 +5,14 @@ import ReactNativeModal from 'react-native-modal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 import { useIsFocused } from "@react-navigation/native";
+import { Circle } from 'react-native-animated-spinkit'
+import ApiLink from '../../../assets/ApiHelper/ApiLink'
 
 
 const Edit = ({route, navigation}) => {
 
-    const {idKegiatan} = route.params
-    const base_url ="http:10.0.2.2:8000/api"
+    const {idKegiatan, idAbsensi} = route.params
+    const base_url =ApiLink+"/api"
     const isFocused = useIsFocused();
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -37,6 +39,7 @@ const Edit = ({route, navigation}) => {
 
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
+    const [modalLoad, setModalLoad] = useState(false)
 
 
     const toggleModal = () => {
@@ -71,6 +74,7 @@ const Edit = ({route, navigation}) => {
     }
 
     const handlerUpdate = async data =>{
+        setModalLoad(true)
 
         try {
 
@@ -86,7 +90,7 @@ const Edit = ({route, navigation}) => {
             await axios.post(target_url,params,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{
-
+                setModalLoad(false)
                 setModalSuccess(true)
             })
 
@@ -160,48 +164,26 @@ const Edit = ({route, navigation}) => {
                 </View>
             </View>
             {/* Modal Alert Sukess */}
-            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => navigation.goBack()}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+            <ReactNativeModal isVisible={modalSuccess} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.goBack()}>
-                                <Image source={CloseIcont} style={{width:30, height:30}}/>
-                            </TouchableOpacity>
-                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Kegiatan Berhasil Diubah.</Text>
-                            </View>
-                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.goBack()}>
-                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
-                                </TouchableOpacity>      
-                            </View>
-                        </View>
-            </ReactNativeModal>            
-            {/* modal hapus */}
-            <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
-
-                    <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.navigate("Agenda", {idAbsensi:idAbsensi})}>
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
-                    <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Detail Kegiatan Anda</Text>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Kegiatan Berhasil Diubah.</Text>
                     </View>
-
-                    <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Izin :</Text>
-                    <View style={{alignItems:"center"}}>
-                        <View style={{width:"90%", height:100, borderWidth:0.5, borderColor:"black",borderRadius:15}}>
-                            <TextInput
-                                placeholder=''
-                                placeholderTextColor={"#000"}
-                                value={detail}
-                                keyboardType= "default"
-                                onChangeText={(text) => setDetail(text)}
-                                style={{ color: "#000" }}
-                                multiline
-                            />
-                        </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.navigate("Agenda", {idAbsensi:idAbsensi})}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
                     </View>
                 </View>
+            </ReactNativeModal>        
+
+            {/* modal Loading */}
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
             </ReactNativeModal>
         </ScrollView>
     )

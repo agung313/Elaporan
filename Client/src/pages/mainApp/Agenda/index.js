@@ -5,19 +5,22 @@ import ReactNativeModal from 'react-native-modal'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from "@react-navigation/native";
+import { Circle } from 'react-native-animated-spinkit'
+import ApiLink from '../../../assets/ApiHelper/ApiLink'
 
 
 const Agenda = ({route, navigation}) => {
     const {idAbsensi} = route.params
 
     const isFocused = useIsFocused();
-    const base_url ="http:10.0.2.2:8000/api"
+    const base_url =ApiLink+"/api"
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
 
     // input
     const [detail, setDetail] = useState()
+    
 
     // date time tanggal
     const cekTgl = new Date
@@ -53,6 +56,8 @@ const Agenda = ({route, navigation}) => {
 
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
+    const [modalLoad, setModalLoad] = useState(false)
+    const [modalSuccess, setModalSuccess] = useState(false)
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -145,7 +150,9 @@ const Agenda = ({route, navigation}) => {
     }
 
     const handlerDelete = async (id) =>{
-        toggleModal()
+        setModalVisible(false)
+        setModalLoad(true)
+        // toggleModal()
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
@@ -154,6 +161,9 @@ const Agenda = ({route, navigation}) => {
             }});        
             getKegiatan()
             console.log(response,"<--- delete")
+
+            setModalLoad(false)
+            setModalSuccess(true)
 
         } catch (error) {
             console.log(error, "error get my profile")   
@@ -174,7 +184,7 @@ const Agenda = ({route, navigation}) => {
                     </Text>
                 </View>
                 <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center", flexDirection:"row"}}>
-                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit",{idKegiatan:item.id})}>
+                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit",{idKegiatan:item.id, idAbsensi:idAbsensi})}>
                         <Image source={EditIcont} style={{width:25, height:25}} />
                     </TouchableOpacity>
 
@@ -219,27 +229,27 @@ const Agenda = ({route, navigation}) => {
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{profile.nama}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{profile.nama}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{profile.jabatan}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{profile.jabatan}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{absen.status}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.status}</Text>
                                 </View>
                                 {/* <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Kantor Walikota Pekanbaru</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>Kantor Walikota Pekanbaru</Text>
                                 </View> */}
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{absen.waktuMasuk} WIB</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.waktuMasuk} WIB</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{absen.waktuPulang ? absen.waktuPulang+' WIB': '-'}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.waktuPulang ? absen.waktuPulang+' WIB': 'Anda belum absen pulang'}</Text>
                                 </View>
                             </View>
                         </View>
@@ -321,6 +331,27 @@ const Agenda = ({route, navigation}) => {
                         </TouchableOpacity>
                     </View>
                 </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={modalSuccess} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalSuccess(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kegiatan / Agenda Berhasil Dihapus.</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setModalSuccess(false)}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
             </ReactNativeModal>
         </ScrollView>
     )
