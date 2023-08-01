@@ -49,6 +49,7 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
+    const [historyNotif, setHistoryNotif] = useState([]);
     // console.log(history)
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
@@ -81,7 +82,7 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/user/profile`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-    
+            console.log(response.data, "<==== my profile")
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
@@ -145,6 +146,7 @@ const MainApp = ({route, navigation}) => {
     }
 
 
+    // const [absenMasuk, setAbsenMasuk] = useState(false)
     const getToday = async data =>{
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -166,7 +168,6 @@ const MainApp = ({route, navigation}) => {
 
             if (status == 'belum absen datang') {
                 setStatusAbsensi(true)
-
             } 
             //  sakit
             else if (status == 'Anda sakit'  ) {
@@ -219,6 +220,7 @@ const MainApp = ({route, navigation}) => {
             }});        
     
             if (response.status == 200) {
+                setHistoryNotif(response.data)
                 setHistory(response.data.slice(0,4));
                 setLoadHistory(false)
             }
@@ -248,6 +250,7 @@ const MainApp = ({route, navigation}) => {
 
     // buat absensi
     const jarakMeter = distance*1000
+    
     const buatAbsensi = () => {
         setModalVisible(false)
         navigation.navigate('Absensi', {kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
@@ -310,7 +313,7 @@ const MainApp = ({route, navigation}) => {
     const rowHistory = (item, index) =>{
 
         // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
-        console.log(item.ket_hadir)
+        // console.log(item.ket_hadir, "<====== ket hadir")
         if (item.ket_hadir === 'Absen Tepat Waktu') {
             
             if(item.laporan == false){
@@ -491,9 +494,19 @@ const MainApp = ({route, navigation}) => {
                     <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan tambahkan agenda anda hari ini</Text>
                 </View>
             )
-        }else{
+        }
+        else if(labelStatus == "Absensi Masuk"){
             return(
-                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang', {idAbsensi:idAbsensi})}>
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={toggleModal}>
+                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
+                    {labelStatus}
+                    </Text>
+                </TouchableOpacity>
+            )
+        }
+        else{
+            return(
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('Absensi', {idAbsensi:idAbsensi})}>
                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
                     {labelStatus}
                     </Text>
@@ -534,7 +547,7 @@ const MainApp = ({route, navigation}) => {
 
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:20, marginHorizontal:100}}>E - Laporan</Text>
 
-                           <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif")}>
+                           <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif", {historyNotif:historyNotif})}>
                                 <Image source={NotifIcont} style={{width:28, height:28}}/>
                                 <View style={{marginLeft:-15, marginRight:-7}}>
                                     <Image source={WarningIcont} style={{width:20, height:20,}}/>

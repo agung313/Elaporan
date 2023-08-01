@@ -33,6 +33,10 @@ import SakitIcont from './file/sakit.png'
 import ExSakit from './file/exSakit.jpg'
 import PasFoto from './file/pasFoto.png'
 import LogOut from './file/logOut.png'
+import JabatanUser from './file/jabatan.png'
+import EmailUser from './file/emailIcon2.png'
+import AddImgUser from './file/addImgUser.png'
+import ExTtd from './file/ttd.png'
 
 // icont Bottom
 import HomeIcont from './file/home.png'
@@ -42,4 +46,4 @@ import AcountAct from './file/AcountActive.png'
 
 
 
-export {BgMain, LgBappeda, HomeAct, HomeIcont, AcountAct, AcountIcont, BgApp, ExFoto, SettIcont, NotifIcont, Absensi, Agenda, offAgenda, AbsensiKurang, TidakHadir, BackIcon, CloseIcont, AddImg, OffAbsensi, DeletedIcont, EditIcont, WarningIcont, SakitIzin, JmlNotif, PassUsr, EmailIcon, PassProfile, NextIcont, LaporProfile, Pendahuluan, PasswordIcon, Pengajuan, CekLaporan, ProfileKasum, DataThl, SakitIcont, ExSakit, PasFoto, LogOut}
+export {BgMain, LgBappeda, HomeAct, HomeIcont, AcountAct, AcountIcont, BgApp, ExFoto, SettIcont, NotifIcont, Absensi, Agenda, offAgenda, AbsensiKurang, TidakHadir, BackIcon, CloseIcont, AddImg, OffAbsensi, DeletedIcont, EditIcont, WarningIcont, SakitIzin, JmlNotif, PassUsr, EmailIcon, PassProfile, NextIcont, LaporProfile, Pendahuluan, PasswordIcon, Pengajuan, CekLaporan, ProfileKasum, DataThl, SakitIcont, ExSakit, PasFoto, LogOut, JabatanUser, EmailUser, AddImgUser, ExTtd}
