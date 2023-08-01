@@ -27,7 +27,7 @@ class Absen extends JsonResource
         $photo = Absensi::find($this->id);
         $laporan = Laporan::where('id_absensi',$this->id)->first();
         $hari = Carbon::createFromFormat('Y-m-d', $this->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
-        $tanggal =  Carbon::parse($this->tanggal)->format('d M Y');
+        $tanggal =  Carbon::parse($this->tanggal)->isoFormat('D MMMM Y');
 
         return [
             'id' => $this->id,
