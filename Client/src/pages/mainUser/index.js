@@ -138,7 +138,7 @@ const MainUser = ({navigation}) => {
                         </View>
                         <View style={{marginLeft:8, justifyContent:"center", width:"70%"}}>
                             {/* <Text style={{color:"#c3c4c5", fontSize:14, fontWeight:"bold"}}>Username</Text> */}
-                            <Text style={{color:"#000", fontSize:16, fontWeight:"600"}}>Username & Password</Text>
+                            <Text style={{color:"#000", fontSize:16, fontWeight:"600"}}>User Settings</Text>
                         </View>
                         <View style={{justifyContent:"center"}}>
                             <Image source={NextIcont} style={{width:25, height:25}} />
