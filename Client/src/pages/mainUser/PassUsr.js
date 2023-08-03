@@ -67,6 +67,9 @@ const PassUsr = ({navigation}) => {
         }
     }
 
+    const handlerUpdateFoto = async data=>{
+        
+    }
     // showcontent
     const [showContent, setShowContent] = useState(1)
     console.log(showContent, "<====== showwwww")
