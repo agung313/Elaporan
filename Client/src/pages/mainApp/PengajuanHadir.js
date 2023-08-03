@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Agenda, BackIcon, LgBappeda, SakitIcont, SakitIzin, WarningIcont } from '../../assets/images';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const PengajuanHadir = ({navigation}) => {
     // width heigh
@@ -20,6 +21,42 @@ const PengajuanHadir = ({navigation}) => {
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
+
+    // api
+    useEffect(()=>{
+
+
+        if (isFocused) {
+            getMyHistory()       
+        }
+        
+    },[navigation, isFocused])
+
+    const base_url =ApiLink+"/api";
+    const [history, setHistory] = useState([]);
+    const [historyNotif, setHistoryNotif] = useState([]);
+    const [loadHistory, setLoadHistory] = useState(false)
+
+    const getMyHistory = async data =>{
+        setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${base_url}/absen/`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+            // console.log(response.data, "<====data history")
+    
+            if (response.status == 200) {
+                setHistoryNotif(response.data)
+                setHistory(response.data.slice(0,4));
+                setLoadHistory(false)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my history")   
+        }
+    }
 
     return (
         <ScrollView>
@@ -54,17 +91,12 @@ const PengajuanHadir = ({navigation}) => {
                         <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                             <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Status Pengajuan : Menunggu Persetujuan</Text>
+                            <Text style={{ color:"black",  fontSize:10}}>Menunggu Persetujuan Kasubag Umum</Text>
                         </View>
+                        <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("MainApp")}>
-                        <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10, width:"75%"}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Status Pengajuan : Menunggu Persetujuan</Text>
-                        </View>
-                    </TouchableOpacity>
+                    
                 </View>
             </View>
         </ScrollView>

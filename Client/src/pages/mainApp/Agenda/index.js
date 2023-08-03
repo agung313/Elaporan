@@ -184,7 +184,7 @@ const Agenda = ({route, navigation}) => {
                     </Text>
                 </View>
                 <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center", flexDirection:"row"}}>
-                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit",{idKegiatan:item.id, idAbsensi:idAbsensi})}>
+                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit",{idKegiatan:item.id, idAbsensi:idAbsensi, backNavigation:"Agenda"})}>
                         <Image source={EditIcont} style={{width:25, height:25}} />
                     </TouchableOpacity>
 
@@ -200,7 +200,7 @@ const Agenda = ({route, navigation}) => {
         <ScrollView>
             <View style={styles.header}>
                 <View style={{ width: "60%" }}>
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={()=> navigation.navigate("MainApp")} style={{ flexDirection: 'row' }}>
                         <View style={{ justifyContent:"center" }}>
                             <Image source={BackIcon} style={{ width: 20, height: 20 }}/>
                         </View>
@@ -256,7 +256,7 @@ const Agenda = ({route, navigation}) => {
                     </View>
                     <View style={{flexDirection:"row", marginBottom:10 }}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan Hari Ini :</Text>
-                        <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi})}>
+                        <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi, backNavigation:"Agenda"})}>
                             <Text style={{fontWeight:'700', color:"white", fontSize:12}}>
                                 Tambah Kegiatan
                             </Text>

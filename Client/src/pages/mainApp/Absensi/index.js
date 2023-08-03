@@ -87,10 +87,11 @@ const Absensi = ({route, navigation}) => {
     }
     const handlerHadir = async data =>{
 
-        setModalLoad(true)
+        
         setModalStore(false)
         setModalStoreSakit(false)
         setModalStoreIzin(false)
+        setModalLoad(true)
 
         try {
             const dataHadir ={
@@ -409,7 +410,7 @@ const Absensi = ({route, navigation}) => {
 
                     {/* response absen sakit*/}
 
-                    <ReactNativeModal isVisible={modalStoreSakit} onBackdropPress={() => setModalStoreSamodalStoreSakit(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <ReactNativeModal isVisible={modalStoreSakit} onBackdropPress={() => setModalStoreSakit(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                         <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10, }}>
 
                             <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStoreSakit(false)}} >

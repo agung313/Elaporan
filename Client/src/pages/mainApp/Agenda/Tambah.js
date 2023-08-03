@@ -9,7 +9,8 @@ import ApiLink from '../../../assets/ApiHelper/ApiLink'
 
 const Tambah = ({route, navigation}) => {
 
-    const {idAbsensi} = route.params
+    const {idAbsensi, backNavigation} = route.params
+    console.log(backNavigation, "<===== back navigation")
     const base_url =ApiLink+"/api"
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -132,16 +133,18 @@ const Tambah = ({route, navigation}) => {
             <ReactNativeModal isVisible={modalSuccess} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.navigate("Agenda", {idAbsensi:idAbsensi})}>
+                    
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={backNavigation=="Agenda" ? () => navigation.navigate("Agenda", {idAbsensi:idAbsensi}):() => navigation.navigate("Detail", {idAbsensi:idAbsensi})}>
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Kegiatan / Agenda Berhasil Ditambahkan.</Text>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.navigate("Agenda", {idAbsensi:idAbsensi})}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={backNavigation=="Agenda" ? () => navigation.navigate("Agenda", {idAbsensi:idAbsensi}):() => navigation.navigate("Detail", {idAbsensi:idAbsensi})}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
-                        </TouchableOpacity>      
+                        </TouchableOpacity>
+                             
                     </View>
                 </View>
             </ReactNativeModal>   

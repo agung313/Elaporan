@@ -82,7 +82,7 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/user/profile`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data, "<==== my profile")
+            // console.log(response.data, "<==== my profile")
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
@@ -94,7 +94,7 @@ const MainApp = ({route, navigation}) => {
     }    
 
     const [cekApprove, setCekApprove] = useState()
-    // console.log(cekApprove, "cel approve")
+    console.log(cekApprove, "cel approve")
     const [loadApprove, setLoadApprove] = useState(false)
 
     const getMyPengajuan = async data =>{
@@ -146,7 +146,7 @@ const MainApp = ({route, navigation}) => {
     }
 
 
-    // const [absenMasuk, setAbsenMasuk] = useState(false)
+    const [statusApprove, setStatusApprove] = useState()
     const getToday = async data =>{
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -158,7 +158,8 @@ const MainApp = ({route, navigation}) => {
             var status = response.data.status
             var data = response.data.data
             var waktuPulang = data.waktu_pulang
-            // console.log(data.waktu_pulang,"<===== status")
+            setStatusApprove(data.isApprove)
+            // console.log(data.isApprove,"<===== status")
             
 
             if (data) {
@@ -218,6 +219,7 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/absen/`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
+            console.log(response.data, "<====data history")
     
             if (response.status == 200) {
                 setHistoryNotif(response.data)
@@ -417,13 +419,15 @@ const MainApp = ({route, navigation}) => {
             }
         }
         else if(item.ket_hadir === "Sakit"){
+            
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}> {item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan sakit"}</Text>
                     </View>
+                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
                 </TouchableOpacity>
             )
         }
@@ -433,8 +437,9 @@ const MainApp = ({route, navigation}) => {
                     <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan izin</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan izin"}</Text>
                     </View>
+                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
                 </TouchableOpacity>
             )
         }
@@ -517,7 +522,7 @@ const MainApp = ({route, navigation}) => {
 
     // keterangan approve
     const KetApprove = () =>{
-        if(cekApprove==false){
+        if(statusApprove==false){
             return(
                 <>
                     <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>pengajuan {sakit? 'sakit':'izin'} anda sedang diproses</Text>
