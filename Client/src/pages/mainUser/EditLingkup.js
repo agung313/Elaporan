@@ -7,12 +7,17 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 
-const TambahLingkup = ({navigation}) => {
+const EditLingkup = ({route, navigation}) => {
 
-
+    const {indexData} = route.params
+    const isFocused = useIsFocused();
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
+
+    // input
+    const [detail, setDetail] = useState()
+    const [uraian, setUraian] = useState()
 
     // date time tanggal
     const cekTgl = new Date
@@ -36,37 +41,43 @@ const TambahLingkup = ({navigation}) => {
     }
 
     // state New Ruang Lingkup
-    const isFocused = useIsFocused();
     const [newRL, setNewRL] = useState('-')
     const [tmpArr, setTmpArr] = useState([])
-    const [nomorRL, setNomorRL] = useState()
-
     useEffect(() => {
-
+        
         if (isFocused) {
-            setFormStore()   
+            setFormEdit()
+        }
+    
+    }, [navigation, isFocused])
+
+    const setFormEdit = async data =>{
+        var ruangLingkupOld = await AsyncStorage.getItem('tmpRuangLingkup')        
+        setTmpArr(ruangLingkupOld.split("%ry%"))
+        setNewRL(ruangLingkupOld.split("%ry%")[indexData])
+
+    }
+    
+    const saveTmpData = async data=>{
+
+        for (let index = 0; index < tmpArr.length; index++) {
+            if (index == indexData) {
+                tmpArr[index]= newRL
+            } 
         }
 
-    }, [navigation])
-    
-    const setFormStore = async data =>{
-
-        var ruangLingkupOld = await AsyncStorage.getItem('tmpRuangLingkup')        
-        setNomorRL(ruangLingkupOld.split("%ry%").length+1)
-        setTmpArr(ruangLingkupOld.split("%ry%"))
-
-    }    
-    const saveItemArray = async ()=>{
-
-        var tmpData = tmpArr
-        tmpData.push(newRL)   
-        await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("%ry%"))
+        await AsyncStorage.setItem('tmpRuangLingkup', tmpArr.join("%ry%"))
         navigation.goBack()
+
     }
 
+    const deleteTmpData = async data=>{
 
+        tmpArr.splice(indexData,1)
+        await AsyncStorage.setItem('tmpRuangLingkup', tmpArr.join("%ry%"))
+        navigation.goBack()
 
-
+    }    
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -93,7 +104,7 @@ const TambahLingkup = ({navigation}) => {
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
                     <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Ruang Lingkup</Text>
                     <View style={{marginBottom:20}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup No {nomorRL}:</Text>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup No {indexData+1}:</Text>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
                                 <TextInput
@@ -109,10 +120,13 @@ const TambahLingkup = ({navigation}) => {
                         </View>
                     </View>
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#39a339", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={saveItemArray}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tambah</Text>
+                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#39a339", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={saveTmpData}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Update</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#d9dcdf", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={()=>{navigation.goBack()}} >
+                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"red", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={deleteTmpData}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Hapus</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#d9dcdf", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={()=>{navigation.goBack()}}>
                             <Text style={{fontWeight:'700', color:"#000", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
                         </TouchableOpacity>                        
                     </View>
@@ -123,7 +137,7 @@ const TambahLingkup = ({navigation}) => {
     )
 }
 
-export default TambahLingkup
+export default EditLingkup
 
 const styles = StyleSheet.create({
     header: {

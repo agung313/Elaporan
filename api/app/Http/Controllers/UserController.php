@@ -34,7 +34,7 @@ class UserController extends Controller
             'latar_belakang' => 'required|string|max:700',
             'tujuan' => 'required|string|max:700',
             'ruang_lingkup' => 'required',
-            'ttd' => 'required'
+            // 'ttd' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -56,8 +56,8 @@ class UserController extends Controller
         $user->latar_belakang = $request->latar_belakang;
         $user->tujuan = $request->tujuan;
         $user->ruang_lingkup = $request->ruang_lingkup;
-        $user->ttd = $request->ttd;
-        $user->isComplete = true;
+        // $user->ttd = $request->ttd;
+        // $user->isComplete = true;
         $user->save();
 
         return response()->json([

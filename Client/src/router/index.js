@@ -4,7 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { Absensi, AbsensiPulang, Agenda, AllPengajuan, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
-
+import TambahLingkup from '../pages/mainUser/TambahLingkup'
+import EditLingkup from '../pages/mainUser/EditLingkup'
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
@@ -49,6 +50,8 @@ const AcountScreen  = () => {
             <Stack.Screen name='MainUser' component={MainUser} options={{headerShown:false}}/>
             <Stack.Screen name='PassUsr' component={PassUsr} options={{headerShown:false}}/>
             <Stack.Screen name='Pendahuluan' component={Pendahuluan} options={{headerShown:false}}/>
+            <Stack.Screen name='TambahLingkup' component={TambahLingkup} options={{headerShown:false}}/>
+            <Stack.Screen name='EditLingkup' component={EditLingkup} options={{headerShown:false}}/>            
             <Stack.Screen name='Laporan' component={Laporan} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
