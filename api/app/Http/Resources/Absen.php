@@ -47,7 +47,8 @@ class Absen extends JsonResource
             'ket_pulang' => $this->waktu_pulang != null
                     ? ($waktu_pulang->lessThan($jamPulang) 
                     ? 'Pulang cepat' : 'Pulang Tepat Waktu'): 'Tidak Absen Pulang',
-            'laporan' => $laporan == null ? false : true
+            'laporan' => $laporan == null ? false : true,
+            'isApprove' => $this->isApprove
 
         ];
     }
