@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\User as UserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Storage;
+use File;
 
 class UserController extends Controller
 {
@@ -34,7 +35,6 @@ class UserController extends Controller
             'latar_belakang' => 'required|string|max:700',
             'tujuan' => 'required|string|max:700',
             'ruang_lingkup' => 'required',
-            // 'ttd' => 'required'
         ]);
 
         if ($validator->fails()) {
@@ -56,9 +56,76 @@ class UserController extends Controller
         $user->latar_belakang = $request->latar_belakang;
         $user->tujuan = $request->tujuan;
         $user->ruang_lingkup = $request->ruang_lingkup;
-        // $user->ttd = $request->ttd;
-        // $user->isComplete = true;
         $user->save();
+
+        return response()->json([
+            'data' => $user
+        ],200);
+    }
+    public function updateFoto(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'foto' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messages' => 'Error validation',
+                'error' =>  $validator->errors()
+            ]);
+        }
+        $idProfile = Profile::select('id')->where('id_user', $id)->first();
+
+        $user = Profile::findorNew($idProfile->id);
+
+
+        if ($user->foto) {
+
+            $fotoPath = storage_path()."/app/public".$user->foto;
+            File::delete($fotoPath);
+
+        }
+        $path = $request->file('foto')->store('public/foto_profile');
+        $path = preg_replace('/public/','', $path);
+
+
+        $user->foto = $path;
+        $user->update();
+
+        return response()->json([
+            'data' => $user
+        ],200);
+    }
+
+    public function updateTtd(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'ttd' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messages' => 'Error validation',
+                'error' =>  $validator->errors()
+            ]);
+        }
+        $idProfile = Profile::select('id')->where('id_user', $id)->first();
+
+        $user = Profile::findorNew($idProfile->id);
+
+
+        if ($user->ttd) {
+
+            $ttdPath = storage_path()."/app/public".$user->ttd;
+            File::delete($ttdPath);
+
+        }
+        $path = $request->file('ttd')->store('public/ttd');
+        $path = preg_replace('/public/','', $path);
+
+
+        $user->ttd = $path;
+        $user->update();
 
         return response()->json([
             'data' => $user

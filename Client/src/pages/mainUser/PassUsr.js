@@ -43,9 +43,22 @@ const PassUsr = ({navigation}) => {
     const getYear = cekTgl.getFullYear()
 
     // my data
-    const [namaUser, setNamaUser] = useState('')
-    const [jabatanUser, setJabatanUser] = useState('')
-    const [emailUser, setEmailUser] = useState('')
+    const [profile, setProfile] = useState({
+        id:0,
+        nama:'-',
+        jabatan:'-',
+        email:'-',
+        foto:'-',
+        ttd:'-'
+    })
+
+    // modal
+    const [myModal, setMyModal] = useState({
+        contohTtd :false,
+        fotoNoPick : false,
+        success:false
+    });
+
     const base_url =ApiLink+"/api";
     const getMyProfile = async data =>{
 
@@ -57,9 +70,17 @@ const PassUsr = ({navigation}) => {
             }});        
             console.log(response.data, "<==== my profile")
             if (response.status == 200) {
-                setNamaUser(response.data.nama)
-                setJabatanUser(response.data.jabatan)
-                setEmailUser(response.data.email)
+
+                setProfile({
+                    id: response.data.id,
+                    nama:response.data.nama,
+                    jabatan: response.data.jabatan,
+                    email:response.data.email
+                })
+
+                setImgFoto(response.data.URL)
+                // setImgTtd(response.data.ttd)
+                console.log(response.data.ttd,'<--- ttd')
             }
 
         } catch (error) {
@@ -67,21 +88,70 @@ const PassUsr = ({navigation}) => {
         }
     }
 
-    const handlerUpdateFoto = async data=>{
+    
+    const handlerUpdateFoto = async ()=>{
+
+        try{
+
+            if (!fileFoto) {
+                setMyModal({fotoNoPick:true})
+                return
+            }
+            var formData = new FormData()
+            
+            formData.append('foto',{ uri: fileFoto.uri, name: fileFoto.name, type: fileFoto.type })
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.post(base_url+"/user/foto/"+profile.id, formData,{headers:{
+                Authorization: `Bearer ${myToken}`,
+                Accept: 'application/json',
+                'Content-Type': `multipart/form-data`
+            }})            
+
         
-    }
+            if (response.status===200) {
+                setMyModal({success:true})
+            }
+
+        } catch(error){
+            console.log(error, "<= eroro")
+        }
+    }     
+
+    const handlerUpdateTtd = async ()=>{
+
+        try{
+
+            if (!fileTtd) {
+                setMyModal({fotoNoPick:true})
+                return
+            }
+            var formData = new FormData()
+            
+            formData.append('ttd',{ uri: fileTtd.uri, name: fileTtd.name, type: fileTtd.type })
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.post(base_url+"/user/ttd/"+profile.id, formData,{headers:{
+                Authorization: `Bearer ${myToken}`,
+                Accept: 'application/json',
+                'Content-Type': `multipart/form-data`
+            }})            
+
+        
+            if (response.status===200) {
+                setMyModal({success:true})
+            }
+
+        } catch(error){
+            console.log(error, "<= eroro")
+        }
+    }         
     // showcontent
     const [showContent, setShowContent] = useState(1)
-    console.log(showContent, "<====== showwwww")
     const toggleContent = (e)=>{
         setShowContent(e);
-    }
-
-    // modal
-    const [isModalVisible, setModalVisible] = useState(false);
-
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
     }
 
     // select image foto profile
@@ -186,7 +256,7 @@ const PassUsr = ({navigation}) => {
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}}>
+                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateFoto}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Foto</Text>
                                 </TouchableOpacity>
 
@@ -211,14 +281,14 @@ const PassUsr = ({navigation}) => {
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"600", textTransform:"capitalize", marginBottom:10}}>1. File Tanda tangan dalam bentuk image (png, jpg, jpeg)</Text>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"600", textTransform:"capitalize", marginBottom:5}}>2. background tanda tangan putih atau tanpa background</Text>
 
-                                    <TouchableOpacity style={{width:140, height:23, backgroundColor:"#0060cb", marginTop:5, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={toggleModal}>
+                                    <TouchableOpacity style={{width:140, height:23, backgroundColor:"#0060cb", marginTop:5, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={() => setMyModal({contohTtd:true})}>
                                         <Text style={{ color: "#fff", fontSize: 12, fontFamily: "Spartan", fontWeight: "900", marginTop:0}}>Contoh Tanda Tangan</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}}>
+                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateTtd}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Tanda Tangan</Text>
                                 </TouchableOpacity>
 
@@ -236,7 +306,7 @@ const PassUsr = ({navigation}) => {
                                 
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900"}}>Nama</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{namaUser}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{profile.nama}</Text>
                                 </View>
 
                             </View>
@@ -248,7 +318,7 @@ const PassUsr = ({navigation}) => {
 
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900"}}>Jabatan</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{jabatanUser}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{profile.jabatan}</Text>
                                 </View>
                             </View>
 
@@ -259,7 +329,7 @@ const PassUsr = ({navigation}) => {
 
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900"}}>Email</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{emailUser}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{profile.email}</Text>
                                 </View>
                             </View>
 
@@ -349,12 +419,47 @@ const PassUsr = ({navigation}) => {
                 </View>
                 
             </View>
+            {/* modal succcess */}
+            <ReactNativeModal isVisible={myModal.success} onBackdropPress={() => setMyModal({fotoNoPick:false})} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyModal({success:false})} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Data Berhasil Diupdate.</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setMyModal({success:false})} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>
+
+            {/* modal Jika Foto Belum dipilih */}
+            <ReactNativeModal isVisible={myModal.fotoNoPick} onBackdropPress={() => setMyModal({fotoNoPick:false})} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyModal({fotoNoPick:false})} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Maaf ! Foto Terbaru Belum Dipilih.</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setMyModal({fotoNoPick:false})} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>        
 
             {/* modal exTTD */}
-            <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+            <ReactNativeModal isVisible={myModal.contohTtd} onBackdropPress={() => setMyModal({contohTtd:false})}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "30%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={toggleModal}>
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyModal({contohTtd:false})}>
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
 

@@ -95,7 +95,7 @@ const MainApp = ({route, navigation}) => {
     }    
 
     const [cekApprove, setCekApprove] = useState()
-    console.log(cekApprove, "cel approve")
+
     const [loadApprove, setLoadApprove] = useState(false)
 
     const getMyPengajuan = async data =>{
@@ -221,7 +221,6 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/absen/`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data, "<====data history")
     
             if (response.status == 200) {
                 setHistoryNotif(response.data)

@@ -23,6 +23,8 @@ Route::controller(UserController::class)->prefix('user')->group(function () {
     Route::get('/profile', 'profile');
     Route::get('/history', 'history');
     Route::post('/update/{id}', 'update');
+    Route::post('/ttd/{id}','updateTtd');
+    Route::post('/foto/{id}','updateFoto');
 });
 
 //ABSENSI
