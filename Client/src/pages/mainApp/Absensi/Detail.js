@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../../assets/images'
+import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont,  LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
 import { useIsFocused } from "@react-navigation/native";
 import axios from 'axios'
@@ -70,6 +70,7 @@ const Detail = ({route, navigation}) => {
     
     }, [navigation, isFocused])
     
+    const [imgFoto, setImgFoto] = useState()
     const getProfile = async data =>{
 
         try {
@@ -84,6 +85,7 @@ const Detail = ({route, navigation}) => {
                     nama:res.data.nama,
                     jabatan:res.data.jabatan
                 })
+                setImgFoto(res.data.URL)
             }) 
     
 
@@ -91,6 +93,7 @@ const Detail = ({route, navigation}) => {
             console.log(error, "error get kegiatan")   
         }
     }
+    const imgFileFoto = {uri: imgFoto}
     
     const getAbsensi = async data =>{
 
@@ -229,7 +232,7 @@ const Detail = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>

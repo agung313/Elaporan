@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput  } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, ExFoto, ExTtd, JabatanUser, LgBappeda, PasswordIcon } from '../../assets/images';
+import { AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, AddImg, ExTtd, JabatanUser, LgBappeda, PasswordIcon } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
@@ -62,6 +62,8 @@ const PassUsr = ({navigation}) => {
         success:false
     });
 
+    const [modalLoad, setModalLoad] = useState(false)
+
     const base_url =ApiLink+"/api";
     const getMyProfile = async data =>{
 
@@ -83,7 +85,7 @@ const PassUsr = ({navigation}) => {
 
                 setImgFoto(response.data.URL)
                 setImgTtd(response.data.ttd)
-                console.log(response.data.ttd,'<--- ttd')
+                // console.log(response.data,'<--- ttd')
             }
 
         } catch (error) {
@@ -93,7 +95,7 @@ const PassUsr = ({navigation}) => {
 
     
     const handlerUpdateFoto = async ()=>{
-
+        setModalLoad(true)
         try{
 
             if (!fileFoto) {
@@ -114,6 +116,7 @@ const PassUsr = ({navigation}) => {
 
         
             if (response.status===200) {
+                setModalLoad(false)
                 setMyModal({success:true})
             }
 
@@ -168,7 +171,7 @@ const PassUsr = ({navigation}) => {
             await axios.post(target_url,params,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{
-                setModalLoad(false)
+                // setModalLoad(false)
                 setModalSuccess(true)
             })
 
@@ -195,6 +198,7 @@ const PassUsr = ({navigation}) => {
 
             setFileFoto(doc)
             setImgFoto(doc.uri)
+            console.log(doc.uri, "<==== data seelct")
 
         }catch(err){
             if(DocumentPicker.isCancel(e)){
@@ -273,7 +277,7 @@ const PassUsr = ({navigation}) => {
 
                             <View style={{width:"100%", alignItems:"center"}}>
                                 <View style={{marginTop:10, alignItems:"center"}}>
-                                    {imgFoto ? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={ExFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
+                                    {imgFoto ? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                                     
                                     <TouchableOpacity style={{alignItems:"center", justifyContent:"center", height:30, width:110, marginTop:5, flexDirection:"row"}} onPress={selectImageFoto}>
                                         <Image source={AddImgUser} style={{width:25, height:25, marginTop:-3}}/>
@@ -297,7 +301,7 @@ const PassUsr = ({navigation}) => {
                             <View style={{width:"100%", flexDirection:"row"}}>
                                 <View style={{marginTop:10, alignItems:"center", marginRight:10}}>
 
-                                    {imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>:<Image source={ExFoto} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>}
+                                    {imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>}
 
                                     <TouchableOpacity style={{alignItems:"center", justifyContent:"center", height:30, width:110, marginTop:5, flexDirection:"row"}} onPress={selectImageTtd}>
                                         <Image source={AddImgUser} style={{width:25, height:25, marginTop:-3}}/>
@@ -500,9 +504,9 @@ const PassUsr = ({navigation}) => {
                 </View>
             </ReactNativeModal>
 
-            {/* <ReactNativeModal isVisible={true} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <Circle size={100} color="white"/>
-            </ReactNativeModal> */}
+            </ReactNativeModal>
 
         </ScrollView>
     )

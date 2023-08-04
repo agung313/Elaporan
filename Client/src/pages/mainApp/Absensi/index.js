@@ -66,7 +66,7 @@ const Absensi = ({route, navigation}) => {
     }, [navigation])
 
 
-    
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -79,12 +79,15 @@ const Absensi = ({route, navigation}) => {
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+                setImgFoto(response.data.URL)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
     }
+    const imgFileFoto = {uri: imgFoto}
+
     const handlerHadir = async data =>{
 
         
@@ -220,7 +223,7 @@ const Absensi = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            {imgFoto?<Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>

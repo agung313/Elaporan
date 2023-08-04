@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../../assets/images'
+import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -115,6 +115,8 @@ const Agenda = ({route, navigation}) => {
             console.log(error, "error get absensi")   
         }
     }    
+
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -127,6 +129,7 @@ const Agenda = ({route, navigation}) => {
                     nama:res.data.nama,
                     jabatan:res.data.jabatan
                 })
+                setImgFoto(res.data.URL)
             })        
     
 
@@ -134,6 +137,7 @@ const Agenda = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }
     }
+    const imgFileFoto = {uri: imgFoto}
 
     const modalDelete =  (data) =>{
 
@@ -224,7 +228,7 @@ const Agenda = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                                <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                                {imgFoto?<Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>

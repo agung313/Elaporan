@@ -64,6 +64,7 @@ const Pendahuluan = ({navigation}) => {
             }})
 
             if (response.status === 200) {
+                console.log(response.data, "daaaaaaaaa")
 
                 setProfile({
                     latarBelakang:response.data.latar_belakang,

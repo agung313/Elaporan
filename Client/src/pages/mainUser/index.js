@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions, ImageBackground } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { BackIcon, BgApp, CloseIcont, EmailIcon, ExFoto, LaporProfile, LgBappeda, NextIcont, PassProfile, Pendahuluan } from '../../assets/images';
+import { BackIcon, BgApp, CloseIcont, EmailIcon, AddImg, LaporProfile, LgBappeda, NextIcont, PassProfile, Pendahuluan } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -43,7 +43,7 @@ const MainUser = ({navigation}) => {
     // profile api
     const [namaUser, setNamaUser] = useState()
     const [jabatanUser, setJabatanUser] = useState()
-
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -56,12 +56,14 @@ const MainUser = ({navigation}) => {
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+                setImgFoto(response.data.URL)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
     }    
+    const imgFileFoto = {uri: imgFoto}
 
     const HeandleLogout = async () => {
         try {
@@ -120,7 +122,7 @@ const MainUser = ({navigation}) => {
                 </View>
                 <View style={{alignItems:"center", width:WindowWidth, height:200, }}>
                     <View style={{alignItems:"center", marginTop:20}}>
-                        <Image source={ExFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>
+                        {imgFoto? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                         <View style={{marginLeft:15, alignItems:"center", marginTop:15}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{namaUser}</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>

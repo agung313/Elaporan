@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
+import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';
@@ -74,7 +74,7 @@ const MainApp = ({route, navigation}) => {
         
     },[navigation, isFocused])
     
-
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -87,12 +87,14 @@ const MainApp = ({route, navigation}) => {
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+                setImgFoto(response.data.URL)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
-    }    
+    }   
+    const imgFileFoto = {uri: imgFoto} 
 
     const [cekApprove, setCekApprove] = useState()
 
@@ -562,7 +564,7 @@ const MainApp = ({route, navigation}) => {
                     </View>
                     {/* Profile */}
                     <View style={{marginTop:10, marginLeft:15, alignItems:"center"}}>
-                        <Image source={ExFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
+                        {imgFoto ? <Image source={imgFileFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>}
                         <View style={{marginLeft:15, alignItems:"center"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{ namaUser }</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
