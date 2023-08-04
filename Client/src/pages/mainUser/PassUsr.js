@@ -48,8 +48,7 @@ const PassUsr = ({navigation}) => {
         nama:'-',
         jabatan:'-',
         email:'-',
-        foto:'-',
-        ttd:'-'
+
     })
 
     // modal
@@ -79,7 +78,7 @@ const PassUsr = ({navigation}) => {
                 })
 
                 setImgFoto(response.data.URL)
-                // setImgTtd(response.data.ttd)
+                setImgTtd(response.data.ttd)
                 console.log(response.data.ttd,'<--- ttd')
             }
 

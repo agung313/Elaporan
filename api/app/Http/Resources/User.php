@@ -26,7 +26,7 @@ class User extends JsonResource
             'latar_belakang' => $this->latar_belakang,
             'tujuan' => $this->tujuan,
             'ruang_lingkup' => $this->ruang_lingkup,
-            'ttd' => $this->ttd
+            'ttd' => URL('storage/'. $this->ttd)
         ];
     }
 }
