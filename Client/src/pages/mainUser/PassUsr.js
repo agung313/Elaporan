@@ -7,6 +7,7 @@ import ApiLink from '../../assets/ApiHelper/ApiLink';
 import { useIsFocused } from '@react-navigation/native';
 import ReactNativeModal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker'
+import { Circle } from 'react-native-animated-spinkit';
 
 const PassUsr = ({navigation}) => {
     const isFocused = useIsFocused();
@@ -18,9 +19,6 @@ const PassUsr = ({navigation}) => {
         
     },[navigation, isFocused])
 
-    const [password, setPassword] = useState()
-    const [newPassword, setNewPassword] = useState()
-    const [confirmPassword, setConfirmPassword] = useState()
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -49,6 +47,12 @@ const PassUsr = ({navigation}) => {
         jabatan:'-',
         email:'-',
 
+    })
+
+    const [formPassword, setFormPassword] = useState({
+        old:null,
+        new:null,
+        confirm:null
     })
 
     // modal
@@ -147,6 +151,31 @@ const PassUsr = ({navigation}) => {
             console.log(error, "<= eroro")
         }
     }         
+    const handlerUpdatePassword = async data =>{
+
+        // setModalLoad(true)
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const params ={
+                judul_kegiatan: detail,
+                uraian_kegiatan: uraian,
+                _method:'PUT'
+            }
+
+            const target_url = base_url+`/laporan/${idKegiatan}`
+
+            await axios.post(target_url,params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                setModalLoad(false)
+                setModalSuccess(true)
+            })
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
+    }        
     // showcontent
     const [showContent, setShowContent] = useState(1)
     const toggleContent = (e)=>{
@@ -354,8 +383,8 @@ const PassUsr = ({navigation}) => {
                                     <TextInput
                                         placeholder='*******'
                                         placeholderTextColor={"#000"}
-                                        value={password}
-                                        onChangeText={(text) => setPassword(text)}
+                                        value={formPassword.old}
+                                        onChangeText={(text) => setFormPassword({old:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -374,8 +403,8 @@ const PassUsr = ({navigation}) => {
                                     <TextInput
                                         placeholder='*******'
                                         placeholderTextColor={"#000"}
-                                        value={newPassword}
-                                        onChangeText={(text) => setNewPassword(text)}
+                                        value={formPassword.new}
+                                        onChangeText={(text) => setFormPassword({new:text}) }
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -394,8 +423,8 @@ const PassUsr = ({navigation}) => {
                                     <TextInput
                                         placeholder='*******'
                                         placeholderTextColor={"#000"}
-                                        value={confirmPassword}
-                                        onChangeText={(text) => setConfirmPassword(text)}
+                                        value={formPassword.confirm}
+                                        onChangeText={(text) => setFormPassword({confirm:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -407,7 +436,7 @@ const PassUsr = ({navigation}) => {
                             
 
                             <View style={{alignItems:"center"}}>
-                                <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}}>
+                                <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdatePassword}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
                                 </TouchableOpacity>
                             </View>
@@ -470,6 +499,10 @@ const PassUsr = ({navigation}) => {
                     </View>
                 </View>
             </ReactNativeModal>
+
+            {/* <ReactNativeModal isVisible={true} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
+            </ReactNativeModal> */}
 
         </ScrollView>
     )
