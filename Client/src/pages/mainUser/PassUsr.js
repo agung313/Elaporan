@@ -59,7 +59,8 @@ const PassUsr = ({navigation}) => {
     const [myModal, setMyModal] = useState({
         contohTtd :false,
         fotoNoPick : false,
-        success:false
+        success:false,
+        loading:false
     });
 
     const [modalLoad, setModalLoad] = useState(false)
@@ -86,6 +87,7 @@ const PassUsr = ({navigation}) => {
                 setImgFoto(response.data.URL)
                 setImgTtd(response.data.ttd)
                 // console.log(response.data,'<--- ttd')
+
             }
 
         } catch (error) {
@@ -156,27 +158,38 @@ const PassUsr = ({navigation}) => {
     }         
     const handlerUpdatePassword = async data =>{
 
-        // setModalLoad(true)
+        // setMyModal({loading:true})
         try {
 
             const myToken = await AsyncStorage.getItem('AccessToken');    
             const params ={
-                judul_kegiatan: detail,
-                uraian_kegiatan: uraian,
-                _method:'PUT'
+                password: formPassword.old,
+                newPassword: formPassword.new,
+                confirmnewPassword: formPassword.confirm
             }
 
-            const target_url = base_url+`/laporan/${idKegiatan}`
+            const target_url = base_url+`/user/changePassword`
 
-            await axios.post(target_url,params,{headers:{
+            const response = await axios.post(target_url,params,{headers:{
                 Authorization: `Bearer ${myToken}`
-            }}).then((res)=>{
-                // setModalLoad(false)
-                setModalSuccess(true)
-            })
+            }})
+
+
+            if (!response.data.error) {
+
+                setMyModal({
+                    success:true,
+                    loading:false
+                })         
+
+            }else{
+                console.log(response.data)
+            }
+
 
         } catch (error) {
-            console.log(error,"<--- error handler hadir")            
+
+            console.log(error.response.data,"<--- error handler hadir")            
         }
     }        
     // showcontent
@@ -388,7 +401,7 @@ const PassUsr = ({navigation}) => {
                                         placeholder='*******'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.old}
-                                        onChangeText={(text) => setFormPassword({old:text})}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['old']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -408,7 +421,7 @@ const PassUsr = ({navigation}) => {
                                         placeholder='*******'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.new}
-                                        onChangeText={(text) => setFormPassword({new:text}) }
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['new']:text}) }
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -428,7 +441,7 @@ const PassUsr = ({navigation}) => {
                                         placeholder='*******'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.confirm}
-                                        onChangeText={(text) => setFormPassword({confirm:text})}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['confirm']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -504,7 +517,7 @@ const PassUsr = ({navigation}) => {
                 </View>
             </ReactNativeModal>
 
-            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+            <ReactNativeModal isVisible={myModal.loading} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <Circle size={100} color="white"/>
             </ReactNativeModal>
 

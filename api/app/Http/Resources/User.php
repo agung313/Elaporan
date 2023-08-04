@@ -22,11 +22,11 @@ class User extends JsonResource
             'nama' => $this->name,
             'email' => $this->email,
             'jabatan' => $this->jabatan,
-            'URL' => URL('storage'. $this->foto),
+            'URL' => $this->foto ? URL('storage/'. $this->foto) : null,
             'latar_belakang' => $this->latar_belakang,
             'tujuan' => $this->tujuan,
             'ruang_lingkup' => $this->ruang_lingkup,
-            'ttd' => URL('storage'. $this->ttd)
+            'ttd' => $this->ttd ? URL('storage/'.$this->ttd ):null
         ];
     }
 }
