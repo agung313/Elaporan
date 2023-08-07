@@ -18,7 +18,7 @@ class AuthController extends Controller
     }
 
     function tes() {
-        return json_encode(['nama'=>'ondri']);
+        return json_encode(['nama'=>Hash::make('123456')]);
     }
     public function login(Request $request)
     {

@@ -44,6 +44,7 @@ const MainUser = ({navigation}) => {
     const [namaUser, setNamaUser] = useState()
     const [jabatanUser, setJabatanUser] = useState()
     const [imgFoto, setImgFoto] = useState()
+    
     const getMyProfile = async data =>{
 
         try {
@@ -186,7 +187,7 @@ const MainUser = ({navigation}) => {
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silakan Pilih Bulan Laporan Anda</Text>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Bulan Laporan Anda</Text>
                     </View>
                     <View style={{alignItems:"center", width:"100%"}}>
                         <Picker
@@ -196,26 +197,19 @@ const MainUser = ({navigation}) => {
                             }
                             style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
                             selectionColor={"#000"}
-                            // dropdownIconRippleColor={"transparent"}
-                            // dropdownIconColor={"transparent"}
+
                         >
-                            <Picker.Item label="-" value="0"/>
-                            <Picker.Item label="Januari" value="1"/>
-                            <Picker.Item label="Februari" value="2"/>
-                            <Picker.Item label="Maret" value="3"/>
-                            <Picker.Item label="April" value="4"/>
-                            <Picker.Item label="Mei" value="5"/>
-                            <Picker.Item label="Juni" value="6"/>
-                            <Picker.Item label="Juli" value="7"/>
-                            <Picker.Item label="Agustus" value="8"/>
-                            <Picker.Item label="September" value="9"/>
-                            <Picker.Item label="Oktober" value="10"/>
-                            <Picker.Item label="November" value="11"/>
-                            <Picker.Item label="Desember" value="12"/>
+                            {
+                                namaBulan.map((item, index)=>(
+                                    <Picker.Item label={item} value={index}/> 
+                                ))
+                            }
+
+
                         </Picker>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Laporan', {bulan:bulan})}>
+                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Laporan', {bulanIndex:bulan,bulanNama: namaBulan[bulan] })}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
                         </TouchableOpacity>
                     </View>

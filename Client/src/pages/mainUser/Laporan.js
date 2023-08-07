@@ -1,58 +1,17 @@
-import { StyleSheet, Text, View, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import { StyleSheet, Text,FlatList, View, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { BackIcon, LgBappeda } from '../../assets/images';
+import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { axios } from 'axios';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+
+
+
 
 const Laporan = ({route, navigation}) => {
-    const {bulan} = route.params
+    const {bulanIndex,bulanNama} = route.params
 
-    const [cekBulan, setCekBulan] = useState(bulan)
-    console.log(cekBulan, "<== cekBulan laporan")
-
-    const strBulan = () => {
-        if(cekBulan==1){
-            return("Januari")
-        }
-        else if(cekBulan==2){
-            return("Februari")
-        }
-        else if(cekBulan==3){
-            return("Maret")
-        }
-        else if(cekBulan==4){
-            return("April")
-        }
-        else if(cekBulan==5){
-            return("Mei")
-        }
-        else if(cekBulan==6){
-            return("Juni")
-        }
-        else if(cekBulan==7){
-            return("Juli")
-        }
-        else if(cekBulan==8){
-            return("Agustus")
-        }
-        else if(cekBulan==9){
-            return("September")
-        }
-        else if(cekBulan==10){
-            return("Oktober")
-        }
-        else if(cekBulan==11){
-            return("November")
-        }
-        else if(cekBulan==12){
-            return("Desember")
-        }
-        else {
-            return null
-        }
-
-    }
-
-    const cekBln = strBulan()
-    console.log(cekBln, "<===== nama bulan")
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -74,6 +33,60 @@ const Laporan = ({route, navigation}) => {
 
     const getYear = cekTgl.getFullYear()
 
+    const isFocused = useIsFocused();
+    const base_url =ApiLink+"/api"
+
+    useEffect(() => {
+      
+        if (isFocused) {
+            // getMyLaporan()
+        }
+    
+    }, [navigation, isFocused])
+
+    // const getMyLaporan = async data =>{
+
+    //     try {
+    //         const myToken = await AsyncStorage.getItem('AccessToken');    
+
+    //         const response = await axios.get(`${ApiLink}/api/user/profile`,{headers:{
+    //             Authorization: `Bearer ${myToken}`
+    //         }});        
+    
+    //         if (response.status == 200) {
+    //             setNamaUser(response.data.nama)
+    //             setJabatanUser(response.data.jabatan)
+    //             setImgFoto(response.data.URL)
+    //         }
+
+    //     } catch (error) {
+    //         console.log(error, "error get my profile")   
+    //     }
+    // }        
+    const data = [
+        { id: '1', text: 'Item 1' },
+        { id: '2', text: 'Item 2' },
+        { id: '3', text: 'Item 3' },
+        // ...more items
+      ];
+
+    const rowKegiatan = (item, index)=>{
+
+        return(
+                <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
+                    <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                        <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
+                    </View>
+                    <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                        <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
+                    </View>
+                    <View style={{width:"50%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                        <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Kehadiran</Text>
+                    </View>
+                </View>
+        )
+    }
+    const keyExtractor = (item) => item.id
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -111,11 +124,11 @@ const Laporan = ({route, navigation}) => {
 
                     <View style={{width:"100%", alignItems:"center"}}>
                         <View style={{width:"100%"}}>
-                            <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Kegiatan Anda Pada Bulan {cekBln}</Text>
+                            <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Kegiatan Anda Pada Bulan {bulanNama}</Text>
                         </View>
                     </View>
 
-                    <View style={{width:"100%",marginBottom:15}}>
+                    <View style={{width:"100%",marginBottom:15, height: WindowHeight*0.1}}>
                         <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
                             <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>No</Text>
@@ -127,17 +140,13 @@ const Laporan = ({route, navigation}) => {
                                 <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
                             </View>
                         </View>
-                        <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
-                            <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
-                            </View>
-                            <View style={{width:"50%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Kehadiran</Text>
-                            </View>
-                        </View>
+                        <View style={{height:WindowHeight*0.3}}>
+                    <FlatList
+                        data={data}
+                        renderItem={rowKegiatan}
+                        keyExtractor={keyExtractor}
+                    />
+                    </View>
                     </View>
                     
                 </View>

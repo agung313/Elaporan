@@ -11,11 +11,24 @@ use App\Http\Resources\Lapor as LaporanResource;
 
 class LaporanController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }    
     public function index(Request $request)
     {
+
         if($request->detail){
 
-            $laporan = Laporan::where('id', $request->id_laporan)->get();        
+            $laporan = Laporan::where('id', $request->id_laporan)->get();   
+
+        }elseif ($request->bulanan) {
+
+            return ['data' => Auth::user()];
+            exit;
+
+            $laporan = Laporan::join('absensis','absensis.id','id_absensi')->where('id_user', $id_user)->whereMonth('tanggal', $request->bulan)->whereYear('tanggal',$request->tahun)->get();        
+
         }else{
             $laporan = Laporan::where('id_absensi', $request->id_absensi)->get();        
         }
