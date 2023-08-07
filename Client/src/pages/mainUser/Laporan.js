@@ -78,7 +78,7 @@ const Laporan = ({route, navigation}) => {
         <ScrollView>
             <View style={styles.header}>
                 <View style={{ width: "60%" }}>
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={()=> navigation.navigate('MainUser')} style={{ flexDirection: 'row' }}>
                         <View style={{ justifyContent:"center" }}>
                             <Image source={BackIcon} style={{ width: 20, height: 20 }}/>
                         </View>

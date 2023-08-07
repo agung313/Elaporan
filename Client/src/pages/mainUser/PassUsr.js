@@ -154,30 +154,69 @@ const PassUsr = ({navigation}) => {
             console.log(error, "<= eroro")
         }
     }         
+
+    const [modalPass, setModalPass] = useState(false)
+    const [modalChangePass, setModalChangePass] = useState(false)
+
+    console.log(formPassword.old, "old password")
+    console.log(formPassword.new, "new password")
+    console.log(formPassword.confirm, "confirm password")
+
+    const [errPass, setErrPass] = useState(false)
+
+    const [modalSuccess, setModalSuccess] = useState(false)
+
     const handlerUpdatePassword = async data =>{
+        setModalChangePass(false)
+        setModalLoad(true)
 
-        // setModalLoad(true)
-        try {
-
-            const myToken = await AsyncStorage.getItem('AccessToken');    
-            const params ={
-                judul_kegiatan: detail,
-                uraian_kegiatan: uraian,
-                _method:'PUT'
-            }
-
-            const target_url = base_url+`/laporan/${idKegiatan}`
-
-            await axios.post(target_url,params,{headers:{
-                Authorization: `Bearer ${myToken}`
-            }}).then((res)=>{
-                // setModalLoad(false)
-                setModalSuccess(true)
-            })
-
-        } catch (error) {
-            console.log(error,"<--- error handler hadir")            
+        if(formPassword.old == null){
+            setModalLoad(false)
+            setModalPass(true)
         }
+        else{
+            try {
+
+                const myToken = await AsyncStorage.getItem('AccessToken');    
+                const params ={
+                    password: formPassword.old,
+                    newPassword: formPassword.new,
+                    confirm_newPassword: formPassword.confirm
+                }
+    
+                const target_url = base_url+`/user/changePassword`
+    
+                await axios.post(target_url,params,{headers:{
+                    Authorization: `Bearer ${myToken}`
+                }}).then((res)=>{
+                    setModalLoad(false)
+                    // setModalSuccess(true)
+                    
+                })
+
+                const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+                    headers: {
+                      Authorization: `Bearer ${dataToken}`,
+                    },
+                  }
+                );
+            
+                if (response.status === 200) {
+                  // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+                  await AsyncStorage.removeItem('AccessToken');
+                  navigation.replace('MainSplash');
+                } else {
+                  // Tangani respons yang tidak diharapkan jika diperlukan
+                  console.log('Logout tidak berhasil.');
+                }
+    
+            } catch (error) {
+                setModalLoad(false)
+                setErrPass(true)
+                console.log(error,"<--- error handler hadir")            
+            }
+        }
+        
     }        
     // showcontent
     const [showContent, setShowContent] = useState(1)
@@ -385,10 +424,10 @@ const PassUsr = ({navigation}) => {
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>Password Lama</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
                                     <TextInput
-                                        placeholder='*******'
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.old}
-                                        onChangeText={(text) => setFormPassword({old:text})}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['old']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -405,10 +444,10 @@ const PassUsr = ({navigation}) => {
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>New Password</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
                                     <TextInput
-                                        placeholder='*******'
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.new}
-                                        onChangeText={(text) => setFormPassword({new:text}) }
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['new']:text}) }
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -425,10 +464,10 @@ const PassUsr = ({navigation}) => {
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>Confirm New Password</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
                                     <TextInput
-                                        placeholder='*******'
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.confirm}
-                                        onChangeText={(text) => setFormPassword({confirm:text})}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['confirm']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
                                         secureTextEntry
@@ -436,11 +475,18 @@ const PassUsr = ({navigation}) => {
                                     />
                                 </View>
                             </View>
+
+                            <View style={errPass==false? {display:"none"}:{width:"100%", alignItems:"center", marginBottom:20}}>
+                                <View style={{width:280, alignItems:"center",}}>
+                                    <Text style={{color:"red", fontSize:12, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>Password lama anda salah atau</Text>
+                                    <Text style={{color:"red", fontSize:12, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>new password dan confirm password tidak sama</Text>
+                                </View>
+                            </View>
     
                             
 
                             <View style={{alignItems:"center"}}>
-                                <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdatePassword}>
+                                <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={() => setModalChangePass(true)}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
                                 </TouchableOpacity>
                             </View>
@@ -451,6 +497,7 @@ const PassUsr = ({navigation}) => {
                 </View>
                 
             </View>
+
             {/* modal succcess */}
             <ReactNativeModal isVisible={myModal.success} onBackdropPress={() => setMyModal({fotoNoPick:false})} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
@@ -481,6 +528,66 @@ const PassUsr = ({navigation}) => {
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                         <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setMyModal({fotoNoPick:false})} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>      
+
+            {/* modal alert pass */}
+            <ReactNativeModal isVisible={modalChangePass} onBackdropPress={() => setModalChangePass(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalChangePass(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Apakah anda yakin merubah password ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalChangePass(false)}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerUpdatePassword}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>  
+
+            {/* modal Jika password Belum dipilih */}
+            <ReactNativeModal isVisible={modalPass} onBackdropPress={() => setModalPass(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalPass(false)} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Silakan lengkapi seluruh form yang ada</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setModalPass(false)} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>        
+
+            {/* modal Jika password succes*/}
+            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => setModalSuccess(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalSuccess(false)} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>selamat ! password anda berhasil diubah</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.navigate('PassUsr')} >
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
                         </TouchableOpacity>      
                     </View>

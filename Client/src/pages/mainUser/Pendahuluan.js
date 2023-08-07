@@ -151,7 +151,7 @@ const Pendahuluan = ({navigation}) => {
 
     const customBackNavigation = async data =>{
         await AsyncStorage.removeItem('tmpRuangLingkup');
-        navigation.goBack()        
+        navigation.navigate('MainUser')        
     }
 
     return (

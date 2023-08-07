@@ -226,7 +226,7 @@ const MainApp = ({route, navigation}) => {
     
             if (response.status == 200) {
                 setHistoryNotif(response.data)
-                setHistory(response.data.slice(0,4));
+                setHistory(response.data.slice(0,3));
                 setLoadHistory(false)
             }
 
