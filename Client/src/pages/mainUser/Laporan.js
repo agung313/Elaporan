@@ -92,22 +92,22 @@ const Laporan = ({route, navigation}) => {
 
                     setAdaDokumen(false)
                     getMyKegiatan()
+               
+                    var checkKendala = await AsyncStorage.getItem('tmpKendala')
+                    // if (!checkKendala && arrKendala.length == 0) {
+                    if (!checkKendala && checkKendala !== null) {
+                        await AsyncStorage.setItem('tmpKendala','')
+    
+                    // }else if (!checkKendala && arrKendala.length > 0) {
+    
+                    //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
+    
+                    } else{
+                        setArrKendala(checkKendala.split("(%ry%)"))
+                        // setArrRuangLingkup(checkKendala.split("%ry%"))
+                    }                    
                 }
 
-
-                var checkKendala = await AsyncStorage.getItem('tmpKendala')
-                // if (!checkKendala && arrKendala.length == 0) {
-                if (!checkKendala && checkKendala !== null) {
-                    await AsyncStorage.setItem('tmpKendala','')
-
-                // }else if (!checkKendala && arrKendala.length > 0) {
-
-                //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
-
-                } else{
-                    setArrKendala(checkKendala.split("(%ry%)"))
-                    // setArrRuangLingkup(checkKendala.split("%ry%"))
-                }
             }        
 
 
@@ -295,6 +295,30 @@ const Laporan = ({route, navigation}) => {
         let saveNew = await AsyncStorage.setItem('tmpKendala', tmpData.join("(%ry%)"))
         setMyModal({...myModal,['hapus']:false})
     }
+    const handlerDraft = async data =>{
+
+        // setModalLoad(true)
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const params ={
+                kendala:JSON.stringify(arrKendala),
+                tahun:tahun,
+                bulan:bulan
+            }
+            // const response = await axios.post(base_url+"/document/store",params,{headers:{
+            //     Authorization: `Bearer ${myToken}`
+            // }}).then((res)=>{
+            //     setModalLoad(false)
+            //     setModalSuccess(true)
+            // })
+
+
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
+    }
     const customBack = async () =>{
         await AsyncStorage.removeItem('tmpKendala');
         navigation.navigate('MainUser');
@@ -333,6 +357,10 @@ const Laporan = ({route, navigation}) => {
                         <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}}>
                             <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
                         </TouchableOpacity>
+                        <View style={{width:10}}></View>
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={handlerDraft}>
+                            <Text style={{ fontWeight:'900', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Draft</Text>
+                        </TouchableOpacity>                        
                     </View>
 
                     <View style={{width:"100%", alignItems:"center"}}>

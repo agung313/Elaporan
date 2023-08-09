@@ -48,12 +48,12 @@ class DocumentController extends Controller
         $idUser = Auth::user()->id;
 
         $tanggal = $request->bulan;
-        $carbon = Carbon::createFromFormat('d-m-Y', $tanggal);
+        // $carbon = Carbon::createFromFormat('d-m-Y', $tanggal);
 
-        $tahun = $carbon->year;
+        // $tahun = $carbon->year;
         $saran = $request->saran;
         $kendala = $request->kendala;
-        $bulan = $carbon->translatedFormat('F');
+        // $bulan = $carbon->translatedFormat('F');
 
         //user
         $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
@@ -62,10 +62,10 @@ class DocumentController extends Controller
                     ->first();
 
         if ($query) {
-            $query->tahun = $tahun;
+            $query->tahun = $request->tahun;
             $query->saran = $saran;
             $query->kendala = $kendala;
-            $query->bulan = $bulan;
+            $query->bulan = $request->bulan;
         }
 
         if ($query->isComplete == false){
@@ -106,13 +106,13 @@ class DocumentController extends Controller
                     ->pluck('absensis.id')
                     ->toArray();
 
-        $missingIds = array_diff($absensiIds, $laporanIds);
+        // $missingIds = array_diff($absensiIds, $laporanIds);
 
-        if ($missingIds !== null){
-            return response()->json([
-                'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-            ],400);
-        }
+        // if ($missingIds !== null){
+        //     return response()->json([
+        //         'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+        //     ],400);
+        // }
 
         $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
 
