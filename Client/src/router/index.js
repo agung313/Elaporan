@@ -7,6 +7,7 @@ import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
 import EditLingkup from '../pages/mainUser/EditLingkup'
 import TambahKendala from '../pages/mainUser/TambahKendala'
+import EditKendala from '../pages/mainUser/EditKendala'
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
@@ -55,6 +56,8 @@ const AcountScreen  = () => {
             <Stack.Screen name='EditLingkup' component={EditLingkup} options={{headerShown:false}}/>            
             <Stack.Screen name='Laporan' component={Laporan} options={{headerShown:false}}/>
             <Stack.Screen name='TambahKendala' component={TambahKendala} options={{headerShown:false}}/>            
+            <Stack.Screen name='EditKendala' component={EditKendala} options={{headerShown:false}}/>            
+            
         </Stack.Navigator>
     )
 }

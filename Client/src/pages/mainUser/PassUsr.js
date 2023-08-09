@@ -172,7 +172,7 @@ const PassUsr = ({navigation}) => {
     const handlerUpdatePassword = async data =>{
         setModalChangePass(false)
         setModalLoad(true) 
-            
+
         if(formPassword.old == null){
             setModalLoad(false)
             setModalPass(true)

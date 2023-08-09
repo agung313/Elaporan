@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { BackIcon, LgBappeda } from '../../assets/images';
+import { BackIcon, LgBappeda, DotAksi } from '../../assets/images';
 import { FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -67,22 +67,20 @@ const Laporan = ({route, navigation}) => {
                     setAdaDokumen(false)
                     getMyKegiatan()
                 }
-                // if (response.data.ruang_lingkup) {
-                //     setArrRuangLingkup(JSON.parse(response.data.ruang_lingkup))
-                // }
+
 
                 var checkKendala = await AsyncStorage.getItem('tmpKendala')
-
-                if (!checkKendala && arrKendala.length == 0) {
-
+                // if (!checkKendala && arrKendala.length == 0) {
+                if (!checkKendala && checkKendala !== null) {
                     await AsyncStorage.setItem('tmpRuangLingkup','')
 
-                }else if (!checkKendala && arrKendala.length > 0) {
+                // }else if (!checkKendala && arrKendala.length > 0) {
 
-                    await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
+                //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
 
                 } else{
-                    setArrRuangLingkup(checkKendala.split("%ry%"))
+                    setArrKendala(checkKendala.split("(%ry%)"))
+                    // setArrRuangLingkup(checkKendala.split("%ry%"))
                 }
             }        
 
@@ -171,6 +169,30 @@ const Laporan = ({route, navigation}) => {
     
     }
 
+    const rowKendala = (item, index)=>{
+        let tmpStr = item.split("(^*^)")
+
+        return(
+            <View style={{flexDirection:"row", }}>
+                <View style={{width:"8%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{index+1}</Text>
+                </View>
+                <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{tmpStr[0]}</Text>
+                </View>
+                <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{tmpStr[1]}</Text>
+                </View>
+                <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <TouchableOpacity onPress={ () => navigation.navigate("EditKendala", {indexData:index}) } style={{ flexDirection: 'row' }}>
+                            <Image source={DotAksi} style={{width:20, height:20, marginLeft:7}} />
+                        </TouchableOpacity>
+                </View>                
+
+            </View>            
+        )
+    }
+
     const tabelKegiatan = data =>{
 
         return(
@@ -200,12 +222,15 @@ const Laporan = ({route, navigation}) => {
             </View>            
         )
     }
-
+    const customBack = async () =>{
+        await AsyncStorage.removeItem('tmpKendala');
+        navigation.navigate('MainUser');
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
                 <View style={{ width: "60%" }}>
-                    <TouchableOpacity onPress={()=> navigation.navigate('MainUser')} style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={customBack} style={{ flexDirection: 'row' }}>
                         <View style={{ justifyContent:"center" }}>
                             <Image source={BackIcon} style={{ width: 20, height: 20 }}/>
                         </View>
@@ -260,16 +285,26 @@ const Laporan = ({route, navigation}) => {
                         </View>
                     </View>
                     <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
-                            <View style={{width:"8%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>#</Text>
-                            </View>
-                            <View style={{width:"46%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kendala</Text>
-                            </View>
-                            <View style={{width:"46%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Solusi</Text>
-                            </View>
+                        <View style={{width:"8%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>#</Text>
                         </View>
+                        <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kendala</Text>
+                        </View>
+                        <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Solusi</Text>
+                        </View>
+                        <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                            <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Aksi</Text>
+                        </View>                        
+                    </View>
+                    {
+                        arrKendala.length > 0 &&
+                        arrKendala.map((item,index)=>(
+                            rowKendala(item, index)
+                        ))
+
+                    }
 
                 </View>
             </View>
