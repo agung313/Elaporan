@@ -14,7 +14,8 @@ const PassUsr = ({navigation}) => {
     useEffect(()=>{
 
         if (isFocused) {
-            getMyProfile()        
+            getMyProfile(),
+            getKegiatan()        
         }
         
     },[navigation, isFocused])
@@ -73,7 +74,7 @@ const PassUsr = ({navigation}) => {
             const response = await axios.get(`${base_url}/user/profile`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data, "<==== my profile")
+
             if (response.status == 200) {
 
                 setProfile({
@@ -158,9 +159,6 @@ const PassUsr = ({navigation}) => {
     const [modalPass, setModalPass] = useState(false)
     const [modalChangePass, setModalChangePass] = useState(false)
 
-    console.log(formPassword.old, "old password")
-    console.log(formPassword.new, "new password")
-    console.log(formPassword.confirm, "confirm password")
 
     const [errPass, setErrPass] = useState(false)
 
@@ -186,29 +184,35 @@ const PassUsr = ({navigation}) => {
     
                 const target_url = base_url+`/user/changePassword`
     
-                await axios.post(target_url,params,{headers:{
+                const res1 = await axios.post(target_url,params,{headers:{
                     Authorization: `Bearer ${myToken}`
-                }}).then((res)=>{
-                    setModalLoad(false)
-                    // setModalSuccess(true)
-                    
-                })
+                }})
 
-                const response = await axios.post(ApiLink+'/api/auth/logout',{},{
-                    headers: {
-                      Authorization: `Bearer ${dataToken}`,
-                    },
-                  }
-                );
-            
-                if (response.status === 200) {
-                  // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
-                  await AsyncStorage.removeItem('AccessToken');
-                  navigation.replace('MainSplash');
+                setModalLoad(false)
+                
+                if (!res1.data.error) {
+
+                    const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+                        headers: {
+                          Authorization: `Bearer ${myToken}`,
+                        },
+                      }
+                    );
+                
+                    if (response.status === 200) {
+                      // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+                      await AsyncStorage.removeItem('AccessToken');
+                      navigation.replace('MainSplash');
+                    } else {
+                      // Tangani respons yang tidak diharapkan jika diperlukan
+                      console.log('Logout tidak berhasil.');
+                    }
+
                 } else {
-                  // Tangani respons yang tidak diharapkan jika diperlukan
-                  console.log('Logout tidak berhasil.');
+                    setErrPass(true)   
                 }
+
+
     
             } catch (error) {
                 setModalLoad(false)
@@ -237,13 +241,13 @@ const PassUsr = ({navigation}) => {
 
             setFileFoto(doc)
             setImgFoto(doc.uri)
-            console.log(doc.uri, "<==== data seelct")
+
 
         }catch(err){
             if(DocumentPicker.isCancel(e)){
-                console.log(e, "<---- user canceled file")
+
             }else{
-                console.log(err)
+
             }
         }
     } 

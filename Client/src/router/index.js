@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
 import EditLingkup from '../pages/mainUser/EditLingkup'
+import TambahKendala from '../pages/mainUser/TambahKendala'
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
@@ -53,6 +54,7 @@ const AcountScreen  = () => {
             <Stack.Screen name='TambahLingkup' component={TambahLingkup} options={{headerShown:false}}/>
             <Stack.Screen name='EditLingkup' component={EditLingkup} options={{headerShown:false}}/>            
             <Stack.Screen name='Laporan' component={Laporan} options={{headerShown:false}}/>
+            <Stack.Screen name='TambahKendala' component={TambahKendala} options={{headerShown:false}}/>            
         </Stack.Navigator>
     )
 }

@@ -38,7 +38,8 @@ const Pendahuluan = ({navigation}) => {
     })
 
     const [myModal, setMyModal] = useState({
-        success:false
+        success:false,
+        
     })
 
     const [arrRuangLingkup, setArrRuangLingkup] = useState([])
@@ -46,7 +47,7 @@ const Pendahuluan = ({navigation}) => {
     useEffect(() => {
 
         if (isFocused) {
-            getMyProfile()            
+            getMyProfile()
         }
 
     }, [navigation, isFocused])
@@ -69,16 +70,24 @@ const Pendahuluan = ({navigation}) => {
                 setProfile({
                     latarBelakang:response.data.latar_belakang,
                     maksudTujuan:response.data.tujuan,
-                    ruangLingkup:JSON.parse(response.data.ruang_lingkup),
                     id:response.data.id
                 })       
+                if (response.data.ruang_lingkup) {
+                    setArrRuangLingkup(JSON.parse(response.data.ruang_lingkup))
+                }
 
                 var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
 
-                if (!checkTmpRL) {
-    
-                    await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))
-                }else{
+                if (!checkTmpRL && arrRuangLingkup.length == 0) {
+
+                    await AsyncStorage.setItem('tmpRuangLingkup','')
+
+                }else if (!checkTmpRL && arrRuangLingkup.length > 0) {
+
+
+                    await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
+
+                } else{
                     setArrRuangLingkup(checkTmpRL.split("%ry%"))
                 }
             }        
@@ -88,6 +97,7 @@ const Pendahuluan = ({navigation}) => {
             console.log(error, "error get my profile")   
         }
     }    
+
 
     const handlerChange = (key, value) => {
         setProfile(prevState => ({
@@ -124,10 +134,6 @@ const Pendahuluan = ({navigation}) => {
                 await AsyncStorage.removeItem('tmpRuangLingkup');
                 setMyModal({success:true})                
             }
-
-
-
-
 
         } catch (error) {
             console.log(error, "error update pendahuluan")   
@@ -229,13 +235,6 @@ const Pendahuluan = ({navigation}) => {
                             ))
                         }
 
-                        {
-                            arrRuangLingkup.length == 0 &&
-                            
-                                profile.ruangLingkup.map((item, index)=>(
-                                rowRuangLingkup(item, index)
-                                ))
-                        }
                         <View >
 
                         </View>

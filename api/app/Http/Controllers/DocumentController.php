@@ -34,7 +34,8 @@ class DocumentController extends Controller
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
                         ->whereMonth('documents.bulan', $request->bulan)
-                        ->where('documents.status',$request->status)
+                        ->whereYear('documents.bulan', $request->tahun)                        
+                        // ->where('documents.status',$request->status)
                         ->where('documents.id_user',Auth::user()->id)
                         ->get();
         }
@@ -59,6 +60,7 @@ class DocumentController extends Controller
                     ->join('Profiles','profiles.id_user', '=', 'users.id')
                     ->where('users.id', $idUser)
                     ->first();
+
         if ($query) {
             $query->tahun = $tahun;
             $query->saran = $saran;
