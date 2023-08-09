@@ -47,6 +47,7 @@ const MainUser = ({navigation}) => {
     const [namaUser, setNamaUser] = useState()
     const [jabatanUser, setJabatanUser] = useState()
     const [imgFoto, setImgFoto] = useState()
+    
     const getMyProfile = async data =>{
 
         try {
@@ -208,10 +209,11 @@ const MainUser = ({navigation}) => {
 
                         >
                             {
-                                namaBulan.map((item,index)=>(
+                                namaBulan.map((item, index)=>(
                                     <Picker.Item label={item} value={index}/> 
                                 ))
                             }
+
 
                         </Picker>
                     </View>

@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Http\Resources\Lapor as LaporanResource;
 use App\Http\Resources\LaporanBulanan as LaporanBulananResource;
-class LaporanController extends Controller
-{
+class LaporanController extends Controller{
 
     public function __construct()
     {
@@ -20,6 +19,7 @@ class LaporanController extends Controller
 
     public function index(Request $request)
     {
+
         if($request->detail){
 
             $laporan = Laporan::where('id', $request->id_laporan)->get(); 

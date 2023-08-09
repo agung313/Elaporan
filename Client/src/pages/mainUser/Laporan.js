@@ -73,11 +73,11 @@ const Laporan = ({route, navigation}) => {
 
                 var checkKendala = await AsyncStorage.getItem('tmpKendala')
 
-                if (!checkKendala && !arrRuangLingkup) {
+                if (!checkKendala && arrKendala.length == 0) {
 
                     await AsyncStorage.setItem('tmpRuangLingkup','')
 
-                }else if (!checkKendala && arrRuangLingkup) {
+                }else if (!checkKendala && arrKendala.length > 0) {
 
                     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
 
