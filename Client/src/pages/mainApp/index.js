@@ -49,7 +49,6 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
-    const [historyNotif, setHistoryNotif] = useState([]);
     // console.log(history)
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
@@ -226,7 +225,6 @@ const MainApp = ({route, navigation}) => {
             }});        
     
             if (response.status == 200) {
-                setHistoryNotif(response.data)
                 setHistory(response.data.slice(0,3));
                 setLoadHistory(false)
             }
@@ -555,7 +553,7 @@ const MainApp = ({route, navigation}) => {
 
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:20, marginHorizontal:100}}>E - Laporan</Text>
 
-                           <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif", {historyNotif:historyNotif})}>
+                           <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif")}>
                                 <Image source={NotifIcont} style={{width:28, height:28}}/>
                                 <View style={{marginLeft:-15, marginRight:-7}}>
                                     <Image source={WarningIcont} style={{width:20, height:20,}}/>

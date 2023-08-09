@@ -221,7 +221,7 @@ const MainUser = ({navigation}) => {
                         >
                             {
                                 namaBulan.map((item, index)=>(
-                                    <Picker.Item label={item} value={index}/> 
+                                    <Picker.Item label={item} value={index} key={index}/> 
                                 ))
                             }
 
@@ -230,7 +230,7 @@ const MainUser = ({navigation}) => {
                     </View>
                     <View style={{alignItems:"center", width:"50%"}}>
                         <Picker
-                            selectedValue={bulan}
+                            selectedValue={tahun}
                             onValueChange={(itemValue, itemIndex) => 
                                 setTahun(itemValue)
                             }
@@ -240,7 +240,7 @@ const MainUser = ({navigation}) => {
                         >
                             {
                                 namaTahun.map((item,index)=>(
-                                    <Picker.Item label={item} value={index}/> 
+                                    <Picker.Item label={item} value={index} key={index}/> 
                                 ))
                             }
 

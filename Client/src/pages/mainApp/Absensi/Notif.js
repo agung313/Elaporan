@@ -5,14 +5,16 @@ import { useIsFocused } from '@react-navigation/native';
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const Notif = ({route, navigation}) => {
-    const {historyNotif} = route.params
-    // useEffect(()=>{
+    useEffect(()=>{
 
-    //     if (isFocused) {
-    //         getMyHistory()          
-    //     }
+        if (isFocused) {
+            getMyHistory()          
+        }
+        
+    },[navigation, isFocused])
         
     // },[navigation, isFocused])
 
@@ -35,32 +37,38 @@ const Notif = ({route, navigation}) => {
     const getYear = cekTgl.getFullYear()
 
     // api
-    const [history, setHistory] = useState(historyNotif)
+    const [history, setHistory] = useState([])
+    console.log(history, "<=== cek data")
+
     const isFocused = useIsFocused();
     const base_url =ApiLink+"/api"
 
 
 
-    console.log(history, "<====== history notif ")
+    // console.log(history, "<====== history notif ")
 
-    // const getMyHistory = async data =>{
+    const [loadHistory, setLoadHistory] = useState(false)
 
-    //     try {
-    //         const myToken = await AsyncStorage.getItem('AccessToken');    
+    const getMyHistory = async data =>{
+        // setLoadHistory(true)
+        setLoadHistory(true)
 
-    //         const response = await axios.get(`${base_url}/absen/`,{headers:{
-    //             Authorization: `Bearer ${myToken}`
-    //         }});        
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${base_url}/absen/`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
     
-    //         if (response.status == 200) {
-    //             setHistory(response.data)
+            if (response.status == 200) {
+                setHistory(response.data)
+                setLoadHistory(false)
+            }
 
-    //         }
-
-    //     } catch (error) {
-    //         console.log(error, "error get my history")   
-    //     }
-    // }
+        } catch (error) {
+            console.log(error, "error get my history")   
+        }
+    }
 
     const rowHistory = (item, index) =>{
 
@@ -190,12 +198,37 @@ const Notif = ({route, navigation}) => {
 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Absensi Anda Yang Tidak Lengkap </Text>
 
-                    {
-                        history.length > 0 &&
-                        history.map((item,index)=>(
-                            rowHistory(item,index)
-                        ))
-                    }
+                    <View>
+                        {loadHistory?
+                            <View>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                            </View>
+                        :
+                            <View>
+                                {
+                                    history.length > 0 &&
+                                    history.map((item,index)=>(
+                                        rowHistory(item,index)
+                                    ))
+                                }
+                            </View>
+                        }
+                    </View>
+                    
                 </View>
             </View>
         </ScrollView>

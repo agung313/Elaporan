@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont,  LgBappeda } from '../../../assets/images'
+import { AddImg, BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont,  LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
 import { useIsFocused } from "@react-navigation/native";
 import axios from 'axios'
@@ -143,7 +143,7 @@ const Detail = ({route, navigation}) => {
     }
 
     const modalDelete =  (data) =>{
-
+        toggleContent(0)
         console.log(data,"<---")
 
         setModalValue({
@@ -175,29 +175,51 @@ const Detail = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }        
     }
+
+    // showcontent
+    const [showContent, setShowContent] = useState(0)
+    const toggleContent = (e)=>{
+        setShowContent(e);
+    }
+
+    
     const rowKegiatan = (item, index)=>{
+        const GotoEdit = () => {
+            toggleContent(0)
+            navigation.navigate("Edit",{idKegiatan:item.id, backNavigation:"Detail", idAbsensi:idAbsensi,})
+        }
 
         return( 
             <View key={index} style={{flexDirection:"row", backgroundColor:"#fff"}}>
-                <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <View style={{width:"10%", minHeight:50, borderColor:"#000", padding:5, alignItems:"center"}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>
                         {index+1}
                     </Text>
                 </View>
-                <View style={{width:"60%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                <View style={{width:"80%", minHeight:50, borderColor:"#000", padding:5}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>
                         {item.judul_kegiatan}
                     </Text>
                 </View>
-                <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center", flexDirection:"row"}}>
-                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit",{idKegiatan:item.id, backNavigation:"Detail", idAbsensi:idAbsensi,})}>
-                        <Image source={EditIcont} style={{width:25, height:25}} />
-                    </TouchableOpacity>
-
-                    {/* <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={toggleModal}> */}
-                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={()=>modalDelete(item)}>
-                        <Image source={DeletedIcont} style={{width:30, height:30}} />
-                    </TouchableOpacity>
+                <View style={{width:"10%", minHeight:50, borderColor:"#000", alignItems:"center"}}>
+                    {showContent==index+1?
+                        <TouchableOpacity onPress={() => toggleContent(0)}>
+                            <Image source={DotAksi} style={{width:20, height:20}} />
+                        </TouchableOpacity>
+                    :
+                        <TouchableOpacity onPress={() => toggleContent(index+1)}>
+                            <Image source={DotAksi} style={{width:20, height:20}} />
+                        </TouchableOpacity>
+                    }
+                    
+                    <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={GotoEdit}>
+                            <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>modalDelete(item)}>
+                            <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )
@@ -296,8 +318,8 @@ const Detail = ({route, navigation}) => {
                             </TouchableOpacity>
                             
                         </View>
-                        <View style={{width:"100%",marginBottom:15}}>
-                            <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
+                        <View style={{width:"100%",marginBottom:15, marginTop:10}}>
+                            {/* <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
                                 <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>No</Text>
                                 </View>
@@ -307,7 +329,7 @@ const Detail = ({route, navigation}) => {
                                 <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Aksi</Text>
                                 </View>
-                            </View>
+                            </View> */}
                             {
                                 arrKegiatan.length > 0 &&
                                 arrKegiatan.map((item,index)=>(

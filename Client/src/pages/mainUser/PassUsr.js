@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput  } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, AddImg, ExTtd, JabatanUser, LgBappeda, PasswordIcon } from '../../assets/images';
+import { AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, AddImg, ExTtd, JabatanUser, LgBappeda, PasswordIcon, EyeClose, EyeOpen, EyeOpen2 } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
@@ -233,6 +233,12 @@ const PassUsr = ({navigation}) => {
         setShowContent(e);
     }
 
+    // showEye
+    const [showEye, setShowEye] = useState(1)
+    const toggleEye = (e)=>{
+        setShowEye(e);
+    }
+
     // select image foto profile
     const [fileFoto, setFileFoto] = useState()
     const [imgFoto, setImgFoto] = useState()
@@ -423,8 +429,24 @@ const PassUsr = ({navigation}) => {
 
                     <View style={showContent===2 ? {display:"flex"} : {display:"none"}}>
                         <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10}}>
-                            <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>Update Password</Text>
-                            <Text style={{color: "#b5b5b5", fontSize: 11, fontFamily: "Spartan", fontWeight: "900", marginBottom:5,textTransform:"capitalize", marginLeft:5}}>note : gunakan minimal 6 karakter password</Text>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <View>
+                                    <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>Update Password</Text>
+                                    <Text style={{color: "#b5b5b5", fontSize: 11, fontFamily: "Spartan", fontWeight: "900", marginBottom:5,textTransform:"capitalize", marginLeft:5}}>note : gunakan minimal 6 karakter password</Text>
+                                </View>
+
+                                {showEye==1 ?
+                                    <TouchableOpacity style={{marginLeft:"auto", justifyContent:"center", marginRight:10, padding:5}} onPress={()=>toggleEye(2)}>
+                                        <Image source={EyeClose} style={{width:30, height:30}}/>
+                                    </TouchableOpacity>
+                                :
+                                    <TouchableOpacity style={{marginLeft:"auto", justifyContent:"center", marginRight:10, backgroundColor:"#39a339", padding:5, borderRadius:10}} onPress={()=>toggleEye(1)}>
+                                        <Image source={EyeOpen2} style={{width:30, height:30}}/>
+                                    </TouchableOpacity>
+                                }
+                                
+                            </View>
+                            
 
                             <View style={{marginBottom:25, flexDirection:"row",marginTop:15, marginLeft:15}}>
                                 <View style={{justifyContent:"center"}}>
@@ -433,16 +455,29 @@ const PassUsr = ({navigation}) => {
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>Password Lama</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
-                                    <TextInput
+                                    {showEye==1 ?
+                                        <TextInput
                                         placeholder='-'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.old}
                                         onChangeText={(text) => setFormPassword({...formPassword, ['old']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
-                                        secureTextEntry
+                                        secureTextEntry={true}
                                         // multiline
-                                    />
+                                        />
+                                    :
+                                        <TextInput
+                                            placeholder='-'
+                                            placeholderTextColor={"#000"}
+                                            value={formPassword.old}
+                                            onChangeText={(text) => setFormPassword({...formPassword, ['old']:text})}
+                                            style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
+                                            textContentType={'password'}
+                                            secureTextEntry={false}
+                                            // multiline
+                                        />
+                                    }
                                 </View>
                             </View>
                             
@@ -453,16 +488,29 @@ const PassUsr = ({navigation}) => {
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>New Password</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
-                                    <TextInput
+                                    {showEye==1 ?
+                                        <TextInput
                                         placeholder='-'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.new}
                                         onChangeText={(text) => setFormPassword({...formPassword, ['new']:text}) }
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
-                                        secureTextEntry
+                                        secureTextEntry={true}
                                         // multiline
-                                    />
+                                        />
+                                    :
+                                        <TextInput
+                                            placeholder='-'
+                                            placeholderTextColor={"#000"}
+                                            value={formPassword.new}
+                                            onChangeText={(text) => setFormPassword({...formPassword, ['new']:text}) }
+                                            style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
+                                            textContentType={'password'}
+                                            secureTextEntry={false}
+                                            // multiline
+                                        />
+                                    }
                                 </View>
                             </View>
 
@@ -473,16 +521,29 @@ const PassUsr = ({navigation}) => {
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>Confirm New Password</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
-                                    <TextInput
+                                    {showEye==1 ? 
+                                        <TextInput
                                         placeholder='-'
                                         placeholderTextColor={"#000"}
                                         value={formPassword.confirm}
                                         onChangeText={(text) => setFormPassword({...formPassword, ['confirm']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
-                                        secureTextEntry
+                                        secureTextEntry={true}
                                         // multiline
-                                    />
+                                        />
+                                    :
+                                        <TextInput
+                                            placeholder='-'
+                                            placeholderTextColor={"#000"}
+                                            value={formPassword.confirm}
+                                            onChangeText={(text) => setFormPassword({...formPassword, ['confirm']:text})}
+                                            style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
+                                            textContentType={'password'}
+                                            secureTextEntry={false}
+                                            // multiline
+                                        />
+                                    }
                                 </View>
                             </View>
 

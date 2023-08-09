@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 
 const Allabsensi = ({navigation}) => {
@@ -44,7 +45,10 @@ const Allabsensi = ({navigation}) => {
         
     },[navigation, isFocused])
 
+    const [loadHistory, setLoadHistory] = useState(false)
+
     const getMyHistory = async data =>{
+        setLoadHistory(true)
 
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -56,7 +60,7 @@ const Allabsensi = ({navigation}) => {
             if (response.status == 200) {
                 setRawHistory(response.data);
                 setFilteredHistory(response.data)
-
+                setLoadHistory(false)
             }
 
         } catch (error) {
@@ -300,53 +304,39 @@ const Allabsensi = ({navigation}) => {
                         onChangeText={(text) => searchFilterFunction(text)}
                     />
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Merupakan Riwayat Absensi Anda</Text>
+                    
+                    <View>
+                        {loadHistory?
+                            <View>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                            </View>
+                        :
+                            <View>
+                                {
+                                    filtereHistory.length >0 &&
+                                    filtereHistory.map((item,index)=>(
+                                        rowHistory(item,index)
+                                    ))
+                                }
+                            </View>
+                        }
+                    </View>
+                    
 
-                    {
-                        filtereHistory.length >0 &&
-                        filtereHistory.map((item,index)=>(
-                            rowHistory(item,index)
-                        ))
-                    }
-
-                    {/* <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Jumat, 23 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Maaf, anda belum melakukan absensi sore</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                        <Image source={TidakHadir} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Kamis, 23 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Anda tidak hadir</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                        <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Rabu, 22 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Anda sedang sakit</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Selasa, 21 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Anda mengajukan izin</Text>
-                        </View>
-                    </TouchableOpacity> */}
                 </View>
             </View>
         </ScrollView>
