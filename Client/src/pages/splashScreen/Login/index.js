@@ -10,7 +10,7 @@ import ApiLink from '../../../assets/ApiHelper/ApiLink';
 const LoginSide = ({route, navigation}) => {
     const {errorValue} = route.params
     // console.log(errorValue)
-    const base_url = 'http://10.0.2.2:8000/api';
+    const base_url = ApiLink+'/api';
 
     const [inputs, setInputs] = useState({
         username:'',
@@ -117,7 +117,7 @@ const LoginSide = ({route, navigation}) => {
 
             </View>
             <View style={errorValue==1 ? {marginTop:20, display:"flex"}:{display:"none"}}>
-                <Text style={{color:"red", fontSize:14, fontWeight:"bold"}}>Username atau Password anda salah !!</Text>
+                <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>Username atau Password anda salah !!</Text>
             </View>
             {/* <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={() => navigation.navigate("AppScreen")}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>THL</Text>

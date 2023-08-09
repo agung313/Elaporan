@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
+import { Circle } from 'react-native-animated-spinkit';
 
 const MainUser = ({navigation}) => {
     useEffect(()=>{
@@ -13,6 +14,7 @@ const MainUser = ({navigation}) => {
     })
 
     const [bulan, setBulan] = useState()
+    const [tahun, setTahun] = useState()
     // console.log(bulan, "<==== bulan")
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -28,6 +30,7 @@ const MainUser = ({navigation}) => {
 
     const [monthUsed, setMonthUsed] = useState(cekTgl.getMonth()+1)
     const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "November", "Desember"]
+    const namaTahun = ["2023","2024","2025"];
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
@@ -66,7 +69,12 @@ const MainUser = ({navigation}) => {
     }    
     const imgFileFoto = {uri: imgFoto}
 
-    const HeandleLogout = async () => {
+    const [modalLoad, setModalLoad] = useState(false)
+    const [modalLogout, setModalLogout] = useState(false)
+    
+    const HandlerLogout = async () => {
+        setModalLogout(false)
+        setModalLoad(true)
         try {
           const dataToken = await AsyncStorage.getItem('AccessToken');
       
@@ -174,7 +182,7 @@ const MainUser = ({navigation}) => {
                         </View>
                     </TouchableOpacity>
                 
-                    <TouchableOpacity style={{flexDirection:"row", marginBottom:50, width:"100%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={HeandleLogout}>
+                    <TouchableOpacity style={{flexDirection:"row", marginBottom:50, width:"100%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={setModalLogout}>
                         <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16, marginTop:5}}>Logout</Text>
                     </TouchableOpacity>
                 </View>
@@ -189,7 +197,8 @@ const MainUser = ({navigation}) => {
                     <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Bulan Laporan Anda</Text>
                     </View>
-                    <View style={{alignItems:"center", width:"100%"}}>
+                    <View style={{flexDirection:'row'}}>
+                    <View style={{alignItems:"center", width:"50%"}}>
                         <Picker
                             selectedValue={bulan}
                             onValueChange={(itemValue, itemIndex) => 
@@ -208,12 +217,60 @@ const MainUser = ({navigation}) => {
 
                         </Picker>
                     </View>
+                    <View style={{alignItems:"center", width:"50%"}}>
+                        <Picker
+                            selectedValue={bulan}
+                            onValueChange={(itemValue, itemIndex) => 
+                                setTahun(itemValue)
+                            }
+                            style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                            selectionColor={"#000"}
+
+                        >
+                            {
+                                namaTahun.map((item,index)=>(
+                                    <Picker.Item label={item} value={index}/> 
+                                ))
+                            }
+
+                        </Picker>
+                    </View>
+                    </View>                    
                     <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Laporan', {bulanIndex:bulan,bulanNama: namaBulan[bulan] })}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Laporan', {bulan:bulan, tahun:tahun})}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Lihat Laporan</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
+            </ReactNativeModal>
+
+            
+            {/* modal succes */}
+            <ReactNativeModal isVisible={modalLogout} onBackdropPress={() => setModalLogout(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalLogout(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Apakah anda yakin untuk keluar ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalLogout(false)}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={HandlerLogout}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Keluar</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
             </ReactNativeModal>
         </ScrollView>
     )

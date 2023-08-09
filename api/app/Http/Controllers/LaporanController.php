@@ -4,30 +4,33 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Laporan;
+use App\Models\Absensi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Http\Resources\Lapor as LaporanResource;
+use App\Http\Resources\LaporanBulanan as LaporanBulananResource;
+class LaporanController extends Controller{
 
-class LaporanController extends Controller
-{
     public function __construct()
     {
         $this->middleware('auth:sanctum');
-    }    
+    }
+
     public function index(Request $request)
     {
 
         if($request->detail){
 
-            $laporan = Laporan::where('id', $request->id_laporan)->get();   
+            $laporan = Laporan::where('id', $request->id_laporan)->get(); 
 
         }elseif ($request->bulanan) {
 
-            return ['data' => Auth::user()];
-            exit;
+            // $laporan = Laporan::join('absensis','absensis.id','laporans.id_absensi')->where('absensis.id_user', ,Auth::user()->id)->whereMonth('absensis.tanggal',$request->bulan)->whereYear('absensis.tanggal',Carbon::now()->year)->get();
+            
+            $laporan = Absensi::where('id_user',Auth::user()->id)->whereMonth('tanggal',$request->bulan)->whereYear('tanggal',Carbon::now()->year)->get();
 
-            $laporan = Laporan::join('absensis','absensis.id','id_absensi')->where('id_user', $id_user)->whereMonth('tanggal', $request->bulan)->whereYear('tanggal',$request->tahun)->get();        
+            return response(LaporanBulananResource::collection($laporan));
 
         }else{
             $laporan = Laporan::where('id_absensi', $request->id_absensi)->get();        
