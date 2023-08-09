@@ -215,6 +215,7 @@ const MainApp = ({route, navigation}) => {
     }
 
     const [loadHistory, setLoadHistory] = useState(false)
+
     const getMyHistory = async data =>{
         setLoadHistory(true)
         try {
@@ -712,7 +713,7 @@ const MainApp = ({route, navigation}) => {
                             <View>
                             {
                                 history.length > 0 &&
-                                (history.slice(0,4)).map((item, index) =>(
+                                history.map((item, index) =>(
                                     rowHistory(item,index)
                                 ))
                             }

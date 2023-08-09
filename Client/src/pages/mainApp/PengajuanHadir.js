@@ -2,8 +2,13 @@ import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions
 import React, { useEffect, useState } from 'react'
 import { Agenda, BackIcon, LgBappeda, SakitIcont, SakitIzin, WarningIcont } from '../../assets/images';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
+import { useIsFocused } from '@react-navigation/native';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 const PengajuanHadir = ({navigation}) => {
+    const isFocused = useIsFocused();
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -37,6 +42,9 @@ const PengajuanHadir = ({navigation}) => {
     const [historyNotif, setHistoryNotif] = useState([]);
     const [loadHistory, setLoadHistory] = useState(false)
 
+    console.log(history, "<===== historyyyy")
+
+
     const getMyHistory = async data =>{
         setLoadHistory(true)
         try {
@@ -49,13 +57,43 @@ const PengajuanHadir = ({navigation}) => {
     
             if (response.status == 200) {
                 setHistoryNotif(response.data)
-                setHistory(response.data.slice(0,4));
+                setHistory(response.data);
                 setLoadHistory(false)
             }
 
         } catch (error) {
             console.log(error, "error get my history")   
         }
+    }
+
+    const rowHistory = (item, index) =>{
+
+        if(item.ket_hadir === "Sakit"){
+            
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                    <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}> {item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan sakit"}</Text>
+                    </View>
+                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
+                </TouchableOpacity>
+            )
+        }
+        else if(item.ket_hadir === "Izin"){
+            return(
+                <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
+                    <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                    <View style={{marginLeft:10, width:"75%"}}>
+                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan izin"}</Text>
+                    </View>
+                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
+                </TouchableOpacity>
+            )
+        }
+
     }
 
     return (
@@ -87,15 +125,36 @@ const PengajuanHadir = ({navigation}) => {
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10,  textAlign:"center"}}>Berikut Pengajuan Anda </Text>
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:25, textAlign:"center"}}>Belum Disetujui Kasubag Umum </Text>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("MainApp")}>
-                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10, width:"75%"}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Menunggu Persetujuan Kasubag Umum</Text>
-                        </View>
-                        <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
-                    </TouchableOpacity>
+                    {loadHistory?
+                            <View>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                                </SkeletonPlaceholder>
+                            </View>
+                        :
+                            <View>
+                                {
+                                    history.length > 0 &&
+                                    history.map((item, index) =>(
+                                        rowHistory(item,index)
+                                    ))
+                                }
+                            </View>
+                        }
 
+                    
                     
                 </View>
             </View>

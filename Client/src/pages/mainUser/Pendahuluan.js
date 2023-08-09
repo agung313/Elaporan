@@ -140,15 +140,54 @@ const Pendahuluan = ({navigation}) => {
         }
         
     }
+    
+    // showcontent
+    const [showContent, setShowContent] = useState(0)
+    const toggleContent = (e)=>{
+        setShowContent(e);
+    }
+
     const rowRuangLingkup =(item, index) =>{
 
+        // showcontent
+        // const [showContent, setShowContent] = useState(0)
+        // const toggleContent = (e)=>{
+        //     setShowContent(e);
+        // }
+        // setAngkaUrut(angkaUrut+1)
+
         return(
-                <View key={index} style={{width:"90%", minHeight:50 }}>
-                    <View style={{flexDirection:"row"}}>
-                        <TouchableOpacity onPress={ () => navigation.navigate("EditLingkup", {indexData:index}) } style={{ flexDirection: 'row' }}>
-                            <Image source={DotAksi} style={{width:20, height:20, marginLeft:7}} />
-                        </TouchableOpacity>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>{item}</Text>
+                <View key={index} style={{width:"100%", minHeight:50, alignItems:"center" }}>
+                    <View style={{flexDirection:"row", width:"90%"}}>
+                        <View style={{width:"10%", minHeight:20, alignItems:"center", }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"500", textTransform:"capitalize"}}>
+                                {index+1}.
+                            </Text>
+                        </View>
+                        <View style={{width:"80%", minHeight:20, }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"500", textTransform:"capitalize"}} multiline>{item}</Text>
+                        </View>
+                        <View style={{width:"10%", minHeight:20, alignItems:"center", }}>
+                            {/* <TouchableOpacity onPress={ () => navigation.navigate("EditLingkup", {indexData:index}) } > */}
+                            {showContent==index+1?
+                                <TouchableOpacity onPress={() => toggleContent(0)}>
+                                    <Image source={DotAksi} style={{width:20, height:20}} />
+                                </TouchableOpacity>
+                            :
+                                <TouchableOpacity onPress={() => toggleContent(index+1)}>
+                                    <Image source={DotAksi} style={{width:20, height:20}} />
+                                </TouchableOpacity>
+                            }
+                            
+                            <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditLingkup", {indexData:index}) }>
+                                    <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     </View>
 
                 </View>   

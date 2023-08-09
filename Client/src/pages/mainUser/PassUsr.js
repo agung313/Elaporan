@@ -14,8 +14,8 @@ const PassUsr = ({navigation}) => {
     useEffect(()=>{
 
         if (isFocused) {
-            getMyProfile(),
-            getKegiatan()        
+            getMyProfile()
+            // getKegiatan()        
         }
         
     },[navigation, isFocused])
@@ -102,6 +102,7 @@ const PassUsr = ({navigation}) => {
         try{
 
             if (!fileFoto) {
+                setModalLoad(false)
                 setMyModal({fotoNoPick:true})
                 return
             }
@@ -129,10 +130,11 @@ const PassUsr = ({navigation}) => {
     }     
 
     const handlerUpdateTtd = async ()=>{
-
+        setModalLoad(true)
         try{
 
             if (!fileTtd) {
+                setModalLoad(false)
                 setMyModal({fotoNoPick:true})
                 return
             }
@@ -150,6 +152,7 @@ const PassUsr = ({navigation}) => {
 
         
             if (response.status===200) {
+                setModalLoad(false)
                 setMyModal({success:true})
             }
 
@@ -219,7 +222,7 @@ const PassUsr = ({navigation}) => {
             } catch (error) {
                 setModalLoad(false)
                 setErrPass(true)
-                console.log(error,"<--- error handler hadir")            
+                console.log(error,"<--- error handler update")            
             }
         }
         
@@ -421,6 +424,7 @@ const PassUsr = ({navigation}) => {
                     <View style={showContent===2 ? {display:"flex"} : {display:"none"}}>
                         <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10}}>
                             <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>Update Password</Text>
+                            <Text style={{color: "#b5b5b5", fontSize: 11, fontFamily: "Spartan", fontWeight: "900", marginBottom:5,textTransform:"capitalize", marginLeft:5}}>note : gunakan minimal 6 karakter password</Text>
 
                             <View style={{marginBottom:25, flexDirection:"row",marginTop:15, marginLeft:15}}>
                                 <View style={{justifyContent:"center"}}>
@@ -486,15 +490,23 @@ const PassUsr = ({navigation}) => {
                                 <View style={{width:280, alignItems:"center",}}>
                                     <Text style={{color:"red", fontSize:12, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>Password lama anda salah atau</Text>
                                     <Text style={{color:"red", fontSize:12, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>new password dan confirm password tidak sama</Text>
+                                    
                                 </View>
                             </View>
     
-                            
+                            {/* setModalPass */}
 
                             <View style={{alignItems:"center"}}>
-                                <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={() => setModalChangePass(true)}>
-                                    <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
-                                </TouchableOpacity>
+                                {formPassword.old ==null || formPassword.new == null || formPassword.confirm == null ?
+                                    <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={() => setModalPass(true)}>
+                                        <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
+                                    </TouchableOpacity>
+                                :
+                                    <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={() => setModalChangePass(true)}>
+                                        <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
+                                    </TouchableOpacity>
+                                }
+                                
                             </View>
                         </View>
                         
@@ -617,7 +629,7 @@ const PassUsr = ({navigation}) => {
                 </View>
             </ReactNativeModal>
 
-            <ReactNativeModal isVisible={myModal.loading} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <Circle size={100} color="white"/>
             </ReactNativeModal>
 

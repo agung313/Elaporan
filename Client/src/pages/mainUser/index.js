@@ -7,11 +7,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import { Circle } from 'react-native-animated-spinkit';
+import { useIsFocused } from '@react-navigation/native';
 
 const MainUser = ({navigation}) => {
+    const isFocused = useIsFocused();
+
     useEffect(()=>{
-        getMyProfile()
-    })
+        if(isFocused){
+            getMyProfile()
+        }
+    }, [navigation, isFocused])
 
     const [bulan, setBulan] = useState()
     const [tahun, setTahun] = useState()
@@ -105,6 +110,12 @@ const MainUser = ({navigation}) => {
           console.log(error, '<= error logout');
         }
     };
+
+    const GotoLaporan = () =>{
+        setModalVisible(false)
+        navigation.navigate('Laporan', {bulan:bulan, tahun:tahun})
+        
+    }
 
     return (
         <ScrollView>
@@ -237,7 +248,7 @@ const MainUser = ({navigation}) => {
                     </View>
                     </View>                    
                     <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('Laporan', {bulan:bulan, tahun:tahun})}>
+                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> GotoLaporan()}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Lihat Laporan</Text>
                         </TouchableOpacity>
                     </View>

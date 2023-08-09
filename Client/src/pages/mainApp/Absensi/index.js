@@ -8,9 +8,11 @@ import DocumentPicker from 'react-native-document-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
 import { Circle } from 'react-native-animated-spinkit'
+import { useIsFocused } from '@react-navigation/native';
 
 
 const Absensi = ({route, navigation}) => {
+    const isFocused = useIsFocused()
     const {kehadiran, latit, longtit, jarak, idAbsensi} = route.params
     console.log(jarak, "<==============jaraka meter")
     
@@ -60,10 +62,11 @@ const Absensi = ({route, navigation}) => {
     const [jabatanUser, setJabatanUser] = useState('-')
 
     useEffect(() => {
-      
-        getMyProfile()
+        if(isFocused){
+            getMyProfile()
+        }
 
-    }, [navigation])
+    }, [navigation, isFocused])
 
 
     const [imgFoto, setImgFoto] = useState()
