@@ -144,17 +144,11 @@ const Pendahuluan = ({navigation}) => {
     // showcontent
     const [showContent, setShowContent] = useState(0)
     const toggleContent = (e)=>{
+        console.log(e,'<---- e')
         setShowContent(e);
     }
 
     const rowRuangLingkup =(item, index) =>{
-
-        // showcontent
-        // const [showContent, setShowContent] = useState(0)
-        // const toggleContent = (e)=>{
-        //     setShowContent(e);
-        // }
-        // setAngkaUrut(angkaUrut+1)
 
         return(
                 <View key={index} style={{width:"100%", minHeight:50, alignItems:"center" }}>

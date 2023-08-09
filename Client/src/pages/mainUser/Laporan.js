@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { BackIcon, LgBappeda, DotAksi } from '../../assets/images';
+import { BackIcon, LgBappeda, DotAksi, CloseIcont } from '../../assets/images';
 import { FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
+import ReactNativeModal from 'react-native-modal';
+
 
 
 const Laporan = ({route, navigation}) => {
@@ -39,6 +41,30 @@ const Laporan = ({route, navigation}) => {
     const [arrKegiatan, setArrKegiatan] = useState([])
     const [arrKendala, setArrKendala] = useState([])
     const [adaDokumen, setAdaDokumen] = useState(false)
+    
+    const [idDeleted, setIdDeleted] = useState()
+    const [myModal, setMyModal] = useState({
+        hapus:false,
+        sukses:false,
+        gagal:false
+    })
+
+    const handlerModal = (type, message=null)=>{
+
+        console.log(type)
+        switch (type) {
+            case 'hapus':
+                setMyModal({...myModal, hapus:true})
+                break;
+        
+        }
+    }
+    // show aksi
+    const [showContent, setShowContent] = useState(0)
+    const toggleContent = (e)=>{
+        console.log(e)
+        setShowContent(e);
+    }
     useEffect(() => {
 
         if (isFocused) {
@@ -72,7 +98,7 @@ const Laporan = ({route, navigation}) => {
                 var checkKendala = await AsyncStorage.getItem('tmpKendala')
                 // if (!checkKendala && arrKendala.length == 0) {
                 if (!checkKendala && checkKendala !== null) {
-                    await AsyncStorage.setItem('tmpRuangLingkup','')
+                    await AsyncStorage.setItem('tmpKendala','')
 
                 // }else if (!checkKendala && arrKendala.length > 0) {
 
@@ -115,7 +141,7 @@ const Laporan = ({route, navigation}) => {
         return(
             <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
                 <View style={{width:"7%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{index+10}</Text>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{index+1}</Text>
                 </View>
                 <View style={{width:"20%", minHeight:25, justifyContent:'center', borderWidth:0.5, borderColor:"#000", alignItems:'center'}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.hari}</Text>
@@ -184,11 +210,50 @@ const Laporan = ({route, navigation}) => {
                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{tmpStr[1]}</Text>
                 </View>
                 <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                <TouchableOpacity onPress={ () => navigation.navigate("EditKendala", {indexData:index}) } style={{ flexDirection: 'row' }}>
+                        {/* <TouchableOpacity onPress={ () => navigation.navigate("EditKendala", {indexData:index}) } style={{ flexDirection: 'row' }}>
                             <Image source={DotAksi} style={{width:20, height:20, marginLeft:7}} />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
+                            {showContent==index+1?
+                                <TouchableOpacity onPress={() => toggleContent(0)}>
+                                    <Image source={DotAksi} style={{width:20, height:20}} />
+                                </TouchableOpacity>
+                            :
+                                <TouchableOpacity onPress={() => toggleContent(index+1)}>
+                                    <Image source={DotAksi} style={{width:20, height:20}} />
+                                </TouchableOpacity>
+                            }                        
+                        <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditKendala", {indexData:index}) }>
+                                    <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setIdDeleted(index),handlerModal('hapus')}}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                                </TouchableOpacity>
+                            </View>                        
                 </View>                
+            {/* modal alert pass */}
+            <ReactNativeModal isVisible={myModal.hapus} onBackdropPress={()=>{  setMyModal({hapus:false}) }}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{  setMyModal({hapus:false}) }}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Lanjut Hapus Data ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={()=>{  setMyModal({hapus:false}) }} >
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerDeleteKendala} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>  
             </View>            
         )
     }
@@ -222,10 +287,19 @@ const Laporan = ({route, navigation}) => {
             </View>            
         )
     }
+    const handlerDeleteKendala = async data =>{
+
+        toggleContent(0)
+        let tmpData = arrKendala
+        tmpData.splice(idDeleted,1)
+        let saveNew = await AsyncStorage.setItem('tmpKendala', tmpData.join("(%ry%)"))
+        setMyModal({...myModal,['hapus']:false})
+    }
     const customBack = async () =>{
         await AsyncStorage.removeItem('tmpKendala');
         navigation.navigate('MainUser');
     }
+
     return (
         <ScrollView>
             <View style={styles.header}>
