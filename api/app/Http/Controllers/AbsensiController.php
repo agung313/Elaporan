@@ -36,9 +36,7 @@ class AbsensiController extends Controller
     // get jumlah pengajuan sakit/izin belum di approve
     function countNoAcc(Request $request){
         $id = Auth::user()->id; 
-        $data = Absensi::where('id_user', $id)->where('isApprove',0)->where(function($query){
-            $query->where('status','sakit')->orWhere('status','izin');
-        })->count();
+        $data = Absensi::where('id_user', $id)->where('isApprove',0)->count();
         
         return response()->json([
             'messages' => 'success',

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../../assets/images'
+import { AddImg, BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont, LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -115,6 +115,8 @@ const Agenda = ({route, navigation}) => {
             console.log(error, "error get absensi")   
         }
     }    
+
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -127,6 +129,7 @@ const Agenda = ({route, navigation}) => {
                     nama:res.data.nama,
                     jabatan:res.data.jabatan
                 })
+                setImgFoto(res.data.URL)
             })        
     
 
@@ -134,6 +137,7 @@ const Agenda = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }
     }
+    const imgFileFoto = {uri: imgFoto}
 
     const modalDelete =  (data) =>{
 
@@ -169,38 +173,60 @@ const Agenda = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }        
     }
+    
+
+    // showcontent
+    const [showContent, setShowContent] = useState(0)
+    const toggleContent = (e)=>{
+        setShowContent(e);
+    }
+
     const rowKegiatan = (item, index)=>{
+        const GotoEdit = () => {
+            toggleContent(0)
+            navigation.navigate("Edit",{idKegiatan:item.id, idAbsensi:idAbsensi, backNavigation:"Agenda"})
+        }
 
         return( 
             <View key={index} style={{flexDirection:"row", backgroundColor:"#fff"}}>
-                <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <View style={{width:"10%", minHeight:50, borderColor:"#000", padding:5, alignItems:"center"}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>
                         {index+1}
                     </Text>
                 </View>
-                <View style={{width:"60%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                <View style={{width:"80%", minHeight:50, borderColor:"#000", padding:5}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>
                         {item.judul_kegiatan}
                     </Text>
                 </View>
-                <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center", flexDirection:"row"}}>
-                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={() => navigation.navigate("Edit",{idKegiatan:item.id, idAbsensi:idAbsensi})}>
-                        <Image source={EditIcont} style={{width:25, height:25}} />
-                    </TouchableOpacity>
-
-                    {/* <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={toggleModal}> */}
-                    <TouchableOpacity style={{width:"40%", justifyContent:"center", alignItems:"center"}} onPress={()=>modalDelete(item)}>
-                        <Image source={DeletedIcont} style={{width:30, height:30}} />
-                    </TouchableOpacity>
+                <View style={{width:"10%", minHeight:50, borderColor:"#000", alignItems:"center"}}>
+                    {showContent==index+1?
+                        <TouchableOpacity onPress={() => toggleContent(0)}>
+                            <Image source={DotAksi} style={{width:20, height:20}} />
+                        </TouchableOpacity>
+                    :
+                        <TouchableOpacity onPress={() => toggleContent(index+1)}>
+                            <Image source={DotAksi} style={{width:20, height:20}} />
+                        </TouchableOpacity>
+                    }
+                    
+                    <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={GotoEdit}>
+                            <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>modalDelete(item)}>
+                            <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </View>
         )
-    }
+    }  
     return (
         <ScrollView>
             <View style={styles.header}>
                 <View style={{ width: "60%" }}>
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={()=> navigation.navigate("MainApp")} style={{ flexDirection: 'row' }}>
                         <View style={{ justifyContent:"center" }}>
                             <Image source={BackIcon} style={{ width: 20, height: 20 }}/>
                         </View>
@@ -224,7 +250,7 @@ const Agenda = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                                <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                                {imgFoto?<Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
@@ -256,25 +282,14 @@ const Agenda = ({route, navigation}) => {
                     </View>
                     <View style={{flexDirection:"row", marginBottom:10 }}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan Hari Ini :</Text>
-                        <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi})}>
+                        <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi, backNavigation:"Agenda"})}>
                             <Text style={{fontWeight:'700', color:"white", fontSize:12}}>
                                 Tambah Kegiatan
                             </Text>
                         </TouchableOpacity>
                         
                     </View>
-                    <View style={{width:"100%",marginBottom:15}}>
-                        <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
-                            <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>No</Text>
-                            </View>
-                            <View style={{width:"60%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
-                            </View>
-                            <View style={{width:"30%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Aksi</Text>
-                            </View>
-                        </View>
+                    <View style={{width:"100%",marginBottom:15, marginTop:10}}>
                         {
                             detailKegiatan.length > 0 &&
                             detailKegiatan.map((item, index)=>(

@@ -54,12 +54,12 @@
                 <td class="tabell" style="width: 400px; padding: 10px; text-align: justify;">
                     <table>
                         {{-- {{dd(json_decode($user->ruang_lingkup))}} --}}
-                        @foreach (json_decode($user->ruang_lingkup) as $key => $item)
+                        {{-- @foreach (json_decode($user->ruang_lingkup) as $key => $item)
                             <tr>
                                 <td>{{$key+1 ."."}}</td>
                                 <td>{{$item}}</td>
                             </tr>
-                        @endforeach
+                        @endforeach --}}
                     </table>
                 </td>
             </tr>

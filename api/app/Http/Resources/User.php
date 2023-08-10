@@ -16,17 +16,17 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        $photo = Profile::find($this->id_profile);
 
         return [
             'id' => $this->id,
             'nama' => $this->name,
             'email' => $this->email,
             'jabatan' => $this->jabatan,
-            'URL' => URL('storage/'. $photo->foto),
+            'URL' => $this->foto ? URL('storage/'. $this->foto) : null,
             'latar_belakang' => $this->latar_belakang,
             'tujuan' => $this->tujuan,
             'ruang_lingkup' => $this->ruang_lingkup,
+            'ttd' => $this->ttd ? URL('storage/'.$this->ttd ):null
         ];
     }
 }

@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
+import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';
@@ -49,13 +49,13 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
-    const [historyNotif, setHistoryNotif] = useState([]);
     // console.log(history)
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
     const [izinSakit, setIzinSakit] = useState()
     const [sakit, setSakit] = useState()
     const [pulang, SetPulang] = useState()
+    const [noApprove, setNoApprove] = useState(0)
     const [menunggu, SetMenunggu] = useState()
     const [btAbsensi, SetBtAbsensi] = useState(null)
     
@@ -72,8 +72,8 @@ const MainApp = ({route, navigation}) => {
         }
         
     },[navigation, isFocused])
-
-
+    
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -82,19 +82,21 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/user/profile`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data, "<==== my profile")
+            // console.log(response.data, "<==== my profile")
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+                setImgFoto(response.data.URL)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
-    }    
+    }   
+    const imgFileFoto = {uri: imgFoto} 
 
     const [cekApprove, setCekApprove] = useState()
-    // console.log(cekApprove, "cel approve")
+
     const [loadApprove, setLoadApprove] = useState(false)
 
     const getMyPengajuan = async data =>{
@@ -146,7 +148,7 @@ const MainApp = ({route, navigation}) => {
     }
 
 
-    // const [absenMasuk, setAbsenMasuk] = useState(false)
+    const [statusApprove, setStatusApprove] = useState()
     const getToday = async data =>{
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -158,7 +160,9 @@ const MainApp = ({route, navigation}) => {
             var status = response.data.status
             var data = response.data.data
             var waktuPulang = data.waktu_pulang
-            // console.log(data.waktu_pulang,"<===== status")
+            setStatusApprove(data.isApprove)
+            // console.log(data.isApprove,"<===== status")
+            var approve = data.isApprove
             
 
             if (data) {
@@ -210,6 +214,7 @@ const MainApp = ({route, navigation}) => {
     }
 
     const [loadHistory, setLoadHistory] = useState(false)
+
     const getMyHistory = async data =>{
         setLoadHistory(true)
         try {
@@ -220,8 +225,7 @@ const MainApp = ({route, navigation}) => {
             }});        
     
             if (response.status == 200) {
-                setHistoryNotif(response.data)
-                setHistory(response.data.slice(0,4));
+                setHistory(response.data.slice(0,3));
                 setLoadHistory(false)
             }
 
@@ -313,7 +317,6 @@ const MainApp = ({route, navigation}) => {
     const rowHistory = (item, index) =>{
 
         // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
-        // console.log(item.ket_hadir, "<====== ket hadir")
         if (item.ket_hadir === 'Absen Tepat Waktu') {
             
             if(item.laporan == false){
@@ -417,13 +420,15 @@ const MainApp = ({route, navigation}) => {
             }
         }
         else if(item.ket_hadir === "Sakit"){
+            
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}> {item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan sakit"}</Text>
                     </View>
+                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
                 </TouchableOpacity>
             )
         }
@@ -433,8 +438,9 @@ const MainApp = ({route, navigation}) => {
                     <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan izin</Text>
+                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan izin"}</Text>
                     </View>
+                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
                 </TouchableOpacity>
             )
         }
@@ -517,7 +523,7 @@ const MainApp = ({route, navigation}) => {
 
     // keterangan approve
     const KetApprove = () =>{
-        if(cekApprove==false){
+        if(statusApprove==false){
             return(
                 <>
                     <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>pengajuan {sakit? 'sakit':'izin'} anda sedang diproses</Text>
@@ -547,7 +553,7 @@ const MainApp = ({route, navigation}) => {
 
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:20, marginHorizontal:100}}>E - Laporan</Text>
 
-                           <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif", {historyNotif:historyNotif})}>
+                           <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("Notif")}>
                                 <Image source={NotifIcont} style={{width:28, height:28}}/>
                                 <View style={{marginLeft:-15, marginRight:-7}}>
                                     <Image source={WarningIcont} style={{width:20, height:20,}}/>
@@ -557,7 +563,7 @@ const MainApp = ({route, navigation}) => {
                     </View>
                     {/* Profile */}
                     <View style={{marginTop:10, marginLeft:15, alignItems:"center"}}>
-                        <Image source={ExFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
+                        {imgFoto ? <Image source={imgFileFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>}
                         <View style={{marginLeft:15, alignItems:"center"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{ namaUser }</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
@@ -705,7 +711,7 @@ const MainApp = ({route, navigation}) => {
                             <View>
                             {
                                 history.length > 0 &&
-                                (history.slice(0,4)).map((item, index) =>(
+                                history.map((item, index) =>(
                                     rowHistory(item,index)
                                 ))
                             }

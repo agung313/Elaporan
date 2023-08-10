@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ImageBackground, Image, Dimensions, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { BgMain, EmailIcon, LgBappeda, PasswordIcon } from '../../../assets/images'
+import { BgMain, EmailIcon, EyeClose, EyeOpen, LgBappeda, PasswordIcon } from '../../../assets/images'
 import axios from 'axios';
 
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -10,7 +10,7 @@ import ApiLink from '../../../assets/ApiHelper/ApiLink';
 const LoginSide = ({route, navigation}) => {
     const {errorValue} = route.params
     // console.log(errorValue)
-    const base_url = 'http://10.0.2.2:8000/api';
+    const base_url = ApiLink+'/api';
 
     const [inputs, setInputs] = useState({
         username:'',
@@ -74,6 +74,13 @@ const LoginSide = ({route, navigation}) => {
         }
 
     }
+
+    // showcontent
+    const [showContent, setShowContent] = useState(1)
+    const toggleContent = (e)=>{
+        setShowContent(e);
+    }
+
     return (
         <ImageBackground source={BgMain} style={{flex:1, alignItems:'center', justifyContent:'center'}}>
             <Image source={LgBappeda} style={{width:200, height:200}}/>
@@ -102,22 +109,51 @@ const LoginSide = ({route, navigation}) => {
                     <Image source={PasswordIcon} style={{width:25, height:25}}/>
                 </View>
 
-                <View style={{marginLeft:5}}>
-                    <TextInput
-                        placeholder='Password'
-                        placeholderTextColor={"#000"}
-                        value={inputs.password}
-                        keyboardType= "default"
-                        onChangeText={(text) => handleChangeInput('password',text)}
-                        style={{ color: "#000" }}
-                        secureTextEntry={true}
-                        textContentType='password'
-                    />
-                </View>
+                {showContent==1 ? 
+                    <View style={{flexDirection:"row", alignItems:"center",}}>
+                        <View style={{marginLeft:5, width:200}}>
+                            <TextInput
+                                placeholder='Password'
+                                placeholderTextColor={"#000"}
+                                value={inputs.password}
+                                keyboardType= "default"
+                                onChangeText={(text) => handleChangeInput('password',text)}
+                                style={{ color: "#000" }}
+                                secureTextEntry={true}
+                                textContentType='password'
+                            />
+                        </View>
+                        <View>
+                            <TouchableOpacity onPress={()=> toggleContent(2)}>
+                                <Image source={EyeClose} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                :
+                    <View style={{flexDirection:"row", alignItems:"center",}}>
+                        <View style={{marginLeft:5, width:200}}>
+                            <TextInput
+                                placeholder='Password'
+                                placeholderTextColor={"#000"}
+                                value={inputs.password}
+                                keyboardType= "default"
+                                onChangeText={(text) => handleChangeInput('password',text)}
+                                style={{ color: "#000" }}
+                                secureTextEntry={false}
+                                textContentType='password'
+                            />
+                        </View>
+                        <View>
+                            <TouchableOpacity onPress={()=> toggleContent(1)}>
+                                <Image source={EyeOpen} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                }
 
             </View>
             <View style={errorValue==1 ? {marginTop:20, display:"flex"}:{display:"none"}}>
-                <Text style={{color:"red", fontSize:14, fontWeight:"bold"}}>Username atau Password anda salah !!</Text>
+                <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>Username atau Password anda salah !!</Text>
             </View>
             {/* <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={() => navigation.navigate("AppScreen")}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>THL</Text>

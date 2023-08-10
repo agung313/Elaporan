@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ImageBackground} from 'react-native'
+import { StyleSheet, Text, View, ImageBackground, Alert} from 'react-native'
 import React, { useEffect } from 'react'
 import { BgMain } from '../../../assets/images'
 import { Bounce } from 'react-native-animated-spinkit'
@@ -49,6 +49,7 @@ const SplashLogin = ({route, navigation}) => {
             }
         } catch (error) {
             navigation.replace('LoginSide', {errorValue:1})
+            return Alert.alert("Login", "Username atau Password Anda Salah")
         }
 
     }

@@ -8,9 +8,11 @@ import DocumentPicker from 'react-native-document-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
 import { Circle } from 'react-native-animated-spinkit'
+import { useIsFocused } from '@react-navigation/native';
 
 
 const Absensi = ({route, navigation}) => {
+    const isFocused = useIsFocused()
     const {kehadiran, latit, longtit, jarak, idAbsensi} = route.params
     console.log(jarak, "<==============jaraka meter")
     
@@ -60,13 +62,14 @@ const Absensi = ({route, navigation}) => {
     const [jabatanUser, setJabatanUser] = useState('-')
 
     useEffect(() => {
-      
-        getMyProfile()
+        if(isFocused){
+            getMyProfile()
+        }
 
-    }, [navigation])
+    }, [navigation, isFocused])
 
 
-    
+    const [imgFoto, setImgFoto] = useState()
     const getMyProfile = async data =>{
 
         try {
@@ -79,18 +82,23 @@ const Absensi = ({route, navigation}) => {
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+                setImgFoto(response.data.URL)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
     }
+    const imgFileFoto = {uri: imgFoto}
+
     const handlerHadir = async data =>{
 
-        setModalLoad(true)
+        
+        // setModalLoad(true)
         setModalStore(false)
         setModalStoreSakit(false)
         setModalStoreIzin(false)
+        setModalLoad(true)
 
         try {
             const dataHadir ={
@@ -103,8 +111,7 @@ const Absensi = ({route, navigation}) => {
 
             const response = await axios.post(base_url+"/absen/store", dataHadir,{headers:{
                 Authorization: `Bearer ${myToken}`
-            }})
-            
+            }})            
             setModalLoad(false)
             setModalSuccess(true)
         } catch (error) {
@@ -219,7 +226,7 @@ const Absensi = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            {imgFoto?<Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
@@ -409,7 +416,7 @@ const Absensi = ({route, navigation}) => {
 
                     {/* response absen sakit*/}
 
-                    <ReactNativeModal isVisible={modalStoreSakit} onBackdropPress={() => setModalStoreSamodalStoreSakit(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <ReactNativeModal isVisible={modalStoreSakit} onBackdropPress={() => setModalStoreSakit(false)}   style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                         <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10, }}>
 
                             <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalStoreSakit(false)}} >

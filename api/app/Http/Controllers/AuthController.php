@@ -10,15 +10,14 @@ use App\Models\Profile;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Auth as AuthResource;
 
-class AuthController extends Controller
-{
+class AuthController extends Controller{
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['except' => ['login','tes','register']]);
     }
 
     function tes() {
-        return json_encode(['nama'=>'ondri']);
+        return json_encode(['nama'=>Hash::make('123456')]);
     }
     public function login(Request $request)
     {

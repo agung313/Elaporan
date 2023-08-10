@@ -1,26 +1,25 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput  } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, ExFoto, ExTtd, JabatanUser, LgBappeda, PasswordIcon } from '../../assets/images';
+import { AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, AddImg, ExTtd, JabatanUser, LgBappeda, PasswordIcon, EyeClose, EyeOpen, EyeOpen2 } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import { useIsFocused } from '@react-navigation/native';
 import ReactNativeModal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker'
+import { Circle } from 'react-native-animated-spinkit';
 
 const PassUsr = ({navigation}) => {
     const isFocused = useIsFocused();
     useEffect(()=>{
 
         if (isFocused) {
-            getMyProfile()        
+            getMyProfile()
+            // getKegiatan()        
         }
         
     },[navigation, isFocused])
 
-    const [password, setPassword] = useState()
-    const [newPassword, setNewPassword] = useState()
-    const [confirmPassword, setConfirmPassword] = useState()
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -43,9 +42,30 @@ const PassUsr = ({navigation}) => {
     const getYear = cekTgl.getFullYear()
 
     // my data
-    const [namaUser, setNamaUser] = useState('')
-    const [jabatanUser, setJabatanUser] = useState('')
-    const [emailUser, setEmailUser] = useState('')
+    const [profile, setProfile] = useState({
+        id:0,
+        nama:'-',
+        jabatan:'-',
+        email:'-',
+
+    })
+
+    const [formPassword, setFormPassword] = useState({
+        old:null,
+        new:null,
+        confirm:null
+    })
+
+    // modal
+    const [myModal, setMyModal] = useState({
+        contohTtd :false,
+        fotoNoPick : false,
+        success:false,
+        loading:false
+    });
+
+    const [modalLoad, setModalLoad] = useState(false)
+
     const base_url =ApiLink+"/api";
     const getMyProfile = async data =>{
 
@@ -55,11 +75,20 @@ const PassUsr = ({navigation}) => {
             const response = await axios.get(`${base_url}/user/profile`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data, "<==== my profile")
+
             if (response.status == 200) {
-                setNamaUser(response.data.nama)
-                setJabatanUser(response.data.jabatan)
-                setEmailUser(response.data.email)
+
+                setProfile({
+                    id: response.data.id,
+                    nama:response.data.nama,
+                    jabatan: response.data.jabatan,
+                    email:response.data.email
+                })
+
+                setImgFoto(response.data.URL)
+                setImgTtd(response.data.ttd)
+                // console.log(response.data,'<--- ttd')
+
             }
 
         } catch (error) {
@@ -67,18 +96,147 @@ const PassUsr = ({navigation}) => {
         }
     }
 
+    
+    const handlerUpdateFoto = async ()=>{
+        setModalLoad(true)
+        try{
+
+            if (!fileFoto) {
+                setModalLoad(false)
+                setMyModal({fotoNoPick:true})
+                return
+            }
+            var formData = new FormData()
+            
+            formData.append('foto',{ uri: fileFoto.uri, name: fileFoto.name, type: fileFoto.type })
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.post(base_url+"/user/foto/"+profile.id, formData,{headers:{
+                Authorization: `Bearer ${myToken}`,
+                Accept: 'application/json',
+                'Content-Type': `multipart/form-data`
+            }})            
+
+        
+            if (response.status===200) {
+                setModalLoad(false)
+                setMyModal({success:true})
+            }
+
+        } catch(error){
+            console.log(error, "<= eroro")
+        }
+    }     
+
+    const handlerUpdateTtd = async ()=>{
+        setModalLoad(true)
+        try{
+
+            if (!fileTtd) {
+                setModalLoad(false)
+                setMyModal({fotoNoPick:true})
+                return
+            }
+            var formData = new FormData()
+            
+            formData.append('ttd',{ uri: fileTtd.uri, name: fileTtd.name, type: fileTtd.type })
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.post(base_url+"/user/ttd/"+profile.id, formData,{headers:{
+                Authorization: `Bearer ${myToken}`,
+                Accept: 'application/json',
+                'Content-Type': `multipart/form-data`
+            }})            
+
+        
+            if (response.status===200) {
+                setModalLoad(false)
+                setMyModal({success:true})
+            }
+
+        } catch(error){
+            console.log(error, "<= eroro")
+        }
+    }         
+
+    const [modalPass, setModalPass] = useState(false)
+    const [modalChangePass, setModalChangePass] = useState(false)
+
+
+    const [errPass, setErrPass] = useState(false)
+
+    const [modalSuccess, setModalSuccess] = useState(false)
+
+    const handlerUpdatePassword = async data =>{
+        setModalChangePass(false)
+        setModalLoad(true) 
+
+        if(formPassword.old == null){
+            setModalLoad(false)
+            setModalPass(true)
+        }
+        else{
+            try {
+
+                const myToken = await AsyncStorage.getItem('AccessToken');    
+                const params ={
+                    password: formPassword.old,
+                    newPassword: formPassword.new,
+                    confirm_newPassword: formPassword.confirm
+                }
+    
+                const target_url = base_url+`/user/changePassword`
+    
+                const res1 = await axios.post(target_url,params,{headers:{
+                    Authorization: `Bearer ${myToken}`
+                }})
+
+                setModalLoad(false)
+                
+                if (!res1.data.error) {
+
+                    const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+                        headers: {
+                          Authorization: `Bearer ${myToken}`,
+                        },
+                      }
+                    );
+                
+                    if (response.status === 200) {
+                      // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+                      await AsyncStorage.removeItem('AccessToken');
+                      navigation.replace('MainSplash');
+                    } else {
+                      // Tangani respons yang tidak diharapkan jika diperlukan
+                      console.log('Logout tidak berhasil.');
+                    }
+
+                } else {
+                    setErrPass(true)   
+                }
+
+
+    
+            } catch (error) {
+                setModalLoad(false)
+                setErrPass(true)
+                console.log(error,"<--- error handler update")            
+            }
+        }
+        
+    }        
     // showcontent
     const [showContent, setShowContent] = useState(1)
-    console.log(showContent, "<====== showwwww")
     const toggleContent = (e)=>{
         setShowContent(e);
     }
 
-    // modal
-    const [isModalVisible, setModalVisible] = useState(false);
-
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
+    // showEye
+    const [showEye, setShowEye] = useState(1)
+    const toggleEye = (e)=>{
+        setShowEye(e);
     }
 
     // select image foto profile
@@ -95,11 +253,12 @@ const PassUsr = ({navigation}) => {
             setFileFoto(doc)
             setImgFoto(doc.uri)
 
+
         }catch(err){
             if(DocumentPicker.isCancel(e)){
-                console.log(e, "<---- user canceled file")
+
             }else{
-                console.log(err)
+
             }
         }
     } 
@@ -172,7 +331,7 @@ const PassUsr = ({navigation}) => {
 
                             <View style={{width:"100%", alignItems:"center"}}>
                                 <View style={{marginTop:10, alignItems:"center"}}>
-                                    {imgFoto ? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={ExFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
+                                    {imgFoto ? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                                     
                                     <TouchableOpacity style={{alignItems:"center", justifyContent:"center", height:30, width:110, marginTop:5, flexDirection:"row"}} onPress={selectImageFoto}>
                                         <Image source={AddImgUser} style={{width:25, height:25, marginTop:-3}}/>
@@ -183,7 +342,7 @@ const PassUsr = ({navigation}) => {
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}}>
+                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateFoto}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Foto</Text>
                                 </TouchableOpacity>
 
@@ -196,7 +355,7 @@ const PassUsr = ({navigation}) => {
                             <View style={{width:"100%", flexDirection:"row"}}>
                                 <View style={{marginTop:10, alignItems:"center", marginRight:10}}>
 
-                                    {imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>:<Image source={ExFoto} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>}
+                                    {imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>}
 
                                     <TouchableOpacity style={{alignItems:"center", justifyContent:"center", height:30, width:110, marginTop:5, flexDirection:"row"}} onPress={selectImageTtd}>
                                         <Image source={AddImgUser} style={{width:25, height:25, marginTop:-3}}/>
@@ -208,14 +367,14 @@ const PassUsr = ({navigation}) => {
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"600", textTransform:"capitalize", marginBottom:10}}>1. File Tanda tangan dalam bentuk image (png, jpg, jpeg)</Text>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"600", textTransform:"capitalize", marginBottom:5}}>2. background tanda tangan putih atau tanpa background</Text>
 
-                                    <TouchableOpacity style={{width:140, height:23, backgroundColor:"#0060cb", marginTop:5, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={toggleModal}>
+                                    <TouchableOpacity style={{width:140, height:23, backgroundColor:"#0060cb", marginTop:5, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={() => setMyModal({contohTtd:true})}>
                                         <Text style={{ color: "#fff", fontSize: 12, fontFamily: "Spartan", fontWeight: "900", marginTop:0}}>Contoh Tanda Tangan</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}}>
+                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateTtd}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Tanda Tangan</Text>
                                 </TouchableOpacity>
 
@@ -233,7 +392,7 @@ const PassUsr = ({navigation}) => {
                                 
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900"}}>Nama</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{namaUser}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{profile.nama}</Text>
                                 </View>
 
                             </View>
@@ -245,7 +404,7 @@ const PassUsr = ({navigation}) => {
 
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900"}}>Jabatan</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{jabatanUser}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{profile.jabatan}</Text>
                                 </View>
                             </View>
 
@@ -256,7 +415,7 @@ const PassUsr = ({navigation}) => {
 
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900"}}>Email</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{emailUser}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", paddingBottom:0, width:238,}}>{profile.email}</Text>
                                 </View>
                             </View>
 
@@ -270,7 +429,24 @@ const PassUsr = ({navigation}) => {
 
                     <View style={showContent===2 ? {display:"flex"} : {display:"none"}}>
                         <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10}}>
-                            <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>Update Password</Text>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <View>
+                                    <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>Update Password</Text>
+                                    <Text style={{color: "#b5b5b5", fontSize: 11, fontFamily: "Spartan", fontWeight: "900", marginBottom:5,textTransform:"capitalize", marginLeft:5}}>note : gunakan minimal 6 karakter password</Text>
+                                </View>
+
+                                {showEye==1 ?
+                                    <TouchableOpacity style={{marginLeft:"auto", justifyContent:"center", marginRight:10, padding:5}} onPress={()=>toggleEye(2)}>
+                                        <Image source={EyeClose} style={{width:30, height:30}}/>
+                                    </TouchableOpacity>
+                                :
+                                    <TouchableOpacity style={{marginLeft:"auto", justifyContent:"center", marginRight:10, backgroundColor:"#39a339", padding:5, borderRadius:10}} onPress={()=>toggleEye(1)}>
+                                        <Image source={EyeOpen2} style={{width:30, height:30}}/>
+                                    </TouchableOpacity>
+                                }
+                                
+                            </View>
+                            
 
                             <View style={{marginBottom:25, flexDirection:"row",marginTop:15, marginLeft:15}}>
                                 <View style={{justifyContent:"center"}}>
@@ -279,16 +455,29 @@ const PassUsr = ({navigation}) => {
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>Password Lama</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
-                                    <TextInput
-                                        placeholder='*******'
+                                    {showEye==1 ?
+                                        <TextInput
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
-                                        value={password}
-                                        onChangeText={(text) => setPassword(text)}
+                                        value={formPassword.old}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['old']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
-                                        secureTextEntry
+                                        secureTextEntry={true}
                                         // multiline
-                                    />
+                                        />
+                                    :
+                                        <TextInput
+                                            placeholder='-'
+                                            placeholderTextColor={"#000"}
+                                            value={formPassword.old}
+                                            onChangeText={(text) => setFormPassword({...formPassword, ['old']:text})}
+                                            style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
+                                            textContentType={'password'}
+                                            secureTextEntry={false}
+                                            // multiline
+                                        />
+                                    }
                                 </View>
                             </View>
                             
@@ -299,16 +488,29 @@ const PassUsr = ({navigation}) => {
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>New Password</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
-                                    <TextInput
-                                        placeholder='*******'
+                                    {showEye==1 ?
+                                        <TextInput
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
-                                        value={newPassword}
-                                        onChangeText={(text) => setNewPassword(text)}
+                                        value={formPassword.new}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['new']:text}) }
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
-                                        secureTextEntry
+                                        secureTextEntry={true}
                                         // multiline
-                                    />
+                                        />
+                                    :
+                                        <TextInput
+                                            placeholder='-'
+                                            placeholderTextColor={"#000"}
+                                            value={formPassword.new}
+                                            onChangeText={(text) => setFormPassword({...formPassword, ['new']:text}) }
+                                            style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
+                                            textContentType={'password'}
+                                            secureTextEntry={false}
+                                            // multiline
+                                        />
+                                    }
                                 </View>
                             </View>
 
@@ -319,25 +521,53 @@ const PassUsr = ({navigation}) => {
                                 <View style={{marginLeft:8, justifyContent:"center"}}>
                                     <Text style={{color:"#b5b5b5", fontSize:10, fontWeight:"900", marginBottom:-15}}>Confirm New Password</Text>
                                     {/* <Text style={{color:"#000", fontSize:12, fontWeight:"600"}}>Muhammad Agung Sholihhudin, S.T</Text> */}
-                                    <TextInput
-                                        placeholder='*******'
+                                    {showEye==1 ? 
+                                        <TextInput
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
-                                        value={confirmPassword}
-                                        onChangeText={(text) => setConfirmPassword(text)}
+                                        value={formPassword.confirm}
+                                        onChangeText={(text) => setFormPassword({...formPassword, ['confirm']:text})}
                                         style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
                                         textContentType={'password'}
-                                        secureTextEntry
+                                        secureTextEntry={true}
                                         // multiline
-                                    />
+                                        />
+                                    :
+                                        <TextInput
+                                            placeholder='-'
+                                            placeholderTextColor={"#000"}
+                                            value={formPassword.confirm}
+                                            onChangeText={(text) => setFormPassword({...formPassword, ['confirm']:text})}
+                                            style={{ color: "#000", borderBottomColor: "#000",borderBottomWidth: 1, borderStyle:"dashed", marginLeft:-3, paddingBottom:0, width:238, }}
+                                            textContentType={'password'}
+                                            secureTextEntry={false}
+                                            // multiline
+                                        />
+                                    }
+                                </View>
+                            </View>
+
+                            <View style={errPass==false? {display:"none"}:{width:"100%", alignItems:"center", marginBottom:20}}>
+                                <View style={{width:280, alignItems:"center",}}>
+                                    <Text style={{color:"red", fontSize:12, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>Password lama anda salah atau</Text>
+                                    <Text style={{color:"red", fontSize:12, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>new password dan confirm password tidak sama</Text>
+                                    
                                 </View>
                             </View>
     
-                            
+                            {/* setModalPass */}
 
                             <View style={{alignItems:"center"}}>
-                                <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
-                                </TouchableOpacity>
+                                {formPassword.old ==null || formPassword.new == null || formPassword.confirm == null ?
+                                    <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={() => setModalPass(true)}>
+                                        <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
+                                    </TouchableOpacity>
+                                :
+                                    <TouchableOpacity style={{width:WindowWidth*0.6, minHeight:30, backgroundColor:"#0060cb", borderRadius:15, elevation:5, marginBottom:15, padding:10, alignItems:"center", justifyContent:"center"}} onPress={() => setModalChangePass(true)}>
+                                        <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>Update Password</Text>
+                                    </TouchableOpacity>
+                                }
+                                
                             </View>
                         </View>
                         
@@ -347,11 +577,107 @@ const PassUsr = ({navigation}) => {
                 
             </View>
 
+            {/* modal succcess */}
+            <ReactNativeModal isVisible={myModal.success} onBackdropPress={() => setMyModal({fotoNoPick:false})} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyModal({success:false})} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Data Berhasil Diupdate.</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setMyModal({success:false})} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>
+
+            {/* modal Jika Foto Belum dipilih */}
+            <ReactNativeModal isVisible={myModal.fotoNoPick} onBackdropPress={() => setMyModal({fotoNoPick:false})} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyModal({fotoNoPick:false})} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Maaf ! Foto Terbaru Belum Dipilih.</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setMyModal({fotoNoPick:false})} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>      
+
+            {/* modal alert pass */}
+            <ReactNativeModal isVisible={modalChangePass} onBackdropPress={() => setModalChangePass(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalChangePass(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Apakah anda yakin merubah password ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalChangePass(false)}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerUpdatePassword}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>  
+
+            {/* modal Jika password Belum dipilih */}
+            <ReactNativeModal isVisible={modalPass} onBackdropPress={() => setModalPass(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalPass(false)} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Silakan lengkapi seluruh form yang ada</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setModalPass(false)} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>        
+
+            {/* modal Jika password succes*/}
+            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => setModalSuccess(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalSuccess(false)} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>selamat ! password anda berhasil diubah</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.navigate('PassUsr')} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>        
+
             {/* modal exTTD */}
-            <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+            <ReactNativeModal isVisible={myModal.contohTtd} onBackdropPress={() => setMyModal({contohTtd:false})}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "30%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={toggleModal}>
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyModal({contohTtd:false})}>
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
 
@@ -362,6 +688,10 @@ const PassUsr = ({navigation}) => {
                         <Image source={ExTtd} style={{width:100, height:100}}/>      
                     </View>
                 </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
             </ReactNativeModal>
 
         </ScrollView>

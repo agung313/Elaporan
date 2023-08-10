@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput  } from 'react-native'
-import React, { useState } from 'react'
-import { BackIcon, EmailIcon, LgBappeda, PasswordIcon } from '../../assets/images';
+import React, { useState, useEffect } from 'react'
+import { BackIcon, DotAksi,CloseIcont, EmailIcon, LgBappeda, PasswordIcon } from '../../assets/images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import ReactNativeModal from 'react-native-modal'
 
 const Pendahuluan = ({navigation}) => {
-    const [latarBelakang, setLatarBelakang] = useState('Perkembangan Teknologi Informasi (Information Technology, IT), khususnya dibidang Programming. Pemanfaatan berbagai program oleh instansi Pemerintah merupakan salah satu inovasi dengan memaksimalkan teknologi. Memacu kebutuhan akan data dan informasi lebih tertata dalam penunjang mobilitas kegiatan Bappeda Kota pekanbaru. ')
-    const [maksudTujuan, setMaksudTujuan] = useState('Teknologi Informasi dalam bidang pemrograman menunjang percepatan dan maintenance dalam berbagai pekerjaan Badan Perencanaan  Pembangunan  Daerah  Kota  Pekanbaru.')
-
-    const [ruangLingkup, setRuangLingkup] = useState()
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -26,12 +27,177 @@ const Pendahuluan = ({navigation}) => {
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
+    const base_url =ApiLink+"/api";
+
+
+    const [profile, setProfile] = useState({
+        latarBelakang:'-',
+        maksudTujuan:'-',
+        ruangLingkup:[],
+        id:0
+    })
+
+    const [myModal, setMyModal] = useState({
+        success:false,
+        
+    })
+
+    const [arrRuangLingkup, setArrRuangLingkup] = useState([])
+    const isFocused = useIsFocused();
+    useEffect(() => {
+
+        if (isFocused) {
+            getMyProfile()
+        }
+
+    }, [navigation, isFocused])
+    
+
+    const getMyProfile = async data =>{
+
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+
+            const response = await axios.get(`${base_url}/user/profile`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }})
+
+            if (response.status === 200) {
+                console.log(response.data, "daaaaaaaaa")
+
+                setProfile({
+                    latarBelakang:response.data.latar_belakang,
+                    maksudTujuan:response.data.tujuan,
+                    id:response.data.id
+                })       
+                if (response.data.ruang_lingkup) {
+                    setArrRuangLingkup(JSON.parse(response.data.ruang_lingkup))
+                }
+
+                var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
+
+                if (!checkTmpRL && arrRuangLingkup.length == 0) {
+
+                    await AsyncStorage.setItem('tmpRuangLingkup','')
+
+                }else if (!checkTmpRL && arrRuangLingkup.length > 0) {
+
+
+                    await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
+
+                } else{
+                    setArrRuangLingkup(checkTmpRL.split("%ry%"))
+                }
+            }        
+
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
+    }    
+
+
+    const handlerChange = (key, value) => {
+        setProfile(prevState => ({
+            ...prevState, 
+            [key]:value
+        }))
+    };
+
+    const handlerUpdate = async data=>{
+        
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
+
+            var paramsRL =''
+
+            if (checkTmpRL) {
+
+                paramsRL =JSON.stringify(checkTmpRL.split("%ry%"))
+            }
+
+
+            const params ={
+                latar_belakang: profile.latarBelakang,
+                tujuan: profile.maksudTujuan,
+                ruang_lingkup: paramsRL
+            }
+            console.log(params,"<====")
+            const response = await axios.post(base_url+"/user/update/"+profile.id,params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }})
+
+            if (response.status === 200) {
+                await AsyncStorage.removeItem('tmpRuangLingkup');
+                setMyModal({success:true})                
+            }
+
+        } catch (error) {
+            console.log(error, "error update pendahuluan")   
+        }
+        
+    }
+    
+    // showcontent
+    const [showContent, setShowContent] = useState(0)
+    const toggleContent = (e)=>{
+        console.log(e,'<---- e')
+        setShowContent(e);
+    }
+
+    const rowRuangLingkup =(item, index) =>{
+
+        return(
+                <View key={index} style={{width:"100%", minHeight:50, alignItems:"center" }}>
+                    <View style={{flexDirection:"row", width:"90%"}}>
+                        <View style={{width:"10%", minHeight:20, alignItems:"center", }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"500", textTransform:"capitalize"}}>
+                                {index+1}.
+                            </Text>
+                        </View>
+                        <View style={{width:"80%", minHeight:20, }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"500", textTransform:"capitalize"}} multiline>{item}</Text>
+                        </View>
+                        <View style={{width:"10%", minHeight:20, alignItems:"center", }}>
+                            {/* <TouchableOpacity onPress={ () => navigation.navigate("EditLingkup", {indexData:index}) } > */}
+                            {showContent==index+1?
+                                <TouchableOpacity onPress={() => toggleContent(0)}>
+                                    <Image source={DotAksi} style={{width:20, height:20}} />
+                                </TouchableOpacity>
+                            :
+                                <TouchableOpacity onPress={() => toggleContent(index+1)}>
+                                    <Image source={DotAksi} style={{width:20, height:20}} />
+                                </TouchableOpacity>
+                            }
+                            
+                            <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditLingkup", {indexData:index}) }>
+                                    <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+
+                </View>   
+        )
+    }
+
+    const customBackNavigation = async data =>{
+        await AsyncStorage.removeItem('tmpRuangLingkup');
+        navigation.navigate('MainUser')        
+    }
 
     return (
         <ScrollView>
             <View style={styles.header}>
                 <View style={{ width: "60%" }}>
-                    <TouchableOpacity onPress={()=> navigation.goBack()} style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity onPress={customBackNavigation} style={{ flexDirection: 'row' }}>
                         <View style={{ justifyContent:"center" }}>
                             <Image source={BackIcon} style={{ width: 20, height: 20 }}/>
                         </View>
@@ -60,9 +226,9 @@ const Pendahuluan = ({navigation}) => {
                                 <TextInput
                                         placeholder=''
                                         placeholderTextColor={"#000"}
-                                        value={latarBelakang}
+                                        value={profile.latarBelakang}
                                         keyboardType= "default"
-                                        onChangeText={(text) => setLatarBelakang(text)}
+                                        onChangeText={(text) => handlerChange('latarBelakang', text)}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -77,9 +243,9 @@ const Pendahuluan = ({navigation}) => {
                                 <TextInput
                                         placeholder=''
                                         placeholderTextColor={"#000"}
-                                        value={maksudTujuan}
+                                        value={profile.maksudTujuan}
                                         keyboardType= "default"
-                                        onChangeText={(text) => setMaksudTujuan(text)}
+                                        onChangeText={(text) => handlerChange('maksudTujuan', text)}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -89,45 +255,43 @@ const Pendahuluan = ({navigation}) => {
 
                     <View style={{marginBottom:25}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
-                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"center", marginBottom:15 }}>
-                            <View style={{width:WindowHeight*0.3, minHeight:30, borderBottomWidth:0.5, borderColor:"black"}}>
-                                <TextInput
-                                    placeholder='Input here'
-                                    placeholderTextColor={"#000"}
-                                    value={ruangLingkup}
-                                    keyboardType= "default"
-                                    onChangeText={(text) => setRuangLingkup(text)}
-                                    style={{ color: "#000" }}
-                                    multiline
-                                />
-                            </View>
-                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={() => navigation.navigate("Tambah")}>
+                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"flex-end", marginBottom:15 }}>
+
+                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={() => navigation.navigate("TambahLingkup")}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
-                            </TouchableOpacity>
-                            
+                            </TouchableOpacity>                            
                         </View>
+                        {
+                            arrRuangLingkup.length > 0 &&
+                            arrRuangLingkup.map((item, index)=>(
+                              rowRuangLingkup(item, index)
+                            ))
+                        }
+
                         <View >
-                            <View style={{width:"90%", minHeight:50 }}>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}}>1.</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>Pengembangan system Bappeda Kota Pekanbaru</Text>
-                                </View>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}}>2.</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>Maintenance terhadap system dan aplikasi Bappeda Kota Pekanbaru</Text>
-                                </View>
-                                <View style={{flexDirection:"row"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}}>3.</Text>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginBottom:10, marginLeft:15}} multiline>Melakukan konfigurasi dan update system informasi Bappeda Kota Pekanbaru</Text>
-                                </View>
-                            </View>
+
                         </View>
                     </View>
                     
                 </View>
+                <ReactNativeModal isVisible={myModal.success} onBackdropPress={() => navigation.goBack()}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
+                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.goBack()}>
+                                <Image source={CloseIcont} style={{width:30, height:30}}/>
+                            </TouchableOpacity>
+                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Data Berhasil Diupdate.</Text>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.goBack()}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                                </TouchableOpacity>      
+                            </View>
+                        </View>
+                </ReactNativeModal>            
                 <View style={{width:WindowWidth,marginBottom:15, padding:10, alignItems:"center" }}>
-                    <TouchableOpacity style={{flexDirection:"row", marginBottom:25, width:"95%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={() => navigation.navigate("MainUser")}>
+                    <TouchableOpacity style={{flexDirection:"row", marginBottom:25, width:"95%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdate}>
                         <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16, marginTop:5}}>Update</Text>
                     </TouchableOpacity>
                 </View>
