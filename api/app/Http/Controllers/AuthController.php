@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Profile;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Auth as AuthResource;
 
@@ -17,7 +18,10 @@ class AuthController extends Controller{
     }
 
     function tes() {
-        return json_encode(['nama'=>Hash::make('123456')]);
+
+
+        $bln = Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
+        return json_encode(['nama'=> $bln]);
     }
     public function login(Request $request)
     {

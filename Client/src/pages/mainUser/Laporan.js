@@ -7,12 +7,13 @@ import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import ReactNativeModal from 'react-native-modal';
-
-
+import Pdf from 'react-native-pdf'
+import { Grid  } from 'react-native-animated-spinkit'
 
 const Laporan = ({route, navigation}) => {
 
     const {bulan, tahun} = route.params
+
     const [cekBulan, setCekBulan] = useState(bulan)
 
     // width heigh
@@ -40,7 +41,7 @@ const Laporan = ({route, navigation}) => {
     const isFocused = useIsFocused();
     const [arrKegiatan, setArrKegiatan] = useState([])
     const [arrKendala, setArrKendala] = useState([])
-    const [adaDokumen, setAdaDokumen] = useState(false)
+    const [adaDokumen, setAdaDokumen] = useState()
     
     const [idDeleted, setIdDeleted] = useState()
     const [myModal, setMyModal] = useState({
@@ -51,7 +52,7 @@ const Laporan = ({route, navigation}) => {
 
     const handlerModal = (type, message=null)=>{
 
-        console.log(type)
+
         switch (type) {
             case 'hapus':
                 setMyModal({...myModal, hapus:true})
@@ -62,7 +63,7 @@ const Laporan = ({route, navigation}) => {
     // show aksi
     const [showContent, setShowContent] = useState(0)
     const toggleContent = (e)=>{
-        console.log(e)
+
         setShowContent(e);
     }
     useEffect(() => {
@@ -79,7 +80,8 @@ const Laporan = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
 
-            const target_url = `${base_url}/laporan?tahun=${tahun}&bulan=${bulan}`
+            const target_url = `${base_url}/document?tahun=${tahun}&bulan=${bulan}`
+
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
@@ -87,26 +89,37 @@ const Laporan = ({route, navigation}) => {
             if (response.status === 200) {
 
                 if (response.data.length > 0) {
+                    setAdaDokumen('as')
                     
                 }else{
 
                     setAdaDokumen(false)
                     getMyKegiatan()
-               
-                    var checkKendala = await AsyncStorage.getItem('tmpKendala')
-                    // if (!checkKendala && arrKendala.length == 0) {
-                    if (!checkKendala && checkKendala !== null) {
-                        await AsyncStorage.setItem('tmpKendala','')
-    
-                    // }else if (!checkKendala && arrKendala.length > 0) {
-    
-                    //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
-    
-                    } else{
-                        setArrKendala(checkKendala.split("(%ry%)"))
-                        // setArrRuangLingkup(checkKendala.split("%ry%"))
-                    }                    
                 }
+
+                var checkKendala = await AsyncStorage.getItem('tmpKendala')
+                // if (!checkKendala && arrKendala.length == 0) {
+                if (!checkKendala) {
+                    console.log('tida ada local')
+                    await AsyncStorage.setItem('tmpKendala','')
+
+                    if (adaDokumen) {
+                        let tmpArr = JSON.parse(response.data[0].kendala)
+                        setArrKendala(tmpArr)
+                        await AsyncStorage.setItem('tmpKendala',JSON.stringify(tmpArr))
+                    }
+
+                // }else if (!checkKendala && arrKendala.length > 0) {
+
+                //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
+                }else{
+                    console.log(checkKendala,"<---")
+                        setArrKendala(checkKendala.split("(%ry%)"))
+
+
+                    // setArrRuangLingkup(checkKendala.split("%ry%"))
+                }                    
+
 
             }        
 
@@ -304,26 +317,52 @@ const Laporan = ({route, navigation}) => {
             const params ={
                 kendala:JSON.stringify(arrKendala),
                 tahun:tahun,
-                bulan:bulan
+                bulan:bulan,
+                status:'draft'
             }
-            // const response = await axios.post(base_url+"/document/store",params,{headers:{
-            //     Authorization: `Bearer ${myToken}`
-            // }}).then((res)=>{
-            //     setModalLoad(false)
-            //     setModalSuccess(true)
-            // })
+            const response = await axios.post(base_url+"/document/store",params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
 
-
+            })
 
         } catch (error) {
-            console.log(error,"<--- error handler hadir")            
+            console.log(error,"<--- error handler draft")            
         }
     }
     const customBack = async () =>{
         await AsyncStorage.removeItem('tmpKendala');
         navigation.navigate('MainUser');
     }
+    const loadSpinner = () =>{
+        return (
+            <View style={{ alignItems:"center", justifyContent:"center" }}>
+                <Grid size={50} color="#008080"/>
+                <Text style={{ color:"#000", fontFamily:"Spartan", marginTop:10, fontSize:11, fontWeight:"bold" }}>Loading File......</Text>
+            </View>
+        )
+    }
+    const readLaporan = () =>{
 
+        return(
+            <View style={{ flex: 1,
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                marginTop: 5}}>
+
+                        <Pdf
+                            trustAllCerts={false}
+                            source={{uri:'http://10.0.2.2:8000/storage/pdf/hasil.pdf'}}
+                            style={{ width: 300,
+                                height: 300, flex:1}}
+                            renderActivityIndicator={loadSpinner}
+                        />
+                        <TouchableOpacity style={{backgroundColor:'rgba(235,233,230,0.5)', width:300, position:'absolute', height:'100%', justifyContent:'center', alignItems:'center', opacity:0.9 }}>
+                            <Text style={{color:'#000',backgroundColor:'#d8db2a', width:120, padding:6, textAlign:'center',borderRadius:10, fontWeight:'900'}}>Baca Laporan</Text>
+                        </TouchableOpacity>
+            </View >            
+        )
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -371,8 +410,8 @@ const Laporan = ({route, navigation}) => {
 
                     <View style={{width:"100%",marginBottom:15}}>
                     {
-                        !adaDokumen &&
-                            tabelKegiatan()
+                        adaDokumen == null ? tabelKegiatan(): readLaporan()
+                            
                     }
 
                     </View>

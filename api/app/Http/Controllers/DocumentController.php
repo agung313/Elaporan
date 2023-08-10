@@ -25,16 +25,18 @@ class DocumentController extends Controller
     public function index(Request $request)
     {
         if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
+
             $document = Document::select('documents.*','users.name','users.jabatan')
                     ->join('Users','users.id', '=', 'documents.id_user')
                     ->whereMonth('documents.bulan', $request->bulan)
                     ->where('documents.status', $request->status)
                     ->get();
         }else{
+
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
-                        ->whereMonth('documents.bulan', $request->bulan)
-                        ->whereYear('documents.bulan', $request->tahun)                        
+                        ->where('documents.bulan', $request->bulan)
+                        ->where('documents.tahun', $request->tahun)                        
                         // ->where('documents.status',$request->status)
                         ->where('documents.id_user',Auth::user()->id)
                         ->get();
@@ -47,13 +49,20 @@ class DocumentController extends Controller
     {
         $idUser = Auth::user()->id;
 
-        $tanggal = $request->bulan;
-        // $carbon = Carbon::createFromFormat('d-m-Y', $tanggal);
-
-        // $tahun = $carbon->year;
-        $saran = $request->saran;
         $kendala = $request->kendala;
-        // $bulan = $carbon->translatedFormat('F');
+        $status = $request->status;
+        $tahun = $request->tahun;
+
+        $bulan =  Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
+
+        // validasi laporan
+        if ($status === 'diajukan') {
+            if ($this->checkLaporan($idUser, $bulan)) {
+                return response()->json([
+                    'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+                ],400);
+            }        
+        }
 
         //user
         $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
@@ -62,17 +71,18 @@ class DocumentController extends Controller
                     ->first();
 
         if ($query) {
-            $query->tahun = $request->tahun;
-            $query->saran = $saran;
+            $query->tahun = $tahun;
             $query->kendala = $kendala;
-            $query->bulan = $request->bulan;
+            $query->bulan = $bulan;
         }
+
 
         if ($query->isComplete == false){
             return response()->json([
                 'messages' => 'silahkan lengkapi data profile anda terlebih dahulu'
             ],400);
         }
+
 
         //absensi
         $query2 = Absensi::select('absensis.*')
@@ -93,28 +103,7 @@ class DocumentController extends Controller
                     ->where('users.id', $idUser)
                     ->get();
 
-        //validasi laporan
-        $laporanIds = Laporan::join('Absensis','absensis.id','=','laporans.id_absensi')
-                    ->join('Users','users.id', '=', 'absensis.id_user')
-                    ->where('users.id', $idUser)
-                    ->pluck('laporans.id_absensi')
-                    ->toArray();
-        $absensiIds = Absensi::where('absensis.status', 'hadir')
-                    ->join('Users','users.id', '=', 'absensis.id_user')
-                    ->whereMonth('absensis.tanggal',$request->bulan)
-                    ->where('users.id', $idUser)
-                    ->pluck('absensis.id')
-                    ->toArray();
-
-        // $missingIds = array_diff($absensiIds, $laporanIds);
-
-        // if ($missingIds !== null){
-        //     return response()->json([
-        //         'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-        //     ],400);
-        // }
-
-        $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
+        $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala]);
 
         $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -123,8 +112,8 @@ class DocumentController extends Controller
         if (!File::isDirectory($directory)) {
             File::makeDirectory($directory, 0755, true, true);
         }
-
-        $pdf->save($filePath);
+        
+        $pdf->save($filePath); 
 
         $path = Storage::disk('public')->putFile('pdf', $filePath);
 
@@ -132,16 +121,58 @@ class DocumentController extends Controller
         $document = New Document;
         $document->id_user = $idUser;
         $document->path = $path;
-        $document->status = 'verifikasi';
+        $document->status = $status;
         $document->bulan = $request->bulan;
-        $document->saran = $request->solusi;
-        $document->kendala = $request->kendala;
+        $document->kendala = $kendala;
+        $document->tahun = $tahun;
         $document->save();
 
         return response()->json([
             'messages' => 'laporan diteruskan ke kasubag umum',
             'data' => $document
-         ],200);
+            ],200);
+    // }
+
+    }
+
+    function saveFile() {
+        
+    }
+
+    function createNewFile($arrParams){
+
+        try {
+
+
+            return $filePath;
+            
+        } catch (\Throwable $th) {
+            return $th;
+        }
+        
+    }
+
+    public function checkLaporan($idUser, $bulan){
+        //validasi laporan
+        $laporanIds = Laporan::join('Absensis','absensis.id','=','laporans.id_absensi')
+                    ->join('Users','users.id', '=', 'absensis.id_user')
+                    ->where('users.id', $idUser)
+                    ->pluck('laporans.id_absensi')
+                    ->toArray();
+        $absensiIds = Absensi::where('absensis.status', 'hadir')
+                    ->join('Users','users.id', '=', 'absensis.id_user')
+                    ->whereMonth('absensis.tanggal',$bulan)
+                    ->where('users.id', $idUser)
+                    ->pluck('absensis.id')
+                    ->toArray();
+
+        $missingIds = array_diff($absensiIds, $laporanIds);
+
+        if ($missingIds !== null){
+            return true;
+        }        
+
+        return false;
     }
 
     public function approve(Request $request, $id)
