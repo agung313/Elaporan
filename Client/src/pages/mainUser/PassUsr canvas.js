@@ -8,9 +8,10 @@ import { useIsFocused } from '@react-navigation/native';
 import ReactNativeModal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker'
 import { Circle } from 'react-native-animated-spinkit';
-import SignatureCapture from 'react-native-signature-capture';
+import SignatureCanvas from 'react-native-signature-canvas';
+import WebView from 'react-native-webview'
 
-const PassUsr = ({navigation,  }) => {
+const PassUsr = ({navigation, onOK }) => {
     
 
     const isFocused = useIsFocused();
@@ -295,31 +296,36 @@ const PassUsr = ({navigation,  }) => {
 
     // siganture ttd
     const [modalSignature, setModalSignature] = useState(false)
+
     const signatureRef = useRef();
-
-    const handleSave = () => {
-        if (signatureRef.current) {
-        signatureRef.current.saveImage();
-        setModalSignature(false)
-        }
-    };
-
     
-    const onSaveEvent = (result) => {
-        //result.encoded - for the base64 encoded png
-        //result.pathName - for the file path name
-        console.log(result.pathName, "<==== lokasi signature");
-    }
-    const onDragEvent = () => {
-         // This callback will be called when the user enters signature
-        console.log("dragged");
-    }
 
     const handleClear = () => {
-        if (signatureRef.current) {
-        signatureRef.current.resetImage();
-        }
+        signatureRef.current.clearSignature();
     };
+
+    const handleSave = async () => {
+        // const signature = signatureRef.current.saveSignature();
+        if (signatureRef.current) {
+            const signature = await signatureRef.current.getData();
+            // Now you have the signature data, you can save it wherever you need.
+            console.log('Signature Data:', signature);
+          }
+        else{
+            // Lakukan sesuatu dengan data tanda tangan, misalnya simpan ke berkas atau kirim ke server
+            console.log( "<===== data signature");
+        }
+        
+    };
+
+    const webStylee = `.m-signature-pad--footer
+        .save {
+            display: none;
+        }
+        .clear {
+            display: none;
+        }
+    `;
 
     return (
         <ScrollView>
@@ -383,6 +389,26 @@ const PassUsr = ({navigation,  }) => {
                         <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10}}>
                             <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>File Tanda Tangan</Text>
 
+                            {/* <View style={{width:"100%", flexDirection:"row"}}>
+                                <View style={{marginTop:10, alignItems:"center", marginRight:10}}>
+
+                                    {imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:5,}} resizeMode='cover'/>}
+
+                                    <TouchableOpacity style={{alignItems:"center", justifyContent:"center", height:30, width:110, marginTop:5, flexDirection:"row"}} onPress={selectImageTtd}>
+                                        <Image source={AddImgUser} style={{width:25, height:25, marginTop:-3}}/>
+                                        
+                                        <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:5, marginLeft:5}}>Add File</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{marginTop:10, width:"60%"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", textTransform:"capitalize", marginBottom:10}}>1. File Tanda tangan dalam bentuk image (png, jpg, jpeg)</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"600", textTransform:"capitalize", marginBottom:5}}>2. background tanda tangan putih atau tanpa background</Text>
+
+                                    <TouchableOpacity style={{width:140, height:23, backgroundColor:"#0060cb", marginTop:5, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={() => setMyModal({contohTtd:true})}>
+                                        <Text style={{ color: "#fff", fontSize: 12, fontFamily: "Spartan", fontWeight: "900", marginTop:0}}>Contoh Tanda Tangan</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View> */}
                             <View style={{width:"100%", alignItems:"center", marginTop:20}}>
                                 <Image source={ExTtd} style={{width:100, height:100}}/>
                             </View>
@@ -690,29 +716,19 @@ const PassUsr = ({navigation,  }) => {
 
             {/* modal signature */}
             <ReactNativeModal isVisible={modalSignature} onBackdropPress={() => setModalSignature(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "70%", backgroundColor: "#fff", borderRadius: 10,  padding:10,  }}>
-                    <TouchableOpacity  style={{alignItems:'flex-end', marginTop:10}} onPress={() => setModalSignature(false)} >
-                        <Image source={CloseIcont} style={{width:30, height:30}}/>
-                    </TouchableOpacity>
-                    <View style={{width:"100%",  alignItems:"center", marginBottom:20, marginTop:-20}}>
+                <View style={{ width: "90%", height: "70%", backgroundColor: "#fff", borderRadius: 10,  padding:10, alignItems:"center" }}>
+                    <View style={{width:"100%",  alignItems:"center", marginBottom:20, marginTop:20}}>
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Update Tanda Tangan</Text>
                     </View>
-
-                    <SignatureCapture
-                        style={{ width:300, height:300}}
+                    <SignatureCanvas 
                         ref={signatureRef}
-                        saveImageFileInExtStorage={true}
-                        showNativeButtons={false}
-                        backgroundColor="#d9dcdf"
-                        onSaveEvent={onSaveEvent}
-                        onDragEvent={onDragEvent}
-                        // strokeColor="red"
-                        minStrokeWidth={13}
-                    maxStrokeWidth={13}
+                        canvasProps={{ width: 300, height: 200, style: styles.signatureCanvas }}
+                        clearText='Hapus'
+                        confirmText='Simpan'
+                        descriptionText=""
+                        webStyle={webStylee}
                     />
-                        
-                    
-                    <View style={{width:"100%", flexDirection:"row",  justifyContent:"center", marginTop:20 }}>
+                    <View style={{width:"100%", flexDirection:"row",  justifyContent:"center", marginBottom:30 }}>
                         <TouchableOpacity style={{width:"40%", height:40, alignItems:"center", justifyContent:"center", backgroundColor:"#0060cb", borderRadius:10, marginRight:15}} onPress={handleClear}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Clear</Text> 
                         </TouchableOpacity>
@@ -745,5 +761,9 @@ const styles = StyleSheet.create({
     lgHead: {
         height: 45,
         width: 45
+    },
+    signatureCanvas: {
+        borderColor: 'black',
+        borderWidth: 1,
     },
 })
