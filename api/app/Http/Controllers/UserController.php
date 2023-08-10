@@ -75,6 +75,7 @@ class UserController extends Controller
     }
     public function updateFoto(Request $request, $id)
     {
+
         $validator = Validator::make($request->all(), [
             'foto' => 'required',
         ]);

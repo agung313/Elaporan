@@ -90,7 +90,7 @@ const PassUsr = ({navigation,  }) => {
 
                 setImgFoto(response.data.URL)
                 setImgTtd(response.data.ttd)
-                // console.log(response.data,'<--- ttd')
+                console.log(response.data.ttd,'<--- ttd')
 
             }
 
