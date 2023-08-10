@@ -22,7 +22,7 @@ Route::controller(UserController::class)->prefix('user')->group(function () {
     Route::post('/changePassword', 'changePassword');
     Route::get('/profile', 'profile');
     Route::get('/history', 'history');
-    Route::post('/update/{id}', 'update');
+    Route::post('/update', 'update');
 });
 
 //ABSENSI

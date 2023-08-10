@@ -28,35 +28,43 @@ class UserController extends Controller
         return response(new UserResource($user));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'latar_belakang' => 'required|string|max:700',
-            'tujuan' => 'required|string|max:700',
-            'ruang_lingkup' => 'required',
-            'ttd' => 'required'
-        ]);
+        $users = Auth::user();
 
-        if ($validator->fails()) {
-            return response()->json([
-                'messages' => 'Error validation',
-                'error' =>  $validator->errors()
-            ]);
+        if($users->role != "kasum" || $users->role != "admin"){
+
+            if($request->file != true){
+                $validator = Validator::make($request->all(), [
+                    'latar_belakang' => 'required|string|max:700',
+                    'tujuan' => 'required|string|max:700',
+                    'ruang_lingkup' => 'required'
+                ]);
+        
+                if ($validator->fails()) {
+                    return response()->json([
+                        'messages' => 'Error validation',
+                        'error' =>  $validator->errors()
+                    ]);
+                }
+            }
         }
 
-        $idProfile = Profile::select('id')->where('id_user', $id)->first();
+        
+        $idProfile = Profile::select('*')->where('id_user', $users->id)->first();
 
         if ($request->file) {
             $path = $request->file('foto')->store('public');
+            $path2 = $request->file('ttd')->store('public');
         }
 
         $user = Profile::findorNew($idProfile->id);
         $user->foto = $request->foto ? $path : null;
-        $user->id_user = $id;
-        $user->latar_belakang = $request->latar_belakang;
-        $user->tujuan = $request->tujuan;
-        $user->ruang_lingkup = $request->ruang_lingkup;
-        $user->ttd = $request->ttd;
+        $user->ttd = $request->ttd ? $path2 : null;
+        $user->id_user = $users->id;
+        $user->latar_belakang = $request->latar_belakang == null ? $idProfile->latar_belakang : $request->latar_belakang;
+        $user->tujuan = $request->tujuan == null ? $idProfile->tujuan : $request->tujuan;
+        $user->ruang_lingkup = $request->ruang_lingkup == null ? $idProfile->ruang_lingkup : $request->ruang_lingkup;
         $user->isComplete = true;
         $user->save();
 
