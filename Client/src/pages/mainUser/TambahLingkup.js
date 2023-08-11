@@ -60,11 +60,14 @@ const TambahLingkup = ({navigation}) => {
     const [modalForm, setModalForm] = useState(false)
 
     const saveItemArray = async ()=>{
-        setModalForm(true)
-        // var tmpData = tmpArr
-        // tmpData.push(newRL)   
-        // await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("%ry%"))
-        // navigation.goBack()
+        if (newRL==null && newRL == '') {
+            setModalForm(true)                    
+        }
+
+        var tmpData = tmpArr
+        tmpData.push(newRL)   
+        await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("%ry%"))
+        navigation.goBack()
     }
 
 
