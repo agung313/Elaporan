@@ -132,6 +132,10 @@ const PassUsr = ({navigation,  }) => {
         }
     }     
 
+    const removeTmp = async()=>{
+        await AsyncStorage.removeItem('tmpKendala');
+        await AsyncStorage.removeItem('tmpRuangLingkup');
+    }
     const handlerUpdateTtd = async ()=>{
         setModalLoad(true)
         try{

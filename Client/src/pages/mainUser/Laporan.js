@@ -90,7 +90,7 @@ const Laporan = ({route, navigation}) => {
             if (response.status === 200) {
 
                 if (response.data.length > 0) {
-                    setAdaDokumen('as')
+                    setAdaDokumen(response.data[0].URL)
                     
                 }else{
 
@@ -101,7 +101,8 @@ const Laporan = ({route, navigation}) => {
                 var checkKendala = await AsyncStorage.getItem('tmpKendala')
                 // if (!checkKendala && arrKendala.length == 0) {
                 if (!checkKendala) {
-                    console.log('tida ada local')
+                    console.log('tidak ada ')
+
                     await AsyncStorage.setItem('tmpKendala','')
 
                     if (adaDokumen) {
@@ -114,11 +115,14 @@ const Laporan = ({route, navigation}) => {
 
                 //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
                 }else{
-                    console.log(checkKendala,"<---")
-                        setArrKendala(checkKendala.split("(%ry%)"))
 
+                    if (checkKendala.includes('(%ry%)')) {
+                        setArrKendala(checkKendala.split("(%ry%)"))                        
+                    } else {
+                        
+                        setArrKendala(JSON.parse(checkKendala))
+                    }
 
-                    // setArrRuangLingkup(checkKendala.split("%ry%"))
                 }                    
 
 
@@ -312,6 +316,7 @@ const Laporan = ({route, navigation}) => {
     }
     const customBack = async () =>{
         await AsyncStorage.removeItem('tmpKendala');
+        
         navigation.navigate('MainUser');
     }
     const loadSpinner = () =>{
@@ -345,7 +350,7 @@ const Laporan = ({route, navigation}) => {
 
                         <Pdf
                             trustAllCerts={false}
-                            source={{uri:'http://10.0.2.2:8000/storage/pdf/hasil.pdf'}}
+                            source={{uri:adaDokumen}}
                             style={{ width: 300,
                                 height: 300, flex:1}}
                             renderActivityIndicator={loadSpinner}
