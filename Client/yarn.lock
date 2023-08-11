@@ -3303,6 +3303,17 @@ escape-string-regexp@^1.0.5:
   integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
 
 escape-string-regexp@^2.0.0:
+escape-string-regexp@2.0.0, escape-string-regexp@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
+  integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
+
+escape-string-regexp@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz"
+  integrity sha512-vbRorB5FUQWvla16U8R/qgaFIya2qGzwDrNmCZuYKrbdSUMG6I1ZCGQRefkRVhuOkIGVne7BQ35DSfo1qvJqFg==
+
+escape-string-regexp@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/escape-string-regexp/-/escape-string-regexp-2.0.0.tgz"
   integrity sha512-UpzcLCXolUWcNu5HtVMHYdXJjArjsF9C0aNnquZYY4uW/Vu0miy5YoWvbV345HauVvcAUnpRuhMMcqTcGOY2+w==
@@ -4145,7 +4156,15 @@ internal-slot@^1.0.3, internal-slot@^1.0.5:
     has "^1.0.3"
     side-channel "^1.0.4"
 
+<<<<<<< HEAD
 invariant@*, invariant@^2.2.4, invariant@2.2.4:
+=======
+<<<<<<< HEAD
+invariant@*, invariant@2.2.4, invariant@^2.2.4:
+=======
+invariant@*, invariant@^2.2.4, invariant@2.2.4:
+>>>>>>> ac0934d (update laporan)
+>>>>>>> 80463f7
   version "2.2.4"
   resolved "https://registry.npmjs.org/invariant/-/invariant-2.2.4.tgz"
   integrity sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==
@@ -6207,7 +6226,7 @@ prompts@^2.0.1, prompts@^2.4.0:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@*, prop-types@^15.5.8, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
+prop-types@*, prop-types@^15.5.10, prop-types@^15.5.8, prop-types@^15.6.2, prop-types@^15.7.2, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -6391,6 +6410,18 @@ react-native-screens@^3.22.0, "react-native-screens@>= 3.0.0":
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
+react-native-signature-canvas@^4.5.1:
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/react-native-signature-canvas/-/react-native-signature-canvas-4.5.1.tgz#7b363bc6051e919c29696da181e8b9390aa3f7da"
+  integrity sha512-YCiyIMWXiv9fn1JdKAb++b3AkKG5R1GQIXh+cAipxHV1GGZXKVuBukVo5WQ2rL1P9NOGpIOpWyeq0NXdGk41Rw==
+
+react-native-signature-capture@^0.4.12:
+  version "0.4.12"
+  resolved "https://registry.yarnpkg.com/react-native-signature-capture/-/react-native-signature-capture-0.4.12.tgz#9e24cdd2a45fd9eeeb70f78ab5f1083052388aba"
+  integrity sha512-DtRqYABtrXxcKhMYJaRFcptAgugDjsn/09KCbcNtZHVtEFyUvdSriOx2i6OgtTRHlQbN/+YBWnezeikcXu7UnQ==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-skeleton-placeholder@^5.2.4:
   version "5.2.4"
   resolved "https://registry.npmjs.org/react-native-skeleton-placeholder/-/react-native-skeleton-placeholder-5.2.4.tgz"
@@ -6413,13 +6444,29 @@ react-native-svg@^13.9.0, "react-native-svg@> 6.4.1":
 
 react-native-webview@^13.3.1:
   version "13.3.1"
+<<<<<<< HEAD
   resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.3.1.tgz"
+=======
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/react-native-webview/-/react-native-webview-13.3.1.tgz#b368c3fb6a28c81e8ffe74208c899c95ee633ce7"
+=======
+  resolved "https://registry.npmjs.org/react-native-webview/-/react-native-webview-13.3.1.tgz"
+>>>>>>> ac0934d (update laporan)
+>>>>>>> 80463f7
   integrity sha512-jTRC7bZB1gedAbZGGzQUnsaU+avZcZrKLT8g+RR0bsGW80tUOvwezwznKvQ+m1xXOpGFTD1B3+AazUP7+jy4mg==
   dependencies:
     escape-string-regexp "2.0.0"
     invariant "2.2.4"
 
+<<<<<<< HEAD
 react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.72 || 1000.0.0", "react-native@>= 0.50.0", "react-native@>= 0.64.3", react-native@>=0.50.1, react-native@>=0.57, react-native@>=0.65.0, react-native@0.68.0:
+=======
+<<<<<<< HEAD
+react-native@0.68.0:
+=======
+react-native@*, "react-native@^0.0.0-0 || 0.60 - 0.72 || 1000.0.0", "react-native@>= 0.50.0", "react-native@>= 0.64.3", react-native@>=0.50.1, react-native@>=0.57, react-native@>=0.65.0, react-native@0.68.0:
+>>>>>>> ac0934d (update laporan)
+>>>>>>> 80463f7
   version "0.68.0"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.68.0.tgz"
   integrity sha512-Qi8KpG9rqiU0hVp05GKkuRe8iAVhblYMwpnwG3wkBi99Z/X8iZ0jD1b1UW0/y6oesmCyGQAxpsB36imU8zg1AQ==

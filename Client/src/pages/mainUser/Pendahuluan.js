@@ -254,10 +254,10 @@ const Pendahuluan = ({navigation}) => {
                     </View>
 
                     <View style={{marginBottom:25}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
-                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"flex-end", marginBottom:15 }}>
-
-                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={() => navigation.navigate("TambahLingkup")}>
+                        
+                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"center", marginBottom:15 }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
+                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10, marginTop:-5}} onPress={() => navigation.navigate("TambahLingkup")}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
                             </TouchableOpacity>                            
                         </View>

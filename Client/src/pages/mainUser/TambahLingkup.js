@@ -37,7 +37,7 @@ const TambahLingkup = ({navigation}) => {
 
     // state New Ruang Lingkup
     const isFocused = useIsFocused();
-    const [newRL, setNewRL] = useState('-')
+    const [newRL, setNewRL] = useState('')
     const [tmpArr, setTmpArr] = useState([])
     const [nomorRL, setNomorRL] = useState()
 
@@ -56,12 +56,15 @@ const TambahLingkup = ({navigation}) => {
         setTmpArr(ruangLingkupOld.split("%ry%"))
 
     }    
-    const saveItemArray = async ()=>{
 
-        var tmpData = tmpArr
-        tmpData.push(newRL)   
-        await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("%ry%"))
-        navigation.goBack()
+    const [modalForm, setModalForm] = useState(false)
+
+    const saveItemArray = async ()=>{
+        setModalForm(true)
+        // var tmpData = tmpArr
+        // tmpData.push(newRL)   
+        // await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("%ry%"))
+        // navigation.goBack()
     }
 
 
@@ -97,7 +100,7 @@ const TambahLingkup = ({navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
                                 <TextInput
-                                    placeholder=''
+                                    placeholder='-'
                                     placeholderTextColor={"#000"}
                                     value={newRL}
                                     keyboardType= "default"
@@ -118,6 +121,24 @@ const TambahLingkup = ({navigation}) => {
                     </View>
                 </View>
             </View>
+
+            {/* modal Jika form tidak di isi */}
+            <ReactNativeModal isVisible={modalForm} onBackdropPress={() => setModalForm(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalForm(false)} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Silakan lengkapi seluruh form yang ada</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setModalForm(false)} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>
 
         </ScrollView>
     )
