@@ -115,7 +115,7 @@ const PassUsr = ({navigation,  }) => {
 
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-            const response = await axios.post(base_url+"/user/foto/"+profile.id, formData,{headers:{
+            const response = await axios.post(base_url+"/user/foto", formData,{headers:{
                 Authorization: `Bearer ${myToken}`,
                 Accept: 'application/json',
                 'Content-Type': `multipart/form-data`
@@ -312,16 +312,31 @@ const PassUsr = ({navigation,  }) => {
     const onSaveEvent = async(result) => {
         //result.encoded - for the base64 encoded png
         //result.pathName - for the file path name
+
+        try {
+            
+            const params ={
+                ttd:result.encoded
+            }
+
         const myToken = await AsyncStorage.getItem('AccessToken');    
 
-
-        const response = await axios.post(base_url+"/user/tes", formData,{headers:{
+        const response = await axios.post(base_url+"/user/ttd", params,{headers:{
             Authorization: `Bearer ${myToken}`,
             Accept: 'application/json',
             'Content-Type': `multipart/form-data`
         }})            
 
-        console.log(result.encoded, "<==== lokasi signature");
+        if (response.status===200) {
+            
+            setMyModal({myModal:true})
+            getMyProfile()
+        }        
+    } catch (error) {
+        console.log(error.result)       
+    }
+        
+
     }
     const onDragEvent = () => {
          // This callback will be called when the user enters signature
@@ -396,8 +411,8 @@ const PassUsr = ({navigation,  }) => {
                         <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10}}>
                             <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>File Tanda Tangan</Text>
 
-                            <View style={{width:"100%", alignItems:"center", marginTop:20}}>
-                                <Image source={ExTtd} style={{width:100, height:100}}/>
+                            <View style={{width:"100%", alignItems:"center", marginTop:20}}>{imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100 }} resizeMode='cover'/>:
+                                <Image source={ExTtd} style={{width:100, height:100}}/>}
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
@@ -716,7 +731,7 @@ const PassUsr = ({navigation,  }) => {
                         ref={signatureRef}
                         // saveImageFileInExtStorage={true}
                         showNativeButtons={false}
-                        backgroundColor="#d9dcdf"
+                        backgroundColor="#ffffff"
                         onSaveEvent={onSaveEvent}
                         onDragEvent={onDragEvent}
                         // strokeColor="red"

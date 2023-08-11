@@ -20,6 +20,8 @@ Route::controller(AuthController::class)->prefix('auth')->group(function () {
 //USER
 Route::controller(UserController::class)->prefix('user')->group(function () {
     Route::post('/changePassword', 'changePassword');
+    Route::post('/foto', 'updateFoto');
+    Route::post('/ttd', 'updateTtd');
     Route::get('/profile', 'profile');
     Route::get('/history', 'history');
     Route::post('/update', 'update');

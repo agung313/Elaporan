@@ -73,9 +73,9 @@ class UserController extends Controller
             'data' => $user
         ],200);
     }
-    public function updateFoto(Request $request, $id)
+    public function updateFoto(Request $request)
     {
-
+        $id = Auth::user()->id;
         $validator = Validator::make($request->all(), [
             'foto' => 'required',
         ]);
@@ -109,8 +109,12 @@ class UserController extends Controller
         ],200);
     }
 
-    public function updateTtd(Request $request, $id)
+    public function updateTtd(Request $request)
     {
+
+
+        $id = Auth::user()->id;
+
         $validator = Validator::make($request->all(), [
             'ttd' => 'required',
         ]);
@@ -132,11 +136,23 @@ class UserController extends Controller
             File::delete($ttdPath);
 
         }
-        $path = $request->file('ttd')->store('public/ttd');
-        $path = preg_replace('/public/','', $path);
+
+        $decodedTTd = base64_decode($request->ttd);
+
+        // Generate a unique filename
+        $filename = uniqid() . '.png'; // Change the extension as needed
+
+        // Specify the storage path
+        $storagePath = storage_path('app/public/ttd');
+
+        // Save the decoded data to the storage path
+        file_put_contents($storagePath . '/' . $filename, $decodedTTd);
+
+        // $path = $request->file('ttd')->store('public/ttd');
+        // $path = preg_replace('/public/','', $path);
 
 
-        $user->ttd = $path;
+        $user->ttd = '/ttd/'.$filename;
         $user->update();
 
         return response()->json([
