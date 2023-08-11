@@ -110,7 +110,7 @@ const PassUsr = ({navigation,  }) => {
                 return
             }
             var formData = new FormData()
-            
+
             formData.append('foto',{ uri: fileFoto.uri, name: fileFoto.name, type: fileFoto.type })
 
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -309,10 +309,19 @@ const PassUsr = ({navigation,  }) => {
     };
 
     
-    const onSaveEvent = (result) => {
+    const onSaveEvent = async(result) => {
         //result.encoded - for the base64 encoded png
         //result.pathName - for the file path name
-        console.log(result.pathName, "<==== lokasi signature");
+        const myToken = await AsyncStorage.getItem('AccessToken');    
+
+
+        const response = await axios.post(base_url+"/user/tes", formData,{headers:{
+            Authorization: `Bearer ${myToken}`,
+            Accept: 'application/json',
+            'Content-Type': `multipart/form-data`
+        }})            
+
+        console.log(result.encoded, "<==== lokasi signature");
     }
     const onDragEvent = () => {
          // This callback will be called when the user enters signature
@@ -705,14 +714,14 @@ const PassUsr = ({navigation,  }) => {
                     <SignatureCapture
                         style={{ width:300, height:300}}
                         ref={signatureRef}
-                        saveImageFileInExtStorage={true}
+                        // saveImageFileInExtStorage={true}
                         showNativeButtons={false}
                         backgroundColor="#d9dcdf"
                         onSaveEvent={onSaveEvent}
                         onDragEvent={onDragEvent}
                         // strokeColor="red"
                         minStrokeWidth={13}
-                    maxStrokeWidth={13}
+                        maxStrokeWidth={13}
                     />
                         
                     

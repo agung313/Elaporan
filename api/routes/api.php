@@ -52,4 +52,6 @@ Route::controller(DocumentController::class)->prefix('document')->group(function
     Route::post('/store', 'store');
     Route::post('/upload', 'upload');
     Route::post('/approve/{id}', 'approve');
+    Route::delete('/{id}', 'destroy');
+
 });
