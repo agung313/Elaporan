@@ -1,10 +1,14 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images'
 import ReactNativeModal from 'react-native-modal';
 import { Circle } from 'react-native-animated-spinkit';
+import { useIsFocused } from "@react-navigation/native";
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
-const DetailPengajuan = ({navigation}) => {
+const DetailPengajuan = ({route ,navigation}) => {
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -39,6 +43,16 @@ const DetailPengajuan = ({navigation}) => {
 
     const [modaAlertPengajuan, setModaAlertPengajuan] = useState(false)
 
+    const isFocused = useIsFocused();
+    const base_url= ApiLink+'/api'
+    const {idPengajuan} = route.params
+    useEffect(() => {
+        if (isFocused) {
+            getDetail()
+        }
+    }, [navigation, isFocused])
+    
+
     const tolakPengajuan=()=>{
         setPengajuan(0)
         setModaAlertPengajuan(true)
@@ -54,6 +68,28 @@ const DetailPengajuan = ({navigation}) => {
         setModalLoad(false)
         navigation.navigate("MainKasum")
     }
+
+    const getDetail = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url = `${base_url}/absen?detail=true&id=${idPengajuan}`
+            console.log(target_url)
+            await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{     
+                // console.log(res.data[0].foto, "<==== lokasi foto")       
+                
+
+            }) 
+            
+
+
+        } catch (error) {
+            console.log(error, "error get absensi")   
+        }
+    }    
 
     return (
         <ScrollView>

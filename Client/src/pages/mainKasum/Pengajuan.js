@@ -1,14 +1,19 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { BackIcon, LgBappeda, SakitIcont, SakitIzin } from '../../assets/images'
 import SearchBar from 'react-native-dynamic-search-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const Pengajuan = ({navigation}) => {
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
-
+    const isFocused = useIsFocused();
+    const base_url = ApiLink+'/api'
     // date time tanggal
     const cekTgl = new Date
     const localeTime = cekTgl.toLocaleTimeString()
@@ -23,13 +28,88 @@ const Pengajuan = ({navigation}) => {
 
     const getYear = cekTgl.getFullYear()
 
+    const [arrPengajuan, setArrPengajuan] = useState([])
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
+    useEffect(() => {
+      
+        if (isFocused) {
+            handlerGetPengajuan()
+        }
 
+    }, [navigation, isFocused])
+    
+    const handlerGetPengajuan = async ()=>{
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url =`${base_url}/absen?izinSakit=true`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+            // console.log(response.data, "<==== my profile")
+            if (response.status == 200) {
+                setArrPengajuan(response.data)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }        
+    }
+
+    const searchFilterFunction = (text) => {
+        // Check if searched text is not blank
+            if (text) {
+
+                const newData = rawHistory.filter(
+                function (params) {
+                    
+                    
+                    const itemData = params.tanggal
+                    ?  params.tanggal.toUpperCase() 
+                    : ''.toUpperCase();
+
+                    const textData = text.toUpperCase();
+                    return itemData.indexOf(textData) > -1;
+                   
+                }
+                );
+                setFilteredHistory(newData);
+                setSearch(text);
+            } else {
+
+                setFilteredHistory(rawHistory);
+                setSearch(text);
+            }
+    };
+
+    const rowData = (item, index)=>{
+        console.log(item)
+        return(
+                <>
+                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan", {idPengajuan:item.id})}>
+                        <Image source={item.status =='izin' ? SakitIcont:SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                        <View style={{marginLeft:10}}>
+                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : {item.hari+", "+item.tanggal}</Text>
+                        </View>
+                    </TouchableOpacity>
+
+                    {/* <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
+                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                        <View style={{marginLeft:10}}>
+                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : Rabu, 22 Juni 2023</Text>
+                        </View>
+                    </TouchableOpacity>             */}
+                </>            
+        )
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -55,28 +135,20 @@ const Pengajuan = ({navigation}) => {
 
             <View style={{alignItems:"center"}}>
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
-                    <SearchBar
-                        placeholder='Search here'
+                <SearchBar
+                        placeholder='Search tanggal absensi'
                         style={{marginBottom:20, width:"100%"}}
+                        onChangeText={(text) => searchFilterFunction(text)}
                     />
 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data Pengajuan Kehadiran THL-IT</Text>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
-                        <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : Rabu, 22 Juni 2023</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
-                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : Rabu, 22 Juni 2023</Text>
-                        </View>
-                    </TouchableOpacity>
+                    {
+                        arrPengajuan.length > 0 &&
+                        arrPengajuan.map((item,index)=>(
+                            rowData(item, index)
+                        ))
+                    }
                 </View>
             </View>
         </ScrollView>

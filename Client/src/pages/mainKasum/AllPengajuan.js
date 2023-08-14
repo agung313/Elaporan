@@ -1,13 +1,18 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AbsensiKurang, Agenda, BackIcon, LgBappeda, SakitIcont, SakitIzin, TidakHadir } from '../../assets/images'
 import SearchBar from 'react-native-dynamic-search-bar';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const AllPengajuan = ({navigation}) => {
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
+
+    const isFocused = useIsFocused();
 
     // date time tanggal
     const cekTgl = new Date
@@ -22,6 +27,8 @@ const AllPengajuan = ({navigation}) => {
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
+
+
 
     return (
         <ScrollView>
@@ -48,7 +55,7 @@ const AllPengajuan = ({navigation}) => {
             
             <View style={{alignItems:"center"}}>
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
-
+ 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data Pengajuan dan Laporan</Text>
 
                     <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
