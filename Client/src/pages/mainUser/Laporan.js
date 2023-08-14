@@ -45,12 +45,14 @@ const Laporan = ({route, navigation}) => {
     const [adaDokumen, setAdaDokumen] = useState()
     
     const [idDeleted, setIdDeleted] = useState()
+    const [message, setMessage] = useState()
     const [myModal, setMyModal] = useState({
         hapus:false,
         hapusLaporan:false,
         sukses:false,
         gagal:false
     })
+
 
     const handlerModal = (type, message=null)=>{
 
@@ -308,8 +310,9 @@ const Laporan = ({route, navigation}) => {
             navigation.goBack()
         }
     }    
-    const handlerDraft = async data =>{
+    const handlerStore = async (status) =>{
 
+        setModalLaporkan(false)
         // setModalLoad(true)
         try {
 
@@ -318,22 +321,31 @@ const Laporan = ({route, navigation}) => {
                 kendala:JSON.stringify(arrKendala),
                 tahun:tahun,
                 bulan:bulan,
-                status:'draft'
+                status:status
             }
+
             const response = await axios.post(base_url+"/document/store",params,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
             if (response.status === 200) {
                                 
+                console.log(response.data)
                 await AsyncStorage.removeItem('tmpKendala');                
                 navigation.goBack()
             }
 
 
         } catch (error) {
-            console.log(error,"<--- error handler draft")            
+            if (error.response.status == 400) {
+
+                setMessage('Harap Lengkapi Laporan Harian Anda !')
+                setMyModal({...myModal, ['gagal']:true})
+            }else{
+                console.log(error,"<--- undefined error store laporan")            
+            }
+
         }
-    }
+    }   
     const customBack = async () =>{
         await AsyncStorage.removeItem('tmpKendala');
         
@@ -407,7 +419,7 @@ const Laporan = ({route, navigation}) => {
                             <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
                         </TouchableOpacity>
                         <View style={{width:5}}></View>
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={handlerDraft}>
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={ ()=>{handlerStore('draft')}}>
                             <Text style={{ fontWeight:'900', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Draft</Text>
                         </TouchableOpacity>
                         <View style={{width:5}}></View>    
@@ -523,6 +535,7 @@ const Laporan = ({route, navigation}) => {
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Laporkan laporan bulanan anda ?</Text>
+                        <Text style={{textAlign:'center', marginTop:5, fontSize:10, color:'red', fontWeight:'500'}}>Laporan akan diteruskan ke KASUM dan Tidak Bisa Diubah lagi</Text>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                         <View style={{flexDirection:"row"}}>
@@ -530,13 +543,33 @@ const Laporan = ({route, navigation}) => {
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=> setModalLaporkan(false)} >
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={ ()=>{handlerStore('diajukan')}} >
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
                             </TouchableOpacity>
                         </View>     
                     </View>
                 </View>
             </ReactNativeModal>  
+
+            <ReactNativeModal isVisible={myModal.gagal} onBackdropPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Proses Gagal !</Text>
+                        <Text style={{textAlign:'center', marginTop:5, fontSize:10,fontWeight:'500', color:'red' }}>{message}</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Oke</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>              
 
         </ScrollView>
     )
