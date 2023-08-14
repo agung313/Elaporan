@@ -258,7 +258,7 @@ const MainUser = ({navigation}) => {
             </ReactNativeModal>
 
             
-            {/* modal succes */}
+            {/* modal succes logout*/}
             <ReactNativeModal isVisible={modalLogout} onBackdropPress={() => setModalLogout(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 

@@ -3,6 +3,7 @@ import React, {useState} from 'react'
 import { BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf';
+import { Circle } from 'react-native-animated-spinkit';
 
 const DetailLaporanKasum = ({navigation}) => {
     // width heigh
@@ -27,6 +28,8 @@ const DetailLaporanKasum = ({navigation}) => {
     const getYear = cekTgl.getFullYear()
 
     // modal
+    const [modalLoad, setModalLoad] = useState(false)
+
     const [isModalVisible, setModalVisible] = useState(false);
 
     const toggleModal = () => {
@@ -48,6 +51,13 @@ const DetailLaporanKasum = ({navigation}) => {
     const [showContent, setShowContent] = useState(0)
     const toggleContent = (e)=>{
         setShowContent(e);
+    }
+
+    const [modaAlertPengajuan, setModaAlertPengajuan] = useState(false)
+    const UpdatePengajuan = () => {
+        setModalLoad(true)
+        setModalLoad(false)
+        navigation.navigate("MainKasum")
     }
 
     return (
@@ -148,10 +158,10 @@ const DetailLaporanKasum = ({navigation}) => {
                         </TouchableOpacity>
                         
                     </View>
-                    <View style={{width:"100%", marginBottom:15, alignItems:"center"}}>
+                    <View style={{width:"100%", marginBottom:5, alignItems:"center", }}>
                         
-                        <View style={{width:"90%"}}>
-                            <View style={{flexDirection:"row", backgroundColor:"#fff", marginTop:10, minHeight:50}}>
+                        <View style={{width:"90%", borderBottomWidth:0.5, borderBottomColor:"black"}}>
+                            <View style={{flexDirection:"row", backgroundColor:"#fff", marginTop:10, minHeight:50, marginBottom:15}}>
                                 <View style={{width:"10%", minHeight:25,  alignItems:"center"}}>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
                                 </View>
@@ -169,10 +179,10 @@ const DetailLaporanKasum = ({navigation}) => {
                                         </TouchableOpacity>
                                     }
                                     <View style={showContent==1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
-                                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} >
+                                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={()=>navigation.navigate("EditCatatan")}>
                                             <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
                                         </TouchableOpacity>
-                                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} >
+                                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={toggleModal3}>
                                             <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
                                         </TouchableOpacity>
                                     </View>
@@ -182,17 +192,22 @@ const DetailLaporanKasum = ({navigation}) => {
                     </View>
                     
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => navigation.navigate('MainKasum')}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Terima</Text>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => setModaAlertPengajuan(true)}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Terima Laporan</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
+
+                <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <Circle size={100} color="white"/>
+                </ReactNativeModal>
+
                 <ReactNativeModal isVisible={isModalVisible} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalVisible(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "95%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
                         <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
                             <Image source={CloseIcont} style={{width:30, height:30}}/>
                         </TouchableOpacity>
-                        <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                        <View style={{width:"100%", marginTop:-10, alignItems:"center", marginBottom:20,}}>
                             <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Laporan Bulan {getStrMonth} {getYear}</Text>
                         </View>
                         <View>
@@ -211,7 +226,7 @@ const DetailLaporanKasum = ({navigation}) => {
                         <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal2}>
                             <Image source={CloseIcont} style={{width:30, height:30}}/>
                         </TouchableOpacity>
-                        <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                        <View style={{width:"100%", marginTop:-10, alignItems:"center", marginBottom:20}}>
                             <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Detail Kegiatan</Text>
                         </View>
 
@@ -273,6 +288,30 @@ const DetailLaporanKasum = ({navigation}) => {
                             <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={toggleModal3}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Hapus</Text>
                             </TouchableOpacity>
+                        </View>
+                    </View>
+                </ReactNativeModal>
+
+                {/* modal succes */}
+                <ReactNativeModal isVisible={modaAlertPengajuan} onBackdropPress={() => setModaAlertPengajuan(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                        <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModaAlertPengajuan(false)}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:-10, alignItems:"center"}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Terima Laporan ?</Text>
+                        </View>
+                        <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                            <View style={{flexDirection:"row"}}>
+                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModaAlertPengajuan(false)}>
+                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center",}} onPress={UpdatePengajuan}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
+                                </TouchableOpacity>
+                            </View>     
                         </View>
                     </View>
                 </ReactNativeModal>

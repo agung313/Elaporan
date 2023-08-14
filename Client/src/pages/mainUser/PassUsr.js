@@ -174,8 +174,6 @@ const PassUsr = ({navigation,  }) => {
 
     const [errPass, setErrPass] = useState(false)
 
-    const [modalSuccess, setModalSuccess] = useState(false)
-
     const handlerUpdatePassword = async data =>{
         setModalChangePass(false)
         setModalLoad(true) 
@@ -696,25 +694,7 @@ const PassUsr = ({navigation,  }) => {
                         </TouchableOpacity>      
                     </View>
                 </View>
-            </ReactNativeModal>        
-
-            {/* modal Jika password succes*/}
-            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => setModalSuccess(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
-
-                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalSuccess(false)} >
-                        <Image source={CloseIcont} style={{width:30, height:30}}/>
-                    </TouchableOpacity>
-                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>selamat ! password anda berhasil diubah</Text>
-                    </View>
-                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.navigate('PassUsr')} >
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
-                        </TouchableOpacity>      
-                    </View>
-                </View>
-            </ReactNativeModal>        
+            </ReactNativeModal>               
 
             {/* modal signature */}
             <ReactNativeModal isVisible={modalSignature} onBackdropPress={() => setModalSignature(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
