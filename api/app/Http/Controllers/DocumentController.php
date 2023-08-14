@@ -57,23 +57,35 @@ class DocumentController extends Controller
 
         $checkData = Document::where('id_user',$idUser)->where('bulan',$request->bulan)->where('tahun',$tahun)->first();
 
-        
+                
         if ($checkData) {
             //store pdf path ke database
+
+            if ($status == 'diajukan') {
+
+                if ($this->checkLaporan($idUser, $bulan)) {
+                    return response()->json([
+                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+                    ],400);
+                }        
+            }
+                        
             $dokument = Document::findorNew($checkData->id);
+            $dokument->status = $status;
             $dokument->kendala = $kendala;
             $dokument->save();
 
             return response()->json([
-                'messages' => 'draft diupdate',
+                'messages' => 'laporan diupdate',
                 'data' => $dokument
                 ],200);
+
         } else {
-            // return ['tidakada'=> $checkData];
-            // exit;
+
 
             // validasi laporan
-            if ($status === 'diajukan') {
+            if ($status == 'diajukan') {
+
                 if ($this->checkLaporan($idUser, $bulan)) {
                     return response()->json([
                         'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
@@ -157,18 +169,6 @@ class DocumentController extends Controller
         
     }
 
-    function createNewFile($arrParams){
-
-        try {
-
-
-            return $filePath;
-            
-        } catch (\Throwable $th) {
-            return $th;
-        }
-        
-    }
 
     public function checkLaporan($idUser, $bulan){
         //validasi laporan
@@ -186,6 +186,7 @@ class DocumentController extends Controller
 
         $missingIds = array_diff($absensiIds, $laporanIds);
 
+        // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
         if ($missingIds !== null){
             return true;
         }        
