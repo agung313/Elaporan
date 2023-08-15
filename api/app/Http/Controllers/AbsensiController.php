@@ -29,10 +29,10 @@ class AbsensiController extends Controller
 
         }elseif ($request->izinSakit) {
 
-            $absen = Absensi::select('absensis.*')->join('users','users.id','absensis.id_user')->where('isApprove', 0)->get();
+            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove', 0)->orderBy('absensis.id','DESC')->get();
 
-            // response(AbsenPengajuanResource::collection($absen))
-            return ['data'=> $absen];
+            return response(AbsenPengajuanResource::collection($absen));
+            // return ['data'=> $absen];
 
         }else{
             $absen = Absensi::where('id_user', Auth::user()->id)->orderBy('tanggal','DESC')->get();

@@ -26,7 +26,7 @@ class AbsenPengajuan extends JsonResource
         $tanggal =  Carbon::parse($this->tanggal)->isoFormat('D MMMM Y');
 
         return [
-            'id' => $this->absensis->id,
+            'id' => $this->id,
             'id_user' => $this->id_user,
             'nama' => $this->name,
             'status' => $this->status,
