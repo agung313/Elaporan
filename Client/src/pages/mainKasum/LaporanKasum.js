@@ -1,6 +1,11 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, Dimensions } from 'react-native'
 import React, {useState} from 'react'
 import { BackIcon, ExFoto, LgBappeda, PasFoto } from '../../assets/images'
+import SearchBar from 'react-native-dynamic-search-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const LaporanKasum = ({navigation}) => {
 
@@ -24,7 +29,8 @@ const LaporanKasum = ({navigation}) => {
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
-
+    const isFocused = useIsFocused();
+    const base_url = ApiLink+'/api'
     // modal
     const [isModalVisible, setModalVisible] = useState(false);
 
