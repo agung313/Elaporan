@@ -106,13 +106,13 @@ class DocumentController extends Controller
                     ->pluck('absensis.id')
                     ->toArray();
 
-        // $missingIds = array_diff($absensiIds, $laporanIds);
+        $missingIds = array_diff($absensiIds, $laporanIds);
 
-        // if ($missingIds !== null){
-        //     return response()->json([
-        //         'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-        //     ],400);
-        // }
+        if ($missingIds !== null){
+            return response()->json([
+                'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            ],400);
+        }
 
         $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
 
