@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use App\Http\Resources\Absen as AbsenResource;
-
+use App\Http\Resources\AbsenPengajuan as AbsenPengajuanResource;
 
 class AbsensiController extends Controller
 {
@@ -22,9 +22,18 @@ class AbsensiController extends Controller
     public function index(Request $request)
     {
         if($request->detail){
-            $absen = Absensi::where('id_user', Auth::user()->id)->where('id', $request->id)->get();
+            // $absen = Absensi::where('id_user', Auth::user()->id)->where('id', $request->id)->get();
+            $absen = Absensi::where('id', $request->id)->get();
         }else if($request->isApprove){
             $absen = Absensi::where('isApprove', false)->get();
+
+        }elseif ($request->izinSakit) {
+
+            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove', 0)->orderBy('absensis.id','DESC')->get();
+
+            return response(AbsenPengajuanResource::collection($absen));
+            // return ['data'=> $absen];
+
         }else{
             $absen = Absensi::where('id_user', Auth::user()->id)->orderBy('tanggal','DESC')->get();
         }

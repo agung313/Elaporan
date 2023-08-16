@@ -25,16 +25,18 @@ class DocumentController extends Controller
     public function index(Request $request)
     {
         if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
+
             $document = Document::select('documents.*','users.name','users.jabatan')
                     ->join('Users','users.id', '=', 'documents.id_user')
                     ->whereMonth('documents.bulan', $request->bulan)
                     ->where('documents.status', $request->status)
                     ->get();
         }else{
+
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
-                        ->whereMonth('documents.bulan', $request->bulan)
-                        ->whereYear('documents.bulan', $request->tahun)                        
+                        ->where('documents.bulan', $request->bulan)
+                        ->where('documents.tahun', $request->tahun)                        
                         // ->where('documents.status',$request->status)
                         ->where('documents.id_user',Auth::user()->id)
                         ->get();
@@ -47,52 +49,128 @@ class DocumentController extends Controller
     {
         $idUser = Auth::user()->id;
 
-        $tanggal = $request->bulan;
-        // $carbon = Carbon::createFromFormat('d-m-Y', $tanggal);
-
-        // $tahun = $carbon->year;
-        $saran = $request->saran;
         $kendala = $request->kendala;
-        // $bulan = $carbon->translatedFormat('F');
+        $status = $request->status;
+        $tahun = $request->tahun;
 
-        //user
-        $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
-                    ->join('Profiles','profiles.id_user', '=', 'users.id')
-                    ->where('users.id', $idUser)
-                    ->first();
+        $bulan =  Carbon::create(Carbon::create(null, $request->bulan,1), 'Asia/Jakarta')->isoFormat('MMMM');
 
-        if ($query) {
-            $query->tahun = $request->tahun;
-            $query->saran = $saran;
-            $query->kendala = $kendala;
-            $query->bulan = $request->bulan;
-        }
+        $checkData = Document::where('id_user',$idUser)->where('bulan',$request->bulan)->where('tahun',$tahun)->first();
 
-        if ($query->isComplete == false){
+                
+        if ($checkData) {
+            //store pdf path ke database
+
+            if ($status == 'diajukan') {
+
+                if ($this->checkLaporan($idUser, $bulan)) {
+                    return response()->json([
+                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+                    ],400);
+                }        
+            }
+                        
+            $dokument = Document::findorNew($checkData->id);
+            $dokument->status = $status;
+            $dokument->kendala = $kendala;
+            $dokument->save();
+
             return response()->json([
-                'messages' => 'silahkan lengkapi data profile anda terlebih dahulu'
-            ],400);
+                'messages' => 'laporan diupdate',
+                'data' => $dokument
+                ],200);
+
+        } else {
+
+
+            // validasi laporan
+            if ($status == 'diajukan') {
+
+                if ($this->checkLaporan($idUser, $bulan)) {
+                    return response()->json([
+                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+                    ],400);
+                }        
+            }
+
+            //user
+            $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
+                        ->join('Profiles','profiles.id_user', '=', 'users.id')
+                        ->where('users.id', $idUser)
+                        ->first();
+
+            if ($query) {
+                $query->tahun = $tahun;
+                $query->kendala = $kendala;
+                $query->bulan = $bulan;
+            }
+
+
+            if ($query->isComplete == false){
+                return response()->json([
+                    'messages' => 'silahkan lengkapi data profile anda terlebih dahulu'
+                ],400);
+            }
+
+
+            //absensi
+            $query2 = Absensi::select('absensis.*')
+                        ->join('Users', 'users.id', '=', 'absensis.id_user')
+                        ->where('users.id', $idUser)
+                        ->get();
+
+            $query2->transform(function ($item) {
+                $tanggal = Carbon::createFromFormat('Y-m-d', $item->tanggal);
+                $item->tanggal = $tanggal->translatedFormat('l, j F Y');
+                return $item;
+            });
+
+            //laporan
+            $query3 = Laporan::select('laporans.*')
+                        ->join('Absensis','absensis.id', 'laporans.id_absensi')
+                        ->join('Users', 'users.id', '=', 'absensis.id_user')
+                        ->where('users.id', $idUser)
+                        ->get();
+
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala]);
+
+            $filePath = storage_path('app/public/pdf/hasil.pdf');
+
+            $directory = dirname($filePath);
+
+            if (!File::isDirectory($directory)) {
+                File::makeDirectory($directory, 0755, true, true);
+            }
+            
+            $pdf->save($filePath); 
+
+            $path = Storage::disk('public')->putFile('pdf', $filePath);
+
+            //store pdf path ke database
+            $document = New Document;
+            $document->id_user = $idUser;
+            $document->path = $path;
+            $document->status = $status;
+            $document->bulan = $request->bulan;
+            $document->kendala = $kendala;
+            $document->tahun = $tahun;
+            $document->save();
+
+            return response()->json([
+                'messages' => 'laporan diteruskan ke kasubag umum',
+                'data' => $document
+                ],200);
+
         }
+        
+    }
 
-        //absensi
-        $query2 = Absensi::select('absensis.*')
-                    ->join('Users', 'users.id', '=', 'absensis.id_user')
-                    ->where('users.id', $idUser)
-                    ->get();
+    function saveFile() {
+        
+    }
 
-        $query2->transform(function ($item) {
-            $tanggal = Carbon::createFromFormat('Y-m-d', $item->tanggal);
-            $item->tanggal = $tanggal->translatedFormat('l, j F Y');
-            return $item;
-        });
 
-        //laporan
-        $query3 = Laporan::select('laporans.*')
-                    ->join('Absensis','absensis.id', 'laporans.id_absensi')
-                    ->join('Users', 'users.id', '=', 'absensis.id_user')
-                    ->where('users.id', $idUser)
-                    ->get();
-
+    public function checkLaporan($idUser, $bulan){
         //validasi laporan
         $laporanIds = Laporan::join('Absensis','absensis.id','=','laporans.id_absensi')
                     ->join('Users','users.id', '=', 'absensis.id_user')
@@ -101,47 +179,27 @@ class DocumentController extends Controller
                     ->toArray();
         $absensiIds = Absensi::where('absensis.status', 'hadir')
                     ->join('Users','users.id', '=', 'absensis.id_user')
-                    ->whereMonth('absensis.tanggal',$request->bulan)
+                    ->whereMonth('absensis.tanggal',$bulan)
                     ->where('users.id', $idUser)
                     ->pluck('absensis.id')
                     ->toArray();
 
         $missingIds = array_diff($absensiIds, $laporanIds);
 
+<<<<<<< HEAD
         if ($missingIds !== null){
             return response()->json([
                 'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
             ],400);
         }
+=======
+        // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
+        if ($missingIds !== null){
+            return true;
+        }        
+>>>>>>> 21ad882092640c5447636b5515326052a7e49551
 
-        $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
-
-        $filePath = storage_path('app/public/pdf/hasil.pdf');
-
-        $directory = dirname($filePath);
-
-        if (!File::isDirectory($directory)) {
-            File::makeDirectory($directory, 0755, true, true);
-        }
-
-        $pdf->save($filePath);
-
-        $path = Storage::disk('public')->putFile('pdf', $filePath);
-
-        //store pdf path ke database
-        $document = New Document;
-        $document->id_user = $idUser;
-        $document->path = $path;
-        $document->status = 'verifikasi';
-        $document->bulan = $request->bulan;
-        $document->saran = $request->solusi;
-        $document->kendala = $request->kendala;
-        $document->save();
-
-        return response()->json([
-            'messages' => 'laporan diteruskan ke kasubag umum',
-            'data' => $document
-         ],200);
+        return false;
     }
 
     public function approve(Request $request, $id)
@@ -237,5 +295,19 @@ class DocumentController extends Controller
     public function update(Request $request, $id)
     {
         //
+    }
+
+    public function destroy($id)
+    {
+        $delete = Document::findOrFail($id);
+
+        $fotoPath = storage_path()."/app/public".$delete->path;
+        File::delete($fotoPath);
+
+        $delete->delete();
+
+        return response()->json([
+            'message' => 'kegiatan berhasil dihapus'
+        ],200);
     }
 }

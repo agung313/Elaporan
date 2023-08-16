@@ -54,12 +54,12 @@
                 <td class="tabell" style="width: 400px; padding: 10px; text-align: justify;">
                     <table>
                         {{-- {{dd(json_decode($user->ruang_lingkup))}} --}}
-                        {{-- @foreach (json_decode($user->ruang_lingkup) as $key => $item)
+                        @foreach (json_decode(json_decode($user->ruang_lingkup)) as $key => $item)
                             <tr>
                                 <td>{{$key+1 ."."}}</td>
                                 <td>{{$item}}</td>
                             </tr>
-                        @endforeach --}}
+                        @endforeach
                     </table>
                 </td>
             </tr>
@@ -139,11 +139,16 @@
                 <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Jenis Kendala</th>
                 <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Solusi</th>
             </tr>
-            <tr class="tabell">
-                <td class="tabell" style="text-align: center; width: 30px; padding: 10px;">1.</td>
-                <td class="tabell" style="width: 250px; padding: 10px;">{{$kendala->kendala}}</td>
-                <td class="tabell" style="width: 250px; padding: 10px;">{{$kendala->solusi}}</td>
-            </tr>
+                @foreach (json_decode($kendala) as $item)
+                @php
+                    $arr = explode('(^*^)', $item);
+                @endphp                
+                <tr class="tabell">
+                    <td class="tabell" style="text-align: center; width: 30px; padding: 10px;">1.</td>
+                    <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[0] ? $arr[0]:'-'}}</td>
+                    <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[1] ?$arr[1]:'-'}}</td>
+                </tr>                                   
+                @endforeach
         </table>
         <div style="height: 50px;"></div>
         <table style="margin: auto;">

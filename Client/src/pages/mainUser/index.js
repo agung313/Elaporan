@@ -19,7 +19,7 @@ const MainUser = ({navigation}) => {
     }, [navigation, isFocused])
 
     const [bulan, setBulan] = useState()
-    const [tahun, setTahun] = useState()
+    const [tahun, setTahun] = useState("2023")
     // console.log(bulan, "<==== bulan")
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -112,6 +112,7 @@ const MainUser = ({navigation}) => {
     };
 
     const GotoLaporan = () =>{
+
         setModalVisible(false)
         navigation.navigate('Laporan', {bulan:bulan, tahun:tahun})
         
@@ -231,9 +232,10 @@ const MainUser = ({navigation}) => {
                     <View style={{alignItems:"center", width:"50%"}}>
                         <Picker
                             selectedValue={tahun}
-                            onValueChange={(itemValue, itemIndex) => 
+                            onValueChange={(itemValue, itemIndex) =>{ 
+                                console.log(itemValue, ",----- tahuns")
                                 setTahun(itemValue)
-                            }
+                            }}
                             style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
                             selectionColor={"#000"}
 
@@ -256,7 +258,7 @@ const MainUser = ({navigation}) => {
             </ReactNativeModal>
 
             
-            {/* modal succes */}
+            {/* modal succes logout*/}
             <ReactNativeModal isVisible={modalLogout} onBackdropPress={() => setModalLogout(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 

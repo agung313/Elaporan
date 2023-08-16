@@ -123,9 +123,6 @@ const EditLingkup = ({route, navigation}) => {
                         <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#39a339", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={saveTmpData}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Update</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"red", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={deleteTmpData}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Hapus</Text>
-                        </TouchableOpacity>
                         <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#d9dcdf", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center" }} onPress={()=>{navigation.goBack()}}>
                             <Text style={{fontWeight:'700', color:"#000", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
                         </TouchableOpacity>                        

@@ -29,7 +29,6 @@ const Pendahuluan = ({navigation}) => {
     const getYear = cekTgl.getFullYear()
     const base_url =ApiLink+"/api";
 
-
     const [profile, setProfile] = useState({
         latarBelakang:'-',
         maksudTujuan:'-',
@@ -126,7 +125,7 @@ const Pendahuluan = ({navigation}) => {
                 ruang_lingkup: paramsRL
             }
             console.log(params,"<====")
-            const response = await axios.post(base_url+"/user/update/"+profile.id,params,{headers:{
+            const response = await axios.post(base_url+"/user/update",params,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
 
@@ -177,7 +176,7 @@ const Pendahuluan = ({navigation}) => {
                                 <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditLingkup", {indexData:index}) }>
                                     <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}}>
+                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>{ deleteItemArr(index)}}>
                                     <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
                                 </TouchableOpacity>
                             </View>
@@ -191,6 +190,16 @@ const Pendahuluan = ({navigation}) => {
     const customBackNavigation = async data =>{
         await AsyncStorage.removeItem('tmpRuangLingkup');
         navigation.navigate('MainUser')        
+    }
+
+    const deleteItemArr = async (id)=>{
+        toggleContent(0)
+
+        let tmpData = arrRuangLingkup
+        tmpData.splice(id,1)
+        let saveNew = await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("(%ry%)"))
+
+        
     }
 
     return (
@@ -254,10 +263,10 @@ const Pendahuluan = ({navigation}) => {
                     </View>
 
                     <View style={{marginBottom:25}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
-                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"flex-end", marginBottom:15 }}>
-
-                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={() => navigation.navigate("TambahLingkup")}>
+                        
+                        <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"center", marginBottom:15 }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
+                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10, marginTop:-5}} onPress={() => navigation.navigate("TambahLingkup")}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
                             </TouchableOpacity>                            
                         </View>

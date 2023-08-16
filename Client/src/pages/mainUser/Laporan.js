@@ -7,12 +7,13 @@ import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import ReactNativeModal from 'react-native-modal';
-
-
+import Pdf from 'react-native-pdf'
+import { Grid  } from 'react-native-animated-spinkit'
 
 const Laporan = ({route, navigation}) => {
 
     const {bulan, tahun} = route.params
+
     const [cekBulan, setCekBulan] = useState(bulan)
 
     // width heigh
@@ -38,20 +39,24 @@ const Laporan = ({route, navigation}) => {
 
     const base_url =ApiLink+"/api";
     const isFocused = useIsFocused();
+    const [idLaporan, setIdLaporan] = useState(0)
     const [arrKegiatan, setArrKegiatan] = useState([])
     const [arrKendala, setArrKendala] = useState([])
-    const [adaDokumen, setAdaDokumen] = useState(false)
+    const [adaDokumen, setAdaDokumen] = useState()
     
     const [idDeleted, setIdDeleted] = useState()
+    const [message, setMessage] = useState()
     const [myModal, setMyModal] = useState({
         hapus:false,
+        hapusLaporan:false,
         sukses:false,
         gagal:false
     })
 
+
     const handlerModal = (type, message=null)=>{
 
-        console.log(type)
+
         switch (type) {
             case 'hapus':
                 setMyModal({...myModal, hapus:true})
@@ -62,9 +67,10 @@ const Laporan = ({route, navigation}) => {
     // show aksi
     const [showContent, setShowContent] = useState(0)
     const toggleContent = (e)=>{
-        console.log(e)
+
         setShowContent(e);
     }
+
     useEffect(() => {
 
         if (isFocused) {
@@ -79,7 +85,8 @@ const Laporan = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
 
-            const target_url = `${base_url}/laporan?tahun=${tahun}&bulan=${bulan}`
+            const target_url = `${base_url}/document?tahun=${tahun}&bulan=${bulan}`
+
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
@@ -87,26 +94,42 @@ const Laporan = ({route, navigation}) => {
             if (response.status === 200) {
 
                 if (response.data.length > 0) {
+
+                    setIdLaporan(response.data[0].id)
+                    setAdaDokumen(response.data[0].URL)
                     
                 }else{
-
-                    setAdaDokumen(false)
+                    setAdaDokumen('')
                     getMyKegiatan()
-               
-                    var checkKendala = await AsyncStorage.getItem('tmpKendala')
-                    // if (!checkKendala && arrKendala.length == 0) {
-                    if (!checkKendala && checkKendala !== null) {
-                        await AsyncStorage.setItem('tmpKendala','')
-    
-                    // }else if (!checkKendala && arrKendala.length > 0) {
-    
-                    //     await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
-    
-                    } else{
-                        setArrKendala(checkKendala.split("(%ry%)"))
-                        // setArrRuangLingkup(checkKendala.split("%ry%"))
-                    }                    
                 }
+
+                var checkKendala = await AsyncStorage.getItem('tmpKendala')
+                // if (!checkKendala && arrKendala.length == 0) {
+                if (!checkKendala) {
+
+                    await AsyncStorage.setItem('tmpKendala','')
+
+                    if (adaDokumen) {
+                        let tmpArr = JSON.parse(response.data[0].kendala)
+                        setArrKendala(tmpArr)
+                        await AsyncStorage.setItem('tmpKendala',JSON.stringify(tmpArr))
+                    }
+                
+                }else{
+
+                    if (checkKendala.includes('(%ry%)')) {
+                        setArrKendala(checkKendala.split("(%ry%)"))                        
+                    } else {
+                        if (adaDokumen) {
+                            setArrKendala(JSON.parse(checkKendala))                            
+                        }else{
+                            setArrKendala([checkKendala])
+                        }   
+
+                    }
+
+                }                    
+
 
             }        
 
@@ -200,16 +223,16 @@ const Laporan = ({route, navigation}) => {
 
         return(
             <View style={{flexDirection:"row", }}>
-                <View style={{width:"8%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <View style={{width:"8%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{index+1}</Text>
                 </View>
-                <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <View style={{width:"41%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, }}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{tmpStr[0]}</Text>
                 </View>
-                <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <View style={{width:"41%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, }}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{tmpStr[1]}</Text>
                 </View>
-                <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                <View style={{width:"10%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  alignItems:"center"}}>
                         {/* <TouchableOpacity onPress={ () => navigation.navigate("EditKendala", {indexData:index}) } style={{ flexDirection: 'row' }}>
                             <Image source={DotAksi} style={{width:20, height:20, marginLeft:7}} />
                         </TouchableOpacity> */}
@@ -226,34 +249,14 @@ const Laporan = ({route, navigation}) => {
                                 <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditKendala", {indexData:index}) }>
                                     <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
                                 </TouchableOpacity>
+
                                 <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setIdDeleted(index),handlerModal('hapus')}}>
                                     <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
                                 </TouchableOpacity>
                             </View>                        
-                </View>                
-            {/* modal alert pass */}
-            <ReactNativeModal isVisible={myModal.hapus} onBackdropPress={()=>{  setMyModal({hapus:false}) }}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
-
-                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{  setMyModal({hapus:false}) }}>
-                        <Image source={CloseIcont} style={{width:30, height:30}}/>
-                    </TouchableOpacity>
-                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Lanjut Hapus Data ?</Text>
-                    </View>
-                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                        <View style={{flexDirection:"row"}}>
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={()=>{  setMyModal({hapus:false}) }} >
-                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerDeleteKendala} >
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
-                            </TouchableOpacity>
-                        </View>     
-                    </View>
-                </View>
-            </ReactNativeModal>  
+                </View> 
+                               
+                
             </View>            
         )
     }
@@ -295,8 +298,21 @@ const Laporan = ({route, navigation}) => {
         let saveNew = await AsyncStorage.setItem('tmpKendala', tmpData.join("(%ry%)"))
         setMyModal({...myModal,['hapus']:false})
     }
-    const handlerDraft = async data =>{
 
+    const handlerDeleteLaporan = async data =>{
+
+        const myToken = await AsyncStorage.getItem('AccessToken');    
+        const response = await axios.delete(`${base_url}/document/${idLaporan}`,{headers:{
+            Authorization: `Bearer ${myToken}`
+        }});           
+
+        if (response.status === 200) {
+            navigation.goBack()
+        }
+    }    
+    const handlerStore = async (status) =>{
+
+        setModalLaporkan(false)
         // setModalLoad(true)
         try {
 
@@ -304,26 +320,75 @@ const Laporan = ({route, navigation}) => {
             const params ={
                 kendala:JSON.stringify(arrKendala),
                 tahun:tahun,
-                bulan:bulan
+                bulan:bulan,
+                status:status
             }
-            // const response = await axios.post(base_url+"/document/store",params,{headers:{
-            //     Authorization: `Bearer ${myToken}`
-            // }}).then((res)=>{
-            //     setModalLoad(false)
-            //     setModalSuccess(true)
-            // })
 
+            const response = await axios.post(base_url+"/document/store",params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }})
+            if (response.status === 200) {
+                                
+                console.log(response.data)
+                await AsyncStorage.removeItem('tmpKendala');                
+                navigation.goBack()
+            }
 
 
         } catch (error) {
-            console.log(error,"<--- error handler hadir")            
+            if (error.response.status == 400) {
+
+                setMessage('Harap Lengkapi Laporan Harian Anda !')
+                setMyModal({...myModal, ['gagal']:true})
+            }else{
+                console.log(error,"<--- undefined error store laporan")            
+            }
+
         }
-    }
+    }   
     const customBack = async () =>{
         await AsyncStorage.removeItem('tmpKendala');
+        
         navigation.navigate('MainUser');
     }
+    const loadSpinner = () =>{
+        return (
+            <View style={{ alignItems:"center", justifyContent:"center" }}>
+                <Grid size={50} color="#008080"/>
+                <Text style={{ color:"#000", fontFamily:"Spartan", marginTop:10, fontSize:11, fontWeight:"bold" }}>Loading File......</Text>
+            </View>
+        )
+    }
 
+    // laporkan
+    const [modalLaporkan, setModalLaporkan] = useState(false)
+
+    const Laporkan = () => {
+        setModalLaporkan(true)
+    }
+
+
+    const readLaporan = () =>{
+
+        return(
+            <View style={{ flex: 1,
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                marginTop: 5}}>
+
+                        <Pdf
+                            trustAllCerts={false}
+                            source={{uri:adaDokumen}}
+                            style={{ width: 300,
+                                height: 300, flex:1}}
+                            renderActivityIndicator={loadSpinner}
+                        />
+                        <TouchableOpacity style={{backgroundColor:'rgba(235,233,230,0.5)', width:300, position:'absolute', height:'100%', justifyContent:'center', alignItems:'center', opacity:0.9 }} onPress={()=> navigation.navigate('Preview',{fileUrl:adaDokumen})}>
+                            <Text style={{color:'#000',backgroundColor:'#d8db2a', width:120, padding:6, textAlign:'center',borderRadius:10, fontWeight:'900'}}>Baca Laporan</Text>
+                        </TouchableOpacity>
+            </View >            
+        )
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -349,18 +414,21 @@ const Laporan = ({route, navigation}) => {
             <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
 
-                    <View style={{width:"100%", flexDirection:"row", justifyContent:"flex-end", marginTop:10}}>
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#39a339", marginBottom:15, alignItems:"center", justifyContent:"center", }}>
-                            <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Download</Text>
-                        </TouchableOpacity>
-                        <View style={{width:10}}></View>
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}}>
+                    <View style={{width:"100%", flexDirection:"row", justifyContent:'flex-end', marginTop:10}}>
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={Laporkan}>
                             <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
                         </TouchableOpacity>
-                        <View style={{width:10}}></View>
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={handlerDraft}>
+                        <View style={{width:5}}></View>
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={ ()=>{handlerStore('draft')}}>
                             <Text style={{ fontWeight:'900', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Draft</Text>
-                        </TouchableOpacity>                        
+                        </TouchableOpacity>
+                        <View style={{width:5}}></View>    
+                        {
+                            adaDokumen !== ''&& 
+
+                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"red", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setMyModal({hapusLaporan:true})}}>
+                            <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus</Text>
+                        </TouchableOpacity>                                               }                     
                     </View>
 
                     <View style={{width:"100%", alignItems:"center"}}>
@@ -371,8 +439,8 @@ const Laporan = ({route, navigation}) => {
 
                     <View style={{width:"100%",marginBottom:15}}>
                     {
-                        !adaDokumen &&
-                            tabelKegiatan()
+                        adaDokumen == '' ? tabelKegiatan(): readLaporan()
+                            
                     }
 
                     </View>
@@ -381,8 +449,8 @@ const Laporan = ({route, navigation}) => {
                         <View style={{flexDirection:'row', display:'flex',  justifyContent:'space-between'}}>
                             <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, }}> Kendala & Solusi</Text>
 
-                            <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#cfc925", marginTop:6, alignItems:"center", justifyContent:"center"}} onPress={()=> navigation.navigate('TambahKendala', {bulan:bulan, tahun:tahun})} >
-                            <Text style={{ fontWeight:'900', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Tambah</Text>
+                            <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#fcc419", marginTop:6, alignItems:"center", justifyContent:"center"}} onPress={()=> navigation.navigate('TambahKendala', {bulan:bulan, tahun:tahun})} >
+                            <Text style={{ fontWeight:'900', color:"black", fontSize:14}}>Tambah</Text>
                         </TouchableOpacity>
                         </View>
                     </View>
@@ -410,6 +478,98 @@ const Laporan = ({route, navigation}) => {
 
                 </View>
             </View>
+
+            {/* modal alert hapus */}
+            <ReactNativeModal isVisible={myModal.hapus} onBackdropPress={()=>{  setMyModal({hapus:false}) }}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{  setMyModal({hapus:false}) }}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Lanjut Hapus Data ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={()=>{  setMyModal({hapus:false}) }} >
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerDeleteKendala} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>  
+            {/* modal alert hapus laporan */}
+            <ReactNativeModal isVisible={myModal.hapusLaporan} onBackdropPress={()=>{  setMyModal({hapusLaporan:false}) }}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{  setMyModal({hapusLaporan:false}) }}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Hapus Laporan ?</Text>
+                        <Text>Data Kendala & Solusi akan hilang</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={()=>{  setMyModal({hapusLaporan:false}) }} >
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerDeleteLaporan} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>  
+            {/* modal alert laporkan */}
+            <ReactNativeModal isVisible={modalLaporkan} onBackdropPress={()=> setModalLaporkan(false)}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=> setModalLaporkan(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Laporkan laporan bulanan anda ?</Text>
+                        <Text style={{textAlign:'center', marginTop:5, fontSize:10, color:'red', fontWeight:'500'}}>Laporan akan diteruskan ke KASUM dan Tidak Bisa Diubah lagi</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={()=> setModalLaporkan(false)} >
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={ ()=>{handlerStore('diajukan')}} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>  
+
+            <ReactNativeModal isVisible={myModal.gagal} onBackdropPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Proses Gagal !</Text>
+                        <Text style={{textAlign:'center', marginTop:5, fontSize:10,fontWeight:'500', color:'red' }}>{message}</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Oke</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>              
 
         </ScrollView>
     )

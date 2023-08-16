@@ -53,10 +53,20 @@ const TambahKendala = ({route, navigation}) => {
 
     const setFormEdit = async data =>{
 
-        var ruangLingkupOld = await AsyncStorage.getItem('tmpKendala')        
-        setTmpArr(ruangLingkupOld.split("(%ry%)"))
+        var ruangLingkupOld = await AsyncStorage.getItem('tmpKendala')
+        
+        let tmpSplit =[];
+        if (ruangLingkupOld.includes("%ry%)")) {
 
-        let tmpSplit = ruangLingkupOld.split("(%ry%)")[indexData].split("(^*^)")
+            setTmpArr(ruangLingkupOld.split("(%ry%)"))
+
+            tmpSplit = ruangLingkupOld.split("(%ry%)")[indexData].split("(^*^)")            
+        
+        }else{
+            setTmpArr(JSON.parse(ruangLingkupOld))
+             tmpSplit = JSON.parse(ruangLingkupOld)[indexData].split("(^*^)")
+        }
+
 
         setMyForm({
             kendala: tmpSplit[0],
