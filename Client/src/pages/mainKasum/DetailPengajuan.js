@@ -9,6 +9,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const DetailPengajuan = ({route ,navigation}) => {
+    const {idPengajuan, idUser} = route.params
+    // console.log(idUser, "id user")
+
+    useEffect(() => {
+        if (isFocused) {
+            getDetail()
+        }
+    }, [navigation, isFocused])
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -45,12 +53,7 @@ const DetailPengajuan = ({route ,navigation}) => {
 
     const isFocused = useIsFocused();
     const base_url= ApiLink+'/api'
-    const {idPengajuan} = route.params
-    useEffect(() => {
-        if (isFocused) {
-            getDetail()
-        }
-    }, [navigation, isFocused])
+    
     
 
     const tolakPengajuan=()=>{
@@ -69,19 +72,30 @@ const DetailPengajuan = ({route ,navigation}) => {
         navigation.navigate("MainKasum")
     }
 
+    const[dataDetail, setDataDetail] = useState({
+        status: "-",
+        tanggal:"-",
+        isApprove:0
+    })
+    // console.log(dataDetail.status)
     const getDetail = async data =>{
 
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
             const target_url = `${base_url}/absen?detail=true&id=${idPengajuan}`
-            console.log(target_url)
+            // console.log(target_url)
+
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
-                // console.log(res.data[0].foto, "<==== lokasi foto")       
-                
-
+                console.log(res.data[0], "<==== lokasi foto")    
+                // setDataDetail(res.data[0])   
+                setDataDetail({
+                    status:res.data[0].status,
+                    tanggal:res.data[0].tanggal,
+                    isApprove:res.data[0].isApprove
+                })   
             }) 
             
 
@@ -133,7 +147,7 @@ const DetailPengajuan = ({route ,navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Sakit</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.status}</Text>
                                 </View>
                                 {/* <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
@@ -141,7 +155,7 @@ const DetailPengajuan = ({route ,navigation}) => {
                                 </View> */}
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pengajuan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.tanggal}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
@@ -151,21 +165,26 @@ const DetailPengajuan = ({route ,navigation}) => {
                         </View>
                     </View>
                     <View>
-                        <View style={{flexDirection:"row", marginBottom:5}}>
-                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Surat Keterangan Sakit :</Text>
-                            <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:40}}>
-                                <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Download Foto</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View style={{alignItems:"center", marginBottom:20}}>
-                            <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
-                                <Image source={ExSakit} style={{width:"100%", height:"100%"}}/>
+                        <View style={dataDetail.status=="Sakit"?{display:"flex"}:{display:"none"}}>
+                            <View style={{flexDirection:"row", marginBottom:5}}>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Surat Keterangan Sakit :</Text>
+                                <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:40}}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Download Foto</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{alignItems:"center", marginBottom:20}}>
+                                <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                    <Image source={ExSakit} style={{width:"100%", height:"100%"}}/>
+                                </View>
                             </View>
                         </View>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Sakit :</Text>
-                        <View style={{alignItems:"center"}}>
-                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
-                                <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>{detail}</Text>
+
+                        <View>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail {dataDetail.status} :</Text>
+                            <View style={{alignItems:"center"}}>
+                                <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>{detail}</Text>
+                                </View>
                             </View>
                         </View>
                         <View style={{alignItems:"center"}}>
