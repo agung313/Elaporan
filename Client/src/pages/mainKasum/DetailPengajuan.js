@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
+import { StyleSheet,Linking, TextInput, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images'
 import ReactNativeModal from 'react-native-modal';
@@ -66,16 +66,46 @@ const DetailPengajuan = ({route ,navigation}) => {
         setModaAlertPengajuan(true)
     }
 
-    const UpdatePengajuan = () => {
+    const UpdatePengajuan = async () => {
+
         setModalLoad(true)
-        setModalLoad(false)
-        navigation.navigate("MainKasum")
+
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const target_url = base_url+`/absen/acceptIzin/${idPengajuan}`
+
+            const response = await axios.post(target_url,myForm,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                setModalLoad(false)
+                navigation.navigate("MainKasum")
+            })
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
+
+
     }
 
     const[dataDetail, setDataDetail] = useState({
-        status: "-",
-        tanggal:"-",
-        isApprove:0
+        nama:'-',
+        jabatan:'-',        
+        statusKehadiran: "-",
+        statusPengajuan:'-',
+        detail:'-',
+        tanggalPengajuan:"-",
+        keterangan:'-',
+        isApprove: 0,
+        foto:'',
+        fotoProfile:''
+    })
+
+    const [catatanKasum, setCatatanKasum] = useState('-')
+    const [myForm, setMyForm] = useState({
+        catatan:'-',
+        status:'0'
     })
     // console.log(dataDetail.status)
     const getDetail = async data =>{
@@ -84,21 +114,26 @@ const DetailPengajuan = ({route ,navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
             const target_url = `${base_url}/absen?detail=true&id=${idPengajuan}`
-            // console.log(target_url)
+            console.log(target_url,"<--- url")
 
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
-                console.log(res.data[0], "<==== lokasi foto")    
-                // setDataDetail(res.data[0])   
+
+                const data = res.data.data
+                console.log(data.fotoProfile)
                 setDataDetail({
-                    status:res.data[0].status,
-                    tanggal:res.data[0].tanggal,
-                    isApprove:res.data[0].isApprove
+                    nama:data.nama,
+                    jabatan:data.jabatan,
+                    statusKehadiran:data.status,
+                    tanggalPengajuan:data.tanggal,
+                    statusPengajuan:data.isApprove,
+                    keterangan:data.keterangan_hadir,
+                    foto:data.foto,
+                    fotoProfile: data.fotoProfile
                 })   
             }) 
             
-
 
         } catch (error) {
             console.log(error, "error get absensi")   
@@ -134,20 +169,20 @@ const DetailPengajuan = ({route ,navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            <Image source={dataDetail.fotoProfile =='' ?ExFoto:{uri:dataDetail.fotoProfile}} style={{width:"100%", height:190}}/>
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.nama}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Programmer</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.jabatan}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.status}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.statusKehadiran}</Text>
                                 </View>
                                 {/* <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
@@ -155,26 +190,26 @@ const DetailPengajuan = ({route ,navigation}) => {
                                 </View> */}
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pengajuan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.tanggal}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.tanggalPengajuan}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Menunggu Persetujuan Kasubag Umum</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.statusPengajuan ? 'Diapprove':'Menunggu Aprrove Kasum'}</Text>
                                 </View>
                             </View>
                         </View>
                     </View>
                     <View>
-                        <View style={dataDetail.status=="Sakit"?{display:"flex"}:{display:"none"}}>
+                        <View style={dataDetail.statusKehadiran=="Sakit"?{display:"flex"}:{display:"none"}}>
                             <View style={{flexDirection:"row", marginBottom:5}}>
                                 <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Surat Keterangan Sakit :</Text>
-                                <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:40}}>
+                                <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:40}} onPress={()=>{ Linking.openURL(dataDetail.foto)}}>
                                     <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Download Foto</Text>
                                 </TouchableOpacity>
                             </View>
                             <View style={{alignItems:"center", marginBottom:20}}>
-                                <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
-                                    <Image source={ExSakit} style={{width:"100%", height:"100%"}}/>
+                                <View style={{width:"90%", height:200, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                    <Image source={{uri:dataDetail.foto}} style={{width:"100%", height:"100%"}}/>
                                 </View>
                             </View>
                         </View>
@@ -183,15 +218,40 @@ const DetailPengajuan = ({route ,navigation}) => {
                             <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail {dataDetail.status} :</Text>
                             <View style={{alignItems:"center"}}>
                                 <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>{detail}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>{dataDetail.keterangan}</Text>
                                 </View>
                             </View>
                         </View>
+
+
+                        <View style={{marginBottom:20, marginTop:20}}>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#d9dcdf", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:0,}} onPress={tolakPengajuan}>
+                            <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
+                                <TextInput
+                                    placeholder=''
+                                    placeholderTextColor={"#000"}
+                                    value={myForm.catatan}
+                                    keyboardType= "default"
+                                    onChangeText={(text) => setMyForm({...myForm,['catatan']:text})}
+                                    style={{ color: "#000" }}
+                                    multiline
+                                />
+                            </View>
+                        </View>
+                        </View>
+
+                        <View style={{alignItems:"center"}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#d9dcdf", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:0,}} onPress={()=>{
+                                tolakPengajuan(),
+                                setMyForm({...myForm, ['status']:2})
+                            }} >
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Tolak Pengajuan</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={setujuiPengajuan}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{
+                                        setMyForm({...myForm, ['status']:1})
+                                        setujuiPengajuan()
+                                        }}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Setujui Pengajuan</Text>
                             </TouchableOpacity>
                         </View>
@@ -203,7 +263,7 @@ const DetailPengajuan = ({route ,navigation}) => {
                 </ReactNativeModal>
 
                 
-                {/* modal succes */}
+                {/* modal approve */}
                 <ReactNativeModal isVisible={modaAlertPengajuan} onBackdropPress={() => setModaAlertPengajuan(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 

@@ -59,6 +59,7 @@ const Pengajuan = ({navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
+            console.log(response.data)
             if (response.status == 200) {
 
                 setRawHistory(response.data);
