@@ -22,6 +22,9 @@ const MainSplash = ({navigation}) => {
             if(myRole === 'kasum'){
                 navigation.replace('KasumScreen')
             }
+            else if(myRole === 'admin') {
+                navigation.replace('AdminScreen')
+            }
             else{
                 navigation.replace('AppScreen')
             }

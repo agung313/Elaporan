@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, AbsensiPulang, Agenda, AllPengajuan, Allabsensi, Detail, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
@@ -30,23 +30,6 @@ const HomeScreen = () =>{
     )
 }
 
-const HomeKasum = () => {
-    return(
-        <Stack.Navigator>
-            <Stack.Screen name='MainKasum' component={Kasum} options={{headerShown:false}}/>
-            <Stack.Screen name='PengajuanKasum' component={Pengajuan} options={{headerShown:false}}/>
-            <Stack.Screen name='DetailPengajuan' component={DetailPengajuan} options={{headerShown:false}}/>
-            <Stack.Screen name='LaporanKasum' component={LaporanKasum} options={{headerShown:false}}/>
-            <Stack.Screen name='ThlIt' component={ThlIt} options={{headerShown:false}}/>
-            <Stack.Screen name='DetailThlIt' component={DetailThlIt} options={{headerShown:false}}/>
-            <Stack.Screen name='DetailLaporanKasum' component={DetailLaporanKasum} options={{headerShown:false}}/>
-            <Stack.Screen name='AllPengajuan' component={AllPengajuan} options={{headerShown:false}}/>
-            <Stack.Screen name='TambahCatatan' component={TambahCatatan} options={{headerShown:false}}/>
-            <Stack.Screen name='EditCatatan' component={EditCatatan} options={{headerShown:false}}/>
-        </Stack.Navigator>
-    )
-}
-
 const AcountScreen  = () => {
     return(
         <Stack.Navigator>
@@ -65,6 +48,26 @@ const AcountScreen  = () => {
     )
 }
 
+// kasum screen
+
+const HomeKasum = () => {
+    return(
+        <Stack.Navigator>
+            <Stack.Screen name='MainKasum' component={Kasum} options={{headerShown:false}}/>
+            <Stack.Screen name='PengajuanKasum' component={Pengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailPengajuan' component={DetailPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='LaporanKasum' component={LaporanKasum} options={{headerShown:false}}/>
+            <Stack.Screen name='ThlIt' component={ThlIt} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailThlIt' component={DetailThlIt} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailLaporanKasum' component={DetailLaporanKasum} options={{headerShown:false}}/>
+            <Stack.Screen name='AllPengajuan' component={AllPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='TambahCatatan' component={TambahCatatan} options={{headerShown:false}}/>
+            <Stack.Screen name='EditCatatan' component={EditCatatan} options={{headerShown:false}}/>
+        </Stack.Navigator>
+    )
+}
+
+
 const AcountKasumScreen  = () => {
     return(
         <Stack.Navigator>
@@ -73,6 +76,30 @@ const AcountKasumScreen  = () => {
     )
 }
 
+// admin
+
+const HomeAdmin = () => {
+    return(
+        <Stack.Navigator>
+            <Stack.Screen name='MainAdmin' component={Admin} options={{headerShown:false}}/>
+            <Stack.Screen name='DataAsn' component={DataAsn} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailAsn' component={DetailAsn} options={{headerShown:false}}/>
+            <Stack.Screen name='DataPengajuan' component={DataPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='DetailDataPengajuan' component={DetailDataPengajuan} options={{headerShown:false}}/>
+        </Stack.Navigator>
+    )
+}
+
+const AcountAdminScreen = () => {
+    return(
+        <Stack.Navigator>
+            <Stack.Screen name='ProfileAdmin' component={ProfileAdmin} options={{headerShown:false}}/>
+        </Stack.Navigator>
+    )
+}
+
+
+// app system
 const AppScreen = () => {
     return (
         <Tab.Navigator tabBar={props => <BottomNavigation {...props} />} options={{ showIcon: true }}>
@@ -87,12 +114,21 @@ const KasumScreen = () => {
     return (
         <Tab.Navigator tabBar={props => <BottomNavigation {...props} />} options={{ showIcon: true }}>
             <Tab.Screen name='HomeScreen' component={HomeKasum} options={{headerShown:false}}/>
-            <Tab.Screen name=' ' component={HomeScreen} options={{headerShown:false}}/>
+            <Tab.Screen name=' ' component={HomeKasum} options={{headerShown:false}}/>
             <Tab.Screen name='AcountScreen' component={AcountKasumScreen} options={{headerShown:false}}/>
         </Tab.Navigator>
     )
 }
 
+const AdminScreen = () => {
+    return(
+        <Tab.Navigator tabBar={props => <BottomNavigation {...props} />} options={{ showIcon: true }}>
+            <Tab.Screen name='HomeScreen' component={HomeAdmin} options={{headerShown:false}}/>
+            <Tab.Screen name=' ' component={HomeAdmin} options={{headerShown:false}}/>
+            <Tab.Screen name='AcountScreen' component={AcountAdminScreen} options={{headerShown:false}}/>
+        </Tab.Navigator>
+    )
+}
 
 // Setting Screen yang akan muncul
 const Router = () => {
@@ -105,6 +141,7 @@ const Router = () => {
             <Stack.Screen name='SplashLogin' component={SplashLogin} options={{headerShown:false}}/>            
             <Stack.Screen name='AppScreen' component={AppScreen} options={{headerShown:false}}/>
             <Stack.Screen name='KasumScreen' component={KasumScreen} options={{headerShown:false}}/>
+            <Stack.Screen name='AdminScreen' component={AdminScreen} options={{headerShown:false}}/>
             <Stack.Screen name='LoginSide' component={LoginSide} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
