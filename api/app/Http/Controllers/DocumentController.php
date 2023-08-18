@@ -185,19 +185,11 @@ class DocumentController extends Controller
                     ->toArray();
 
         $missingIds = array_diff($absensiIds, $laporanIds);
-
-<<<<<<< HEAD
-        if ($missingIds !== null){
-            return response()->json([
-                'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-            ],400);
-        }
-=======
+        
         // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
         if ($missingIds !== null){
             return true;
         }        
->>>>>>> 21ad882092640c5447636b5515326052a7e49551
 
         return false;
     }

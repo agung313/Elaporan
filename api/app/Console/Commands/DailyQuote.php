@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\User;
 use App\Models\Absensi;
+use App\Models\Libur;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -44,6 +45,27 @@ class DailyQuote extends Command
     public function handle()
     {
         $tanggal = Carbon::now()->toDateString();
+        $week = Carbon::now()->dayOfWeek;
+
+        // cek hari sabtu atau minggu
+        if ($week === Carbon::SATURDAY || $week === Carbon::SUNDAY) {
+            $this->info("hari tidak ada absen, silahkan nikmati kopi mu dengan sebatang rokok");
+            return 0;
+        }
+
+        $libur = Libur::all();
+
+        $adminDefinedSpecialDates;
+
+        foreach ($libur as $lb) {
+            $adminDefinedSpecialDates[] = $lb->tanggal; 
+        }
+
+        if (in_array($tanggal, $adminDefinedSpecialDates)) {
+            $this->info("hari tidak ada absen, silahkan nikmati kopi mu dengan sebatang rokok");
+            return 0;
+        }
+
         // Mendapatkan semua id_user yang ada di tabel absensi pada hari ini
         $absentUserIds = Absensi::whereDate('tanggal', Carbon::today())->pluck('id_user')->all();
 
