@@ -1,12 +1,26 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Absensi, AbsensiKurang, Agenda, BgApp, CekLaporan, CloseIcont, DataThl, EmailIcon, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, Pengajuan, ProfileKasum, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 
 
 const Kasum = ({ navigation}) => {
-    
+
+    useEffect(() => {
+      
+        if (isFocused) {
+            handlerGetPengajuan()
+        }
+
+    }, [navigation, isFocused])
+
+    const base_url = ApiLink+'/api'
+    const isFocused = useIsFocused();
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -31,14 +45,34 @@ const Kasum = ({ navigation}) => {
         setModalVisible(!isModalVisible);
     }
 
-    // picker
-    const [kehadiran, setKehadiran] = useState()
-    console.log(kehadiran, "<==== kehadiran")
-
     // showcontent
     const [showContent, setShowContent] = useState(1)
     const toggleContent = (e)=>{
       setShowContent(e);
+    }
+
+    // api get pengajuan
+    const [countPengajuan, setCountPengajuan] = useState()
+    
+    const handlerGetPengajuan = async ()=>{
+        // setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url =`${base_url}/absen?izinSakit=true`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+
+                setCountPengajuan(response.data.length)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }        
     }
     
     return (
@@ -79,8 +113,8 @@ const Kasum = ({ navigation}) => {
                     <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("PengajuanKasum")}>
                         <Image source={Pengajuan} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Pengajuan</Text>
-                        <View style={{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}}>
-                            <Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>10</Text>
+                        <View style={countPengajuan?{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}:{width:30, height:30, marginTop:-110,}}>
+                            {countPengajuan>0?<Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>{countPengajuan}</Text>:<Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}></Text>}
                         </View>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>

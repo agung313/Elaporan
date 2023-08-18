@@ -24,7 +24,7 @@ class Absen extends JsonResource
         $jamPulang = Carbon::parse('15:50:00');
         $waktu_hadir = Carbon::parse($this->waktu_hadir);
         $waktu_pulang = Carbon::parse($this->waktu_pulang);
-        $photo = Absensi::find($this->id);
+        // $photo = Absensi::find($this->id);
         $laporan = Laporan::where('id_absensi',$this->id)->first();
         $hari = Carbon::createFromFormat('Y-m-d', $this->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
         $tanggal =  Carbon::parse($this->tanggal)->isoFormat('D MMMM Y');
@@ -35,7 +35,7 @@ class Absen extends JsonResource
             'status' => $this->status,
             'keterangan' => $this->keterangan,
             'keterangan_pulang' => $this->keterangan_pulang,
-            'foto' => URL('storage/'. $photo->foto),
+            'foto' => URL('storage/'. $this->foto),
             'hari' => $hari,
             // 'tanggal' => Carbon::parse($this->tanggal)->format('d-m-Y'),
             'tanggal' => $tanggal,

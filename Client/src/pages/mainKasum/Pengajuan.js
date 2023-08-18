@@ -59,6 +59,7 @@ const Pengajuan = ({navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
+            console.log(response.data)
             if (response.status == 200) {
 
                 setRawHistory(response.data);
@@ -112,7 +113,7 @@ const Pengajuan = ({navigation}) => {
 
         return(
                 <>
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan", {idPengajuan:item.id})}>
+                    <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan", {idPengajuan:item.id, idUser:item.id_user})}>
                         <Image source={item.status =='izin' ? SakitIzin:SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10}}>
                             <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
@@ -161,7 +162,7 @@ const Pengajuan = ({navigation}) => {
                         onChangeText={(text) => searchFilterFunction(text)}
                     />
 
-                    <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data Pengajuan Kehadiran THL-IT</Text>
+                    <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>{filtereHistory.length?"Berikut Data Pengajuan Kehadiran THL-IT":"Tidak Ada Data Pengajuan"}</Text>
 
                     {loadHistory?
                             <View>

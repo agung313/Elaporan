@@ -24,13 +24,31 @@ class AbsensiController extends Controller
     {
         if($request->detail){
             // $absen = Absensi::where('id_user', Auth::user()->id)->where('id', $request->id)->get();
-            $absen = Absensi::where('id', $request->id)->get();
+            $absen = Absensi::select('absensis.*','users.name AS nama','users.jabatan AS jabatan','profiles.foto AS fotoProfile')
+                            ->join('users','users.id','absensis.id_user')
+                            ->join('profiles','profiles.id_user', 'users.id')
+                            ->where('absensis.id', $request->id)
+                            ->first();
+            $hari = Carbon::createFromFormat('Y-m-d', $absen->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
+            $tanggal =  Carbon::parse($absen->tanggal)->isoFormat('D MMMM Y');
+            $absen->tanggal = $hari.', '.$tanggal;
+
+            $absen->fotoProfile = URL('storage/'.$absen->fotoProfile);
+            $absen->foto = URL('storage/'.$absen->foto);
+
+            return response()->json([
+                'messages' => 'fetch data detail successfully',
+                'data' => $absen
+            ],200);            
+
         }else if($request->isApprove){
             $absen = Absensi::where('isApprove', false)->get();
 
         }elseif ($request->izinSakit) {
 
-            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove', 0)->orderBy('absensis.id','DESC')->get();
+            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where(function($q){
+                $q->where('status','izin')->orWhere('status','sakit');
+            })->orderBy('absensis.id','DESC')->get();
 
             return response(AbsenPengajuanResource::collection($absen));
             // return ['data'=> $absen];
@@ -182,8 +200,8 @@ class AbsensiController extends Controller
             
             //accept izin
             $absen = Absensi::findorNew($id);
-            $absen->isApprove = true;
-            $absen->status = $request->status;
+            $absen->isApprove = $request->status;
+            $absen->catatan_kasum = $request->catatan;
             $absen->save();
 
             return response()->json([
