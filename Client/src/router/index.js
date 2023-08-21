@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataKehadiran, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, HariLibur, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, SplashLogin, Tambah, TambahCatatan, TambahHariLibur, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
@@ -86,6 +86,9 @@ const HomeAdmin = () => {
             <Stack.Screen name='DetailAsn' component={DetailAsn} options={{headerShown:false}}/>
             <Stack.Screen name='DataPengajuan' component={DataPengajuan} options={{headerShown:false}}/>
             <Stack.Screen name='DetailDataPengajuan' component={DetailDataPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='HariLibur' component={HariLibur} options={{headerShown:false}}/>
+            <Stack.Screen name='TambahHariLibur' component={TambahHariLibur} options={{headerShown:false}}/>
+            <Stack.Screen name='DataKehadiran' component={DataKehadiran} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }
