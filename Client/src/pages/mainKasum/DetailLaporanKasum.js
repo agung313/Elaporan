@@ -294,6 +294,18 @@ const DetailLaporanKasum = ({route, navigation}) => {
         )
     }
 
+
+    useEffect(() => {
+      
+        if (isFocused) {
+            handlerGetDetail()
+        }
+
+    }, [navigation, isFocused])
+
+
+
+
     return (
         <ScrollView>
             <View style={styles.header}>
