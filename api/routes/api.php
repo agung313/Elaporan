@@ -45,6 +45,7 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
 //LAPORAN
 Route::controller(LaporanController::class)->prefix('laporan')->group(function () {
     Route::get('/', 'index');
+    Route::get('/listKegiatan', 'laporan');
     Route::post('/store', 'store');
     Route::post('/upload', 'upload');
     Route::put('/{id}','update');

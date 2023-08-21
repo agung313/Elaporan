@@ -32,7 +32,6 @@ class DocumentController extends Controller
                     ->where('documents.status', $request->status)
                     ->get();
         }else{
-
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
                         ->where('documents.bulan', $request->bulan)
