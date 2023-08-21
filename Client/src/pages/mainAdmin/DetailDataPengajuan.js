@@ -161,8 +161,16 @@ const DetailDataPengajuan = ({navigation}) => {
                         </View>
                     </View>
 
-                    <View>
+                    <View style={{marginBottom:15}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Izin :</Text>
+                        <View style={{alignItems:"center"}}>
+                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>iziiiiiiiiiin</Text>
+                            </View>
+                        </View>
+                    </View>
+                    <View>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>iziiiiiiiiiin</Text>

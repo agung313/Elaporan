@@ -1,10 +1,12 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { AddLibur, AddKegiatan, BgApp,  DataThl, EmailIcon,  LogOut, Pengajuan, SettIcont,  } from '../../assets/images';
+import { AddLibur, AddKegiatan, BgApp,  DataThl, EmailIcon,  LogOut, Pengajuan, SettIcont, CloseIcont,  } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import axios from 'axios';
 import { useIsFocused } from '@react-navigation/native';
+import { Circle } from 'react-native-animated-spinkit';
+import ReactNativeModal from 'react-native-modal';
 
 const Admin = ({navigation}) => {
     const base_url =ApiLink+"/api";
@@ -93,6 +95,45 @@ const Admin = ({navigation}) => {
         }        
     }
 
+    // logout
+    const [modalLogout, setModalLogout] = useState()
+    const [modalLoad, setModalLoad] = useState()
+
+    const HeandleLogout = async () => {
+        setModalLoad(true)
+        try {
+          const dataToken = await AsyncStorage.getItem('AccessToken');
+      
+          if (!dataToken) {
+            // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
+            navigation.replace('MainSplash');
+            setModalLoad(false)
+            return;
+          }
+      
+          // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
+          const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+              headers: {
+                Authorization: `Bearer ${dataToken}`,
+              },
+            }
+          );
+      
+          if (response.status === 200) {
+            // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+            await AsyncStorage.removeItem('AccessToken');
+            navigation.replace('MainSplash');
+            setModalLoad(false)
+          } else {
+            // Tangani respons yang tidak diharapkan jika diperlukan
+            console.log('Logout tidak berhasil.');
+          }
+        } catch (error) {
+          // Tangani error yang terjadi saat melakukan permintaan logout
+          console.log(error, '<= error logout');
+        }
+    };
+
     return (
         <ImageBackground source={BgApp} style={{flex:1}}>
             <View style={{ width:WindowWidth, height:200,}}>
@@ -109,7 +150,7 @@ const Admin = ({navigation}) => {
                                 <Image source={WarningIcont} style={{width:20, height:20,}}/>
                             </View>
                         </TouchableOpacity> */}
-                        <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}} >
+                        <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}} onPress={() => setModalLogout(true)}>
                             <Image source={LogOut} style={{width:20, height:20}}/>
                             <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700", marginLeft:5}}>LogOut</Text>
                         </TouchableOpacity>
@@ -146,17 +187,46 @@ const Admin = ({navigation}) => {
                     
                 </View>
                 <View style={styles.barMenu}>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('DataKehadiran')}>
                         <Image source={AddKegiatan} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Kehadiran</Text>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('HariLibur')}>
                         <Image source={AddLibur} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Hari Libur</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
+            {/* modal */}
+            <ReactNativeModal isVisible={modalLogout} onBackdropPress={() => setModalLogout(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalLogout(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Apakah anda yakin untuk keluar ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalLogout(false)}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={HeandleLogout}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Keluar</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
+            </ReactNativeModal>
+
         </ImageBackground>
     )
 }
