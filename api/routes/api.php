@@ -37,6 +37,7 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
     Route::get('/countNoAcc', 'countNoAcc');
     Route::post('/acceptIzin/{id}', 'acceptIzin');
     Route::post('/absenAdmin', 'absenAdmin');
+    Route::post('/approveAdmin/{id}', 'approveAdmin');
     Route::post('/updateLibur', 'updateLibur'); //update libur by admin
     Route::get('/listLibur', 'listLibur'); //list libur by admin
 });
