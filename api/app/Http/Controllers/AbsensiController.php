@@ -23,6 +23,7 @@ class AbsensiController extends Controller
     public function index(Request $request)
     {
         if($request->detail){
+
             // $absen = Absensi::where('id_user', Auth::user()->id)->where('id', $request->id)->get();
             $absen = Absensi::select('absensis.*','users.name AS nama','users.jabatan AS jabatan','profiles.foto AS fotoProfile')
                             ->join('users','users.id','absensis.id_user')
@@ -46,9 +47,7 @@ class AbsensiController extends Controller
 
         }elseif ($request->izinSakit) {
 
-            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where(function($q){
-                $q->where('status','izin')->orWhere('status','sakit');
-            })->orderBy('absensis.id','DESC')->get();
+            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove',0)->get();
 
             return response(AbsenPengajuanResource::collection($absen));
             // return ['data'=> $absen];

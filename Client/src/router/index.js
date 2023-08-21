@@ -60,6 +60,7 @@ const HomeKasum = () => {
             <Stack.Screen name='ThlIt' component={ThlIt} options={{headerShown:false}}/>
             <Stack.Screen name='DetailThlIt' component={DetailThlIt} options={{headerShown:false}}/>
             <Stack.Screen name='DetailLaporanKasum' component={DetailLaporanKasum} options={{headerShown:false}}/>
+            <Stack.Screen name='Preview' component={Preview} options={{headerShown:false}}/>            
             <Stack.Screen name='AllPengajuan' component={AllPengajuan} options={{headerShown:false}}/>
             <Stack.Screen name='TambahCatatan' component={TambahCatatan} options={{headerShown:false}}/>
             <Stack.Screen name='EditCatatan' component={EditCatatan} options={{headerShown:false}}/>

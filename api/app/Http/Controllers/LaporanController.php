@@ -26,9 +26,7 @@ class LaporanController extends Controller{
 
         }elseif ($request->bulanan) {
 
-            // $laporan = Laporan::join('absensis','absensis.id','laporans.id_absensi')->where('absensis.id_user', ,Auth::user()->id)->whereMonth('absensis.tanggal',$request->bulan)->whereYear('absensis.tanggal',Carbon::now()->year)->get();
-            
-            $laporan = Absensi::where('id_user',Auth::user()->id)->whereMonth('tanggal',$request->bulan)->whereYear('tanggal',Carbon::now()->year)->get();
+            $laporan = Laporan::join('absensis','absensis.id','laporans.id_absensi')->where('absensis.id_user', Auth::user()->id)->whereMonth('absensis.tanggal',$request->bulan)->whereYear('absensis.tanggal',Carbon::now()->year)->get();
 
             return response(LaporanBulananResource::collection($laporan));
 

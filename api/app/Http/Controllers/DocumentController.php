@@ -26,12 +26,23 @@ class DocumentController extends Controller
     {
         if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
 
-            $document = Document::select('documents.*','users.name','users.jabatan')
+            $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
                     ->join('Users','users.id', '=', 'documents.id_user')
-                    ->whereMonth('documents.bulan', $request->bulan)
-                    ->where('documents.status', $request->status)
+                    ->join('profiles','profiles.id_user', '=', 'documents.id_user')
+                    // ->whereMonth('documents.bulan', $request->bulan)
+                    ->where('documents.status','not like','draft')
+                    ->orderBy('documents.id','DESC')
+                    ->orderBy('documents.status','ASC')
                     ->get();
-        }else{
+
+        }elseif ($request->id_dokumen) {
+
+            $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
+                    ->join('Users','users.id', '=', 'documents.id_user')
+                    ->join('profiles','profiles.id_user', '=', 'documents.id_user')
+                    ->where('documents.id',$request->id_dokumen)
+                    ->get();
+        } else{
 
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
@@ -61,14 +72,14 @@ class DocumentController extends Controller
         if ($checkData) {
             //store pdf path ke database
 
-            if ($status == 'diajukan') {
+            // if ($status == 'diajukan') {
 
-                if ($this->checkLaporan($idUser, $bulan)) {
-                    return response()->json([
-                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-                    ],400);
-                }        
-            }
+            //     if ($this->checkLaporan($idUser, $bulan)) {
+            //         return response()->json([
+            //             'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            //         ],400);
+            //     }        
+            // }
                         
             $dokument = Document::findorNew($checkData->id);
             $dokument->status = $status;
@@ -84,14 +95,14 @@ class DocumentController extends Controller
 
 
             // validasi laporan
-            if ($status == 'diajukan') {
+            // if ($status == 'diajukan') {
 
-                if ($this->checkLaporan($idUser, $bulan)) {
-                    return response()->json([
-                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-                    ],400);
-                }        
-            }
+            //     if ($this->checkLaporan($idUser, $bulan)) {
+            //         return response()->json([
+            //             'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            //         ],400);
+            //     }        
+            // }
 
             //user
             $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
@@ -186,6 +197,7 @@ class DocumentController extends Controller
 
         $missingIds = array_diff($absensiIds, $laporanIds);
         
+
         // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
         if ($missingIds !== null){
             return true;
@@ -200,15 +212,12 @@ class DocumentController extends Controller
 
         if ($role == "admin" || $role == "kasum"){
 
-            $tanggal = $request->bulan;
-            $carbon = Carbon::createFromFormat('m-Y', $tanggal);
-
-            $tahun = $carbon->year;
-
             $doc = Document::where('id',$id)->first();
             $saran = $doc->saran;
             $kendala = $doc->kendala;
-            $bulan = $carbon->translatedFormat('F');
+            $bulan = $doc->bulan;
+            $tahun = $doc->tahun;
+            
             $catatan = $request->catatan;
 
             //user
@@ -218,7 +227,6 @@ class DocumentController extends Controller
                         ->first();
             if ($query) {
                 $query->tahun = $tahun;
-                $query->saran = $saran;
                 $query->kendala = $kendala;
                 $query->bulan = $bulan;
                 $query->catatan = $catatan;
@@ -243,7 +251,7 @@ class DocumentController extends Controller
                         ->where('users.id', $doc->id_user)
                         ->get();
 
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $doc->kendala]);
 
             $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -269,11 +277,11 @@ class DocumentController extends Controller
             //update file di 
             $dokument = Document::findorNew($id);
             $dokument->path = $pathGas;
-            $dokument->status = "selesai";
+            $dokument->status = "diapprove";
             $dokument->save();
 
             return response()->json([
-                'message' => 'laporan berhasil terverifikasi',
+                'message' => 'laporan berhasil diapprove',
                 'data' => $dokument
             ]);
         }else{

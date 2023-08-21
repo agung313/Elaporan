@@ -198,7 +198,6 @@ const Pendahuluan = ({navigation}) => {
         let tmpData = arrRuangLingkup
         tmpData.splice(id,1)
         let saveNew = await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("(%ry%)"))
-
         
     }
 

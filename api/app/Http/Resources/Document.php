@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use Carbon\Carbon;
 class Document extends JsonResource
 {
     /**
@@ -18,9 +18,14 @@ class Document extends JsonResource
             'id' => $this->id,
             'id_user' => $this->id_user,
             'status' => $this->status,
+            // 'bulan' => Carbon::createFromFormat('m', $this->bulan, 'Asia/Jakarta')->isoFormat('MMMM'),
+            'bulan' => $this->bulan, 
             'URL' => URL('storage/'. $this->path),
+            'tahun' => $this->tahun,
+            'fotoProfile' => URL('storage/'. $this->foto),
             'saran' => $this->saran,
             'kendala' => $this->kendala,
+            'catatan' => $this->catatan,
             'nama' => $this->name,
             'jabatan' => $this->jabatan,
             'isDeleted' => $this->keterangan_pulang
