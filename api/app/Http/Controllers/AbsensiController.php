@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Absensi;
 use App\Models\Laporan;
+use App\Models\Libur;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
@@ -195,6 +196,8 @@ class AbsensiController extends Controller
         if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
 
             $cekStatus = Absensi::select('status')->where('id', $id)->first();
+            
+            //accept izin
             $absen = Absensi::findorNew($id);
             $absen->isApprove = $request->status;
             $absen->catatan_kasum = $request->catatan;
@@ -209,6 +212,45 @@ class AbsensiController extends Controller
                 'messages' => 'anda tidak memiliki akses',
             ],402);
         } 
+    }
+
+    function updateLibur(Request $request){
+        $role = Auth::user()->role;
+        $hari = Carbon::createFromFormat('Y-m-d', $request->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
+        if($role == 'admin' || $role == 'kasum'){
+            
+            $libur = Libur::create([
+                'tanggal' => $request->tanggal,
+                'ket' => $request->ket,
+                'day' => $hari
+            ]);
+
+            return response()->json([
+                'messages' => 'update tanggal libur berhasil',
+                'data' => $libur
+            ]);
+        }else{
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses',
+            ],402);
+        }
+    }
+
+    function listLibur(Request $request){
+        $role = Auth::user()->role;
+        if($role == 'admin' || $role == 'kasum'){
+            
+            $libur = Libur::all();
+
+            return response()->json([
+                'messages' => 'list tanggal libur',
+                'data' => $libur
+            ]);
+        }else{
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses',
+            ],402);
+        }
     }
 
 }

@@ -38,11 +38,11 @@ const SplashLogin = ({route, navigation}) => {
                 navigation.replace('KasumScreen'); 
 
             }
-            // else if (response.data.data.role === 'thl') {
-            //     console.log('as', 'thl ---')
+            else if (response.data.data.role === 'admin') {
+                // console.log('as', 'thl ---')
 
-            //     navigation.replace('AppScreen');
-            // }
+                navigation.replace('AdminScreen');
+            }
             else{
 
                 navigation.replace('AppScreen');

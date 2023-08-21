@@ -196,12 +196,8 @@ class DocumentController extends Controller
                     ->toArray();
 
         $missingIds = array_diff($absensiIds, $laporanIds);
+        
 
-        if ($missingIds !== null){
-            return response()->json([
-                'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-            ],400);
-        }
         // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
         if ($missingIds !== null){
             return true;
@@ -216,15 +212,12 @@ class DocumentController extends Controller
 
         if ($role == "admin" || $role == "kasum"){
 
-            $tanggal = $request->bulan;
-            $carbon = Carbon::createFromFormat('m-Y', $tanggal);
-
-            $tahun = $carbon->year;
-
             $doc = Document::where('id',$id)->first();
             $saran = $doc->saran;
             $kendala = $doc->kendala;
-            $bulan = $carbon->translatedFormat('F');
+            $bulan = $doc->bulan;
+            $tahun = $doc->tahun;
+            
             $catatan = $request->catatan;
 
             //user
@@ -234,7 +227,6 @@ class DocumentController extends Controller
                         ->first();
             if ($query) {
                 $query->tahun = $tahun;
-                $query->saran = $saran;
                 $query->kendala = $kendala;
                 $query->bulan = $bulan;
                 $query->catatan = $catatan;
@@ -259,7 +251,7 @@ class DocumentController extends Controller
                         ->where('users.id', $doc->id_user)
                         ->get();
 
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $doc->kendala]);
 
             $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -285,11 +277,11 @@ class DocumentController extends Controller
             //update file di 
             $dokument = Document::findorNew($id);
             $dokument->path = $pathGas;
-            $dokument->status = "selesai";
+            $dokument->status = "diapprove";
             $dokument->save();
 
             return response()->json([
-                'message' => 'laporan berhasil terverifikasi',
+                'message' => 'laporan berhasil diapprove',
                 'data' => $dokument
             ]);
         }else{

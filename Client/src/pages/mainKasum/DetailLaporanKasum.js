@@ -12,7 +12,8 @@ import { Grid  } from 'react-native-animated-spinkit'
 
 
 const DetailLaporanKasum = ({route, navigation}) => {
-    const {idDokumen} =route.params
+    const {params} =route.params
+    
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -61,24 +62,121 @@ const DetailLaporanKasum = ({route, navigation}) => {
     }
 
     const [modaAlertPengajuan, setModaAlertPengajuan] = useState(false)
-    const UpdatePengajuan = () => {
-        setModalLoad(true)
-        setModalLoad(false)
-        navigation.navigate("MainKasum")
+
+    const handlerAksiPengajuan = async() => {
+
+
+        // setModalLoad(true)
+        // console.log(myAksi,'<--- aksi')
+        // setModalLoad(false)
+        // navigation.navigate("MainKasum")
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const target_url = base_url+`/document/approve/${idDokumen}`
+            console.log(target_url)
+            const myForm={
+                catatan: JSON.stringify(myCatatan)
+            }
+
+            const response = await axios.post(target_url,myForm,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{
+                setModalLoad(false)
+                console.log(res.data)
+                // navigation.navigate("MainKasum")
+            })
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }
     }
 
     const [myDetail, setMyDetail] = useState({
-        nama:'-',
-        jabatan:'-',
-        foto:'-',
         hadir:0,
         tidakHadir:0,
-        dokumen:'',
-        catatan:[]
+        dokumen:''
     })
+
+    const [myProfile, setMyProfile] = useState({
+        nama:null,
+        jabatan:null,
+        foto:null
+    })
+    const [myCatatan, setMyCatatan] = useState([])
+
+    const customBackNavigation = async data =>{
+        await AsyncStorage.removeItem('tmpCatatan');
+        navigation.goBack()
+    }
 
     const isFocused = useIsFocused();
     const base_url = ApiLink+'/api'
+    
+    useEffect(() => {
+      
+        if (isFocused) {
+            // handlerGetDetail()
+            setShowContent(0)
+            handlerGetProfile()
+        }
+
+    }, [navigation, isFocused])
+
+    const handlerGetProfile = async() =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const target_url =`${base_url}/user/profile/?id=${params.idUser}`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+
+                setMyProfile({
+                    nama:response.data.nama,
+                    jabatan: response.data.jabatan,
+                    foto: response.data.URL
+                })
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }                
+    }
+
+    
+    const deleteItemArr = async (id)=>{
+        toggleContent(0)
+
+        let tmpData = myCatatan
+        tmpData.splice(id,1)
+        await AsyncStorage.setItem('tmpCatatan', tmpData.join("(%ry%)"))    
+    }    
+
+    const [myAksi, setMyAksi] = useState({
+        status:'',
+        messagae:''
+    });
+    const handlerModalTerima =()=>{
+        setMyAksi({
+            status:'diapprove',
+            messagae:'Approve Laporan ?'
+        })
+        setModaAlertPengajuan(true)
+        
+    }
+
+    const handlerModalTolak =()=>{
+        setMyAksi({
+            status:'ditolak',
+            messagae:'Tolak Laporan ?'
+        })
+        setModaAlertPengajuan(true)
+    }
+
     
     useEffect(() => {
       
@@ -222,10 +320,10 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         </View>
                         <View>
                             <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, }}>LAPORAN</Text>
-                            <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>Pengajuan Laporan THL-IT</Text>
+                            <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>Pengajuan Laporan</Text>
                         </View>
                     </TouchableOpacity>
-                    {/* <SearchBar placeholder="Type Here..." /> */}
+
                 </View>
                 <View style={{ width: "35%", alignItems: 'flex-end', justifyContent:"center" }}>
                     <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
@@ -234,21 +332,21 @@ const DetailLaporanKasum = ({route, navigation}) => {
 
             <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10 }}>
-                    <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Pengajuan Laporan {getStrMonth} {getYear}</Text>
+                    <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Pengajuan Laporan {namaBulan[params.bulan]+" "+ params.tahun} </Text>
 
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            <Image source={myProfile.foto == null? ExFoto: {uri:myProfile.foto}} style={{width:"100%", height:190}}/>
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.nama}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Programmer</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.jabatan}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Hadir :</Text>
@@ -266,15 +364,43 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         </View>
                     </View>
 
-                    <View style={{flexDirection:"row", marginBottom:5}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>File Laporan :</Text>
-
+                    <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan </Text>
+                        <TouchableOpacity style={{width:60, height:20, backgroundColor:"red", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:160}} onPress={()=> navigation.navigate('Preview',{fileUrl:myDetail.dokumen})}>
+                            <Text style={{fontWeight:'700', color:"white", fontSize:12}}>PDF</Text>
+                        </TouchableOpacity>
+                        
                     </View>
 
                     {
-                        myDetail.dokumen == '' ?<Text style={{alignSelf:'center', color:'red', fontWeight:'600'}}>Laporan Belum Diupload</Text>:readLaporan()
+                        // myDetail.dokumen == '' ?<Text style={{alignSelf:'center', color:'red', fontWeight:'600'}}>Laporan Belum Diupload</Text>:readLaporan()
                     }
-
+                    <View style={{width:"100%",marginBottom:15}}>
+                        <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
+                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Hari/Tanggal</Text>
+                            </View>
+                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
+                            </View>
+                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Detail</Text>
+                            </View>
+                        </View>
+                        <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
+                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  padding:5, alignItems:"center"}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
+                            </View>
+                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
+                                <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
+                            </View>
+                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                                <TouchableOpacity style={{width:60, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={toggleModal2}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Detail</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
                     <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
                         <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:160}} onPress={() => navigation.navigate('TambahCatatan')}>
@@ -285,21 +411,21 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     <View style={{width:"100%", marginBottom:5, alignItems:"center", }}>
                         
                         {
-                            // myDetail.catatan.length > 0 &&
-                            // myDetail.catatan.map((item,index)=>(
-                            //     rowCatatan(item, index)
-                            // ))
+                            myCatatan.length > 0 &&
+                            myCatatan.map((item,index)=>(
+                                rowCatatan(item, index)
+                            ))
                         }
                     </View>
                     
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => setModaAlertPengajuan(true)}>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:10, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTerima}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Terima Laporan</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => setModaAlertPengajuan(true)}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Tolak Laporan</Text>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#b52840", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:5, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTolak}>
+                            <Text style={{fontWeight:'700', color:"#fff", textShadowColor:"#000", fontSize:15}}>Tolak Laporan</Text>
                         </TouchableOpacity>
                     </View>                    
                 </View>
@@ -308,24 +434,6 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     <Circle size={100} color="white"/>
                 </ReactNativeModal>
 
-                <ReactNativeModal isVisible={isModalVisible} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalVisible(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                    <View style={{ width: "95%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
-                        <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
-                            <Image source={CloseIcont} style={{width:30, height:30}}/>
-                        </TouchableOpacity>
-                        <View style={{width:"100%", marginTop:-10, alignItems:"center", marginBottom:20,}}>
-                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Laporan Bulan {getStrMonth} {getYear}</Text>
-                        </View>
-                        <View>
-                            <Pdf
-                                trustAllCerts={false}
-                                source={require('../../assets/file/exFile.pdf')}
-                                style={{width:"100%", height:450}}
-                                // renderActivityIndicator={loadSpinner}
-                            />
-                        </View>
-                    </View>
-                </ReactNativeModal>
 
                 <ReactNativeModal isVisible={isModalVisible2} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalVisible(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "95%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
@@ -398,7 +506,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     </View>
                 </ReactNativeModal>
 
-                {/* modal succes */}
+                {/* modal confirm aksi */}
                 <ReactNativeModal isVisible={modaAlertPengajuan} onBackdropPress={() => setModaAlertPengajuan(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 
@@ -406,7 +514,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                             <Image source={CloseIcont} style={{width:30, height:30}}/>
                         </TouchableOpacity>
                         <View style={{width:"100%", marginTop:-10, alignItems:"center"}}>
-                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Terima Laporan ?</Text>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>{myAksi.messagae}</Text>
                         </View>
                         <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                             <View style={{flexDirection:"row"}}>
@@ -414,7 +522,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                                     <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
                                 </TouchableOpacity>
 
-                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center",}} onPress={UpdatePengajuan}>
+                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center",}} onPress={handlerAksiPengajuan}>
                                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
                                 </TouchableOpacity>
                             </View>     

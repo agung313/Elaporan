@@ -114,15 +114,24 @@ const LaporanKasum = ({navigation}) => {
 
     const rowLaporan = (item,index) =>{
 
+
+
+        const params ={
+            idUser: item.id_user,
+            bulan: item.bulan,
+            tahun: item.tahun
+            // item.id, bulan: item.bulan,tahun:item.tahun
+        }
+
         return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:5, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailLaporanKasum',{ idDokumen:item.id})}>
+            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:5, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:params})}>
                 <Image source={ item.fotoProfile == '' ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                 <View style={{marginLeft:10}}>
                     <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
                     <Text style={{ color:"black",  fontSize:10}}>Jabatan : {item.jabatan} Programmer</Text>
                 </View>
                 <View style={{flexDirection:'row', marginLeft:35, marginTop:-40,}}>
-                    <Text style={{fontSize:11, color:'black', fontWeight:'600', backgroundColor:'#f5c542', borderTopLeftRadius:5, borderBottomLeftRadius:5, padding:5}}>{item.bulan+' '+item.tahun}</Text>
+                    <Text style={{fontSize:11, color:'black', fontWeight:'600', backgroundColor:'#f5c542', borderTopLeftRadius:5, borderBottomLeftRadius:5, padding:5}}>{namaBulan[item.bulan]+' '+item.tahun}</Text>
                     <Text style={{fontSize:11,color:'white', fontWeight:'600', backgroundColor:'#d742f5', borderTopRightRadius:5, borderBottomRightRadius:5, padding:5}}>{item.status}</Text>
                 </View>
             </TouchableOpacity>            
@@ -157,7 +166,8 @@ const LaporanKasum = ({navigation}) => {
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
 
                     <View style={{width:"70%"}}>
-                        <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT Bulan {getStrMonth} {getYear}</Text>
+                        {/* <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT Bulan {getStrMonth} {getYear}</Text> */}
+                        <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT</Text>                        
                     </View>
 
                     {

@@ -6,7 +6,10 @@ import { Picker } from '@react-native-picker/picker';
 import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf';
 
-const DetailThlIt = ({navigation}) => {
+const DetailThlIt = ({route, navigation}) => {
+
+    const {idUser} =route.params
+
     const [bulan, setBulan] = useState()
     // width heigh
     const WindowWidth = Dimensions.get('window').width;

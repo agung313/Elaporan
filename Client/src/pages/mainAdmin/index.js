@@ -1,24 +1,23 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CekLaporan, CloseIcont, DataThl, EmailIcon, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, Pengajuan, ProfileKasum, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
+import { AddLibur, AddKegiatan, BgApp,  DataThl, EmailIcon,  LogOut, Pengajuan, SettIcont,  } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import axios from 'axios';
 import { useIsFocused } from '@react-navigation/native';
 
-
-const Kasum = ({ navigation}) => {
-
-    useEffect(() => {
-      
-        if (isFocused) {
-            handlerGetPengajuan()
-        }
-
-    }, [navigation, isFocused])
-
-    const base_url = ApiLink+'/api'
+const Admin = ({navigation}) => {
+    const base_url =ApiLink+"/api";
     const isFocused = useIsFocused();
+    useEffect(()=>{
+
+        if (isFocused) {
+            getMyProfile(),
+            handlerGetPengajuan()
+            // getKegiatan()        
+        }
+        
+    },[navigation, isFocused])
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -35,19 +34,40 @@ const Kasum = ({ navigation}) => {
 
     const getYear = cekTgl.getFullYear()
 
-    
-    // modal
-    const [isModalVisible, setModalVisible] = useState(false);
+    // profilie
+    const [fileFoto, setFileFoto] = useState()
+    const [imgFoto, setImgFoto] = useState()
+    const [profile, setProfile] = useState()
+    const [namaUser, setNamaUser] = useState()
+    const [jabatanUser, setJabatanUser] = useState()
+    const [emailUser, setEmailUser] = useState()
+    // const [imgTtd, setImgTtd] = useState()
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    }
+    const getMyProfile = async data =>{
 
-    // showcontent
-    const [showContent, setShowContent] = useState(1)
-    const toggleContent = (e)=>{
-      setShowContent(e);
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.get(`${base_url}/user/profile`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+
+                setProfile(response.data)
+                setNamaUser(response.data.nama)
+                setJabatanUser(response.data.jabatan)
+                setEmailUser(response.data.email)
+                setImgFoto(response.data.URL)
+                // setImgTtd(response.data.ttd)
+
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }
     }
+    const imgFileFoto = {uri: imgFoto}
 
     // api get pengajuan
     const [countPengajuan, setCountPengajuan] = useState()
@@ -72,43 +92,45 @@ const Kasum = ({ navigation}) => {
             console.log(error, "error get my profile")   
         }        
     }
-    
+
     return (
         <ImageBackground source={BgApp} style={{flex:1}}>
-        
             <View style={{ width:WindowWidth, height:200,}}>
                 <View style={{ width:WindowWidth, marginTop:15, alignItems:'center' }}>
                         
                     <View style={{flexDirection:'row'}}>
                         <TouchableOpacity onPress={() => navigation.navigate("AcountScreen")}><Image source={SettIcont} style={{width:30, height:30}}/></TouchableOpacity>
 
-                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:20, marginHorizontal:100}}>E - Laporan</Text>
+                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:20, marginLeft:100, marginRight:60}}>E - Laporan</Text>
 
-                        <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("AllPengajuan")}>
+                        {/* <TouchableOpacity style={{flexDirection:"row"}} onPress={() => navigation.navigate("AllPengajuan")}>
                             <Image source={NotifIcont} style={{width:28, height:28}}/>
                             <View style={{marginLeft:-15, marginRight:-7}}>
                                 <Image source={WarningIcont} style={{width:20, height:20,}}/>
                             </View>
+                        </TouchableOpacity> */}
+                        <TouchableOpacity style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}} >
+                            <Image source={LogOut} style={{width:20, height:20}}/>
+                            <Text style={{ color: "#fff", fontSize: 12, marginTop: -5, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700", marginLeft:5}}>LogOut</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={{marginTop:10, marginLeft:15, alignItems:"center",}}>
-                    <Image source={EmailIcon} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
+                    {imgFoto?<Image source={imgFileFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>:<Image source={EmailIcon} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>}
                     <View style={{alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Iwan Kurniawan, S.E</Text>
-                        <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : Kasubag Umum</Text>
+                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{namaUser}</Text>
+                        <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
                     </View>
                 </View>
             </View>
 
             <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, minHeight:500, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center"}}>
-
                 <View style={{marginVertical:10, width:200, alignItems:"center", marginTop:30}}>
                     <Text style={{color:"#000", fontSize: 15, fontWeight:"bold", textAlign:"center"}}>Silakan Pilih Menu Yang Tersedia Di Bawah Ini</Text>
                 </View>
-
+                
                 <View style={styles.barMenu}>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("PengajuanKasum")}>
+                    <TouchableOpacity style={styles.menuBar1} onPress={() => navigation.navigate("DataPengajuan")}>
                         <Image source={Pengajuan} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Pengajuan</Text>
                         <View style={countPengajuan?{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}:{width:30, height:30, marginTop:-110,}}>
@@ -116,42 +138,37 @@ const Kasum = ({ navigation}) => {
                         </View>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("LaporanKasum")}>
-                        <Image source={CekLaporan} style={styles.menuImage}/>
-                        <Text style={styles.labelMenu}>Laporan</Text>
-                        <View style={{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}}>
-                            <Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>10</Text>
-                        </View>
-                    </TouchableOpacity>
-                    
-                    
-                </View>
-
-                <View style={styles.barMenu}>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('DataAsn')}>
                         <Image source={DataThl} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Data ASN</Text>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("AcountScreen")}>
-                        <Image source={ProfileKasum} style={styles.menuImage}/>
-                        <Text style={styles.labelMenu}>Profile</Text>
-                    </TouchableOpacity>
                     
                 </View>
+                <View style={styles.barMenu}>
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
+                        <Image source={AddKegiatan} style={styles.menuImage}/>
+                        <Text style={styles.labelMenu}>Kehadiran</Text>
+                    </TouchableOpacity>
+                    <View style={{width:20}}></View>
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate('ThlIt')}>
+                        <Image source={AddLibur} style={styles.menuImage}/>
+                        <Text style={styles.labelMenu}>Hari Libur</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-                            
         </ImageBackground>
     )
 }
 
-export default Kasum
+export default Admin
 
 const styles = StyleSheet.create({
     barMenu: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginBottom:50
+        alignItems:"center",
+        marginBottom:0
     },
     menuBar: {
         alignItems: 'center',
@@ -163,6 +180,18 @@ const styles = StyleSheet.create({
         padding: 5,
         margin:20
         // borderWidth: 0.5
+    },
+    menuBar1: {
+        alignItems: 'center',
+        margin: 15,
+        minHeight:75,
+        width: 75,
+        // backgroundColor: "#ffff",
+        borderRadius: 15,
+        padding: 5,
+        margin:20,
+        marginTop:-40
+        
     },
     labelMenu:{
         fontSize: 12,
