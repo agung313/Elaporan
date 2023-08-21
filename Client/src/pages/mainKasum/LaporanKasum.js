@@ -114,8 +114,6 @@ const LaporanKasum = ({navigation}) => {
 
     const rowLaporan = (item,index) =>{
 
-
-
         const params ={
             idUser: item.id_user,
             bulan: item.bulan,
