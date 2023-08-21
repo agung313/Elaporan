@@ -23,8 +23,8 @@ class LaporanAdmin extends JsonResource
         $temp = [
             'kegiatan' => $this->status == 'hadir' ? 'Kehadiran' : $this->status,
             'foto' => $this->URL,
-            'waktu_hadir' => $this->waktu_hadir. ' WIB',
-            'waktu_pulang' => $this->waktu_pulang. ' WIB'
+            'waktu_hadir' =>  $this->status == 'hadir' || $this->status == 'hadir kegiatan' ? $this->waktu_hadir. ' WIB' : null,
+            'waktu_pulang' =>  $this->status == 'hadir' || $this->status == 'hadir kegiatan' ? $this->waktu_pulang. ' WIB' : null
         ];
 
         $mergedKegiatan = $detail->prepend($temp);
