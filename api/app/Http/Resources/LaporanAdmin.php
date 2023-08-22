@@ -21,10 +21,11 @@ class LaporanAdmin extends JsonResource
         $tanggal =  Carbon::parse($this->tanggal)->isoFormat('D MMMM Y');
         $detail = Laporan::where('id_absensi', $this->id)->get();
         $temp = [
-            'kegiatan' => $this->status == 'hadir' ? 'Kehadiran' : $this->status,
-            'foto' => $this->URL,
-            'waktu_hadir' => $this->waktu_hadir. ' WIB',
-            'waktu_pulang' => $this->waktu_pulang. ' WIB'
+            'judul_kegiatan' => $this->status == 'hadir' ? 'Kehadiran' : $this->status,
+            'foto' => URL('storage/'. $this->foto),
+            'uraian_kegiatan' => 'Masuk \t : '.$this->waktu_hadir.'WIB \n Pulang \t : '.$this->waktu_pulang.' WIB \n'. $this->keterangan_hadir
+            // 'waktu_hadir' => $this->waktu_hadir. ' WIB',
+            // 'waktu_pulang' => $this->waktu_pulang. ' WIB'
         ];
 
         $mergedKegiatan = $detail->prepend($temp);

@@ -279,14 +279,18 @@ const Laporan = ({route, navigation}) => {
                         <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Uraian</Text>
                     </View>
                 </View>
-                <ScrollView style={{maxHeight:WindowHeight*0.3}}>
+                <View style={{maxHeight:WindowHeight*0.3}}>
                     <FlatList
                         data={arrKegiatan}
                         renderItem={({ item,index }) => (
                             rowKegiatan(item,index)
                         )}
+                        // contentContainerStyle={{
+                        //     flexGrow:1
+                        // }}
+                        nestedScrollEnabled
                     />                            
-                </ScrollView>
+                </View>
             </View>            
         )
     }

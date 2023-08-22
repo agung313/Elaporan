@@ -53,8 +53,17 @@ const ProfileKasum = ({navigation}) => {
     const base_url =ApiLink+"/api";
 
     // profilie
+
+    const [myProfile, setMyProfile] = useState({
+        nama:null,
+        jabatan:null,
+        email:null,
+        ttd:null
+    })
+
     const [fileFoto, setFileFoto] = useState()
     const [imgFoto, setImgFoto] = useState()
+
     const [profile, setProfile] = useState()
     const [namaUser, setNamaUser] = useState()
     const [jabatanUser, setJabatanUser] = useState()
@@ -72,22 +81,14 @@ const ProfileKasum = ({navigation}) => {
 
             if (response.status == 200) {
 
-                // setProfile({
-                //     id: response.data.id,
-                //     nama:response.data.nama,
-                //     jabatan: response.data.jabatan,
-                //     email:response.data.email
-                // })
-                setProfile(response.data)
-                setNamaUser(response.data.nama)
-                setJabatanUser(response.data.jabatan)
-                setEmailUser(response.data.email)
-                setImgFoto(response.data.URL)
-                setImgTtd(response.data.ttd)
-                // console.log(response.data.ttd,'<--- ttd')
-
+                setMyProfile({
+                    nama:response.data.nama,
+                    jabatan:response.data.jabatan,
+                    foto:response.data.URL,
+                    email:response.data.email,
+                    ttd:response.data.ttd
+                })
             }
-
         } catch (error) {
             console.log(error, "error get my profile")   
         }
@@ -352,11 +353,11 @@ const ProfileKasum = ({navigation}) => {
                 </View>
                 <View style={{alignItems:"center", width:WindowWidth, height:200, }}>
                     <View style={{alignItems:"center", marginTop:20}}>
-                        {imgFoto?<Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={EmailIcon} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
+                        {myProfile.foto == null ? <Image source={ imgFileFoto } style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={{uri:myProfile.foto}} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                         
                         <View style={{ alignItems:"center", marginTop:15}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>{namaUser}</Text>
-                            <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:13, marginTop:5}}>Jabatan : {jabatanUser}</Text>
+                            <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:13, marginTop:5}}>Jabatan : {myProfile.jabatan}</Text>
                         </View>
                     </View>
                 </View>
