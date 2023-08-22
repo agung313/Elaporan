@@ -22,7 +22,6 @@ class LaporanAdmin extends JsonResource
         $detail = Laporan::where('id_absensi', $this->id)->get();
         $temp = [
             'kegiatan' => $this->status == 'hadir' ? 'Kehadiran' : $this->status,
-            'foto' => $this->URL,
             'waktu_hadir' =>  $this->status == 'hadir' || $this->status == 'hadir kegiatan' ? $this->waktu_hadir. ' WIB' : null,
             'waktu_pulang' =>  $this->status == 'hadir' || $this->status == 'hadir kegiatan' ? $this->waktu_pulang. ' WIB' : null
         ];
@@ -34,6 +33,9 @@ class LaporanAdmin extends JsonResource
             'hari' => $hari,
             'tanggal' => $tanggal,
             'status' => $this->status,
+            'foto' => $this->URL,
+            'keterangan_hadir' => $this->keterangan_hadir,
+            'keterangan_pulang' => $this->keterangan_pulang,
             'kegiatan' => $mergedKegiatan
         ];
     }
