@@ -283,7 +283,7 @@ const RegisterSide = ({route, navigation}) => {
             <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={handlerRegister}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>Register</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={{width:200, height:40, backgroundColor:"#dadde3", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:15}} onPress={() => navigation.navigate("LoginSide")}>
+            <TouchableOpacity style={{width:200, height:40, backgroundColor:"#dadde3", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:15}} onPress={() => navigation.navigate("LoginSide",{errorValue:0})}>
                 <Text style={{color:"#000", fontWeight:"bold", fontSize:18}}>Login</Text>
             </TouchableOpacity>                         
         </ImageBackground>

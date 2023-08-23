@@ -60,24 +60,23 @@ const DetailLaporanKasum = ({route, navigation}) => {
     const [showContent, setShowContent] = useState(0)
     const toggleContent = (e)=>{
         setShowContent(e);
-    }
+    }   
 
+    const [myAksi, setMyAksi] = useState({
+        message:null,
+        isVisible:false
+    })
     const [modaAlertPengajuan, setModaAlertPengajuan] = useState(false)
 
     const handlerAksiPengajuan = async() => {
-
-
-        // setModalLoad(true)
-        // console.log(myAksi,'<--- aksi')
-        // setModalLoad(false)
-        // navigation.navigate("MainKasum")
+        setModalLoad(true)
         try {
 
             const myToken = await AsyncStorage.getItem('AccessToken');    
-            const target_url = base_url+`/document/approve/${idDokumen}`
-            console.log(target_url)
+            const target_url = base_url+`/document/approve/${params.id_dokumen}`
             const myForm={
-                catatan: JSON.stringify(myCatatan)
+                catatan: JSON.stringify(myCatatan),
+                status:newStatus
             }
 
             const response = await axios.post(target_url,myForm,{headers:{
@@ -85,12 +84,27 @@ const DetailLaporanKasum = ({route, navigation}) => {
             }}).then((res)=>{
                 setModalLoad(false)
                 console.log(res.data)
-                // navigation.navigate("MainKasum")
+                navigation.navigate("MainKasum")
             })
 
         } catch (error) {
             console.log(error,"<--- error handler hadir")            
         }
+    }
+    
+    const handlerModalTerima = ()=>{
+        setMyAksi({
+            message:'Approve Laporan ?',
+            isVisible:true,
+        })
+        setNewStatus('diapprove')
+    }
+    const handlerModalTolak = ()=>{
+        setMyAksi({
+            message:'Tolak Laporan ?',
+            isVisible:true,
+        })
+        setNewStatus('ditolak')
     }
     
     const [myProfile, setMyProfile] = useState({
@@ -102,6 +116,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
 
     const [fileDoc, setFileDoc] = useState()
     const [myCatatan, setMyCatatan] = useState([])
+    const [newStatus, setNewStatus] = useState()
 
     const isFocused = useIsFocused();
     const base_url = ApiLink+'/api'
@@ -445,7 +460,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         </TouchableOpacity>
                     </View>
                     <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#a8323c", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => setModaAlertPengajuan(true)}>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#a8323c", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTolak}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Tolak Laporan</Text>
                         </TouchableOpacity>
                     </View>                    
@@ -528,18 +543,18 @@ const DetailLaporanKasum = ({route, navigation}) => {
                 </ReactNativeModal>
 
                 {/* modal confirm aksi */}
-                <ReactNativeModal isVisible={modaAlertPengajuan} onBackdropPress={() => setModaAlertPengajuan(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <ReactNativeModal isVisible={myAksi.isVisible} onBackdropPress={() => setMyAksi({...myAksi, ['isVisible']:false})}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 
-                        <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModaAlertPengajuan(false)}>
+                        <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setMyAksi({...myAksi, ['isVisible']:false})}>
                             <Image source={CloseIcont} style={{width:30, height:30}}/>
                         </TouchableOpacity>
                         <View style={{width:"100%", marginTop:-10, alignItems:"center"}}>
-                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>{myAksi.messagae}</Text>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>{myAksi.message}</Text>
                         </View>
                         <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                             <View style={{flexDirection:"row"}}>
-                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModaAlertPengajuan(false)}>
+                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setMyAksi({...myAksi, ['isVisible']:false})}>
                                     <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
                                 </TouchableOpacity>
 
