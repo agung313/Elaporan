@@ -39,5 +39,7 @@ import DetailDataPengajuan from './mainAdmin/DetailDataPengajuan'
 import HariLibur from './mainAdmin/HariLibur'
 import TambahHariLibur from './mainAdmin/TambahHariLibur'
 import DataKehadiran from './mainAdmin/DataKehadiran'
+import DetailKehadiran from './mainAdmin/DetailKehadiran'
 
-export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan, DetailPengajuan, LaporanKasum, ThlIt, DetailThlIt, DetailLaporanKasum, ProfileKasum, AllPengajuan, TambahCatatan, EditCatatan, SplashLogin, AbsensiPulang, PengajuanHadir, Admin, ProfileAdmin, DataAsn, DetailAsn, DataPengajuan,DetailDataPengajuan, HariLibur, TambahHariLibur, DataKehadiran}
+
+export{MainSplash, MainApp, MainUser, Absensi, Agenda, Tambah, Edit, Allabsensi, Detail, Notif, PassUsr, Pendahuluan, Laporan, Kasum, LoginSide, Pengajuan, DetailPengajuan, LaporanKasum, ThlIt, DetailThlIt, DetailLaporanKasum, ProfileKasum, AllPengajuan, TambahCatatan, EditCatatan, SplashLogin, AbsensiPulang, PengajuanHadir, Admin, ProfileAdmin, DataAsn, DetailAsn, DataPengajuan,DetailDataPengajuan, HariLibur, TambahHariLibur, DataKehadiran, DetailKehadiran}
