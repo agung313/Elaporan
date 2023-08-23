@@ -155,15 +155,14 @@ const LoginSide = ({route, navigation}) => {
             <View style={errorValue==1 ? {marginTop:20, display:"flex"}:{display:"none"}}>
                 <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>Username atau Password anda salah !!</Text>
             </View>
-            {/* <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={() => navigation.navigate("AppScreen")}>
-                <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>THL</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={() => navigation.navigate("KasumScreen")}>
-                <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>KASUM</Text>
-            </TouchableOpacity> */}
+            
             <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={handlerLogin}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>Login</Text>
-            </TouchableOpacity>            
+            </TouchableOpacity>    
+                    
+            <TouchableOpacity style={{width:200, height:40, backgroundColor:"#dadde3", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:15}} onPress={() => navigation.navigate("RegisterSide", {errorValue:null})}>
+                <Text style={{color:"#000", fontWeight:"bold", fontSize:18}}>Register</Text>
+            </TouchableOpacity> 
         </ImageBackground>
     )
 }

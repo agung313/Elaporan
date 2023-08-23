@@ -114,15 +114,16 @@ const LaporanKasum = ({navigation}) => {
 
     const rowLaporan = (item,index) =>{
 
-        const params ={
-            idUser: item.id_user,
+        console.log(item)
+        const tmpObj = {
+            id_user: item.id_user,        
             bulan: item.bulan,
-            tahun: item.tahun
-            // item.id, bulan: item.bulan,tahun:item.tahun
+            tahun: item.tahun,
+            id_dokumen:item.id
         }
 
         return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:5, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:params})}>
+            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:5, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:tmpObj})}>
                 <Image source={ item.fotoProfile == '' ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                 <View style={{marginLeft:10}}>
                     <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
@@ -164,8 +165,7 @@ const LaporanKasum = ({navigation}) => {
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
 
                     <View style={{width:"70%"}}>
-                        {/* <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT Bulan {getStrMonth} {getYear}</Text> */}
-                        <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT</Text>                        
+                        <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT</Text>
                     </View>
 
                     {

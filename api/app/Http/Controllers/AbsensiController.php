@@ -10,6 +10,7 @@ use App\Models\Libur;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use App\Http\Resources\Absen as AbsenResource;
 use App\Http\Resources\AbsenPengajuan as AbsenPengajuanResource;
 
@@ -45,12 +46,15 @@ class AbsensiController extends Controller
         }else if($request->isApprove){
             $absen = Absensi::where('isApprove', false)->get();
 
-        }elseif ($request->izinSakit) {
+        }else if ($request->izinSakit) {
 
             $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove',0)->get();
 
             return response(AbsenPengajuanResource::collection($absen));
             // return ['data'=> $absen];
+        }else if ($request->approveAdmin) {
+
+            $absen = Absensi::where('approveAdmin', 0)->orderBy('id','DESC')->get();
 
         }else{
             $absen = Absensi::where('id_user', Auth::user()->id)->orderBy('tanggal','DESC')->get();
@@ -107,7 +111,8 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false,
+                    'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
                 return response()->json([
@@ -124,7 +129,8 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false,
+                    'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
                 return response()->json([
@@ -135,7 +141,6 @@ class AbsensiController extends Controller
         }
     }
 
-    //belum jadi karena ngk nampak tampilan seperti apa
     function absenAdmin(Request $request, $id){
         if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
             $absen = Absensi::findorNew($id)([
@@ -156,13 +161,72 @@ class AbsensiController extends Controller
         } 
     }
 
+    //belum jadi karena ngk nampak tampilan seperti apa
+    function approveAdmin(Request $request, $id){
+        if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
+            $startDate = Carbon::parse($request->startDate); 
+            $nextDay = $startDate->copy()->addDay(); // menambah 1 hari karena hari sebelumnya sudah di inputkan
+            $endDate = Carbon::parse($request->endDate);
+
+            $dateRange = CarbonPeriod::create($nextDay, $endDate); // cek range izin
+
+            $user = Absensi::where('id',$id)->first(); // cek data lama
+
+            $insertedAbsences;
+
+            if ($startDate->isSameDay($endDate)){
+                $absen = Absensi::findOrNew($id);
+                $absen->approveAdmin = true;
+                $absen->save();
+
+                $insertedAbsences[] = $absen;
+            }else{
+                foreach ($dateRange as $date) {
+                    $absen = Absensi::create([
+                        'id_user' => $user->id_user,
+                        'status' => $user->status,
+                        'tanggal' => $date->format('Y-m-d') 
+                    ]);
+    
+                    $insertedAbsences[] = $absen;
+                }
+            }
+
+            return response()->json([
+                'messages' => 'absensi berhasil',
+                'data' => $insertedAbsences
+            ],200);
+
+        }else{
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses',
+            ],402);
+        } 
+    }
+
     function cekAbsen() {
 
         $id = Auth::user()->id;
         $tanggal = Carbon::now()->toDateString();
         $waktu = Carbon::now()->toTimeString();
         $absenPulang = Carbon::parse('12:00:00');
-        $cek = Absensi::where('tanggal',$tanggal)->first();
+        $cek = Absensi::where('tanggal',$tanggal)->where('id_user',$id)->first();
+        $libur = Libur::all();
+
+        $adminDefinedSpecialDates;
+
+        foreach ($libur as $lb) {
+            $adminDefinedSpecialDates[] = $lb->tanggal; 
+        }
+
+        if (in_array($tanggal, $adminDefinedSpecialDates)) {
+            $status = "hari tidak ada absen, silahkan nikmati kopi mu dengan sebatang rokok";
+
+            return response()->json([
+                'messages' => $status
+            ]);
+        }
+
         $status;
 
         if ($cek != null){
@@ -188,7 +252,6 @@ class AbsensiController extends Controller
         return response()->json([
             'data' => $cek,
             'status' => $cek == null ? $status : $cek->status,
-
         ]);
     }
 

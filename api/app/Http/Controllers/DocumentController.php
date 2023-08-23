@@ -26,7 +26,11 @@ class DocumentController extends Controller
     {
         if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
 
-            $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
+            if ($request->id_dokumen) {
+                $document = Document::where('documents.id',$request->id_dokumen)->get();
+            } else {
+            
+                $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
                     ->join('Users','users.id', '=', 'documents.id_user')
                     ->join('profiles','profiles.id_user', '=', 'documents.id_user')
                     // ->whereMonth('documents.bulan', $request->bulan)
@@ -34,14 +38,8 @@ class DocumentController extends Controller
                     ->orderBy('documents.id','DESC')
                     ->orderBy('documents.status','ASC')
                     ->get();
+            }
 
-        }elseif ($request->id_dokumen) {
-
-            $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
-                    ->join('Users','users.id', '=', 'documents.id_user')
-                    ->join('profiles','profiles.id_user', '=', 'documents.id_user')
-                    ->where('documents.id',$request->id_dokumen)
-                    ->get();
         } else{
 
             $document = Document::select('documents.*','users.name','users.jabatan')
@@ -216,8 +214,7 @@ class DocumentController extends Controller
             $saran = $doc->saran;
             $kendala = $doc->kendala;
             $bulan = $doc->bulan;
-            $tahun = $doc->tahun;
-            
+            $tahun= $doc->tahun;
             $catatan = $request->catatan;
 
             //user
@@ -251,7 +248,7 @@ class DocumentController extends Controller
                         ->where('users.id', $doc->id_user)
                         ->get();
 
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $doc->kendala]);
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala, 'catatan' => $catatan]);
 
             $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -277,6 +274,7 @@ class DocumentController extends Controller
             //update file di 
             $dokument = Document::findorNew($id);
             $dokument->path = $pathGas;
+            $dokument->catatan = $catatan;
             $dokument->status = "diapprove";
             $dokument->save();
 

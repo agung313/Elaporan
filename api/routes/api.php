@@ -37,6 +37,7 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
     Route::get('/countNoAcc', 'countNoAcc');
     Route::post('/acceptIzin/{id}', 'acceptIzin');
     Route::post('/absenAdmin', 'absenAdmin');
+    Route::post('/approveAdmin/{id}', 'approveAdmin');
     Route::post('/updateLibur', 'updateLibur'); //update libur by admin
     Route::get('/listLibur', 'listLibur'); //list libur by admin
 });
@@ -44,6 +45,7 @@ Route::controller(AbsensiController::class)->prefix('absen')->group(function () 
 //LAPORAN
 Route::controller(LaporanController::class)->prefix('laporan')->group(function () {
     Route::get('/', 'index');
+    Route::get('/listKegiatan', 'laporan');
     Route::post('/store', 'store');
     Route::post('/upload', 'upload');
     Route::put('/{id}','update');

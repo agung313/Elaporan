@@ -18,7 +18,7 @@ class Document extends JsonResource
             'id' => $this->id,
             'id_user' => $this->id_user,
             'status' => $this->status,
-            'bulan' => Carbon::createFromFormat('m', $this->bulan, 'Asia/Jakarta')->isoFormat('MMMM'),
+            'bulan' =>  $this->bulan, 'Asia/Jakarta',
             'URL' => URL('storage/'. $this->path),
             'tahun' => $this->tahun,
             'fotoProfile' => URL('storage/'. $this->foto),

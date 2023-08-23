@@ -37,8 +37,7 @@ const EditCatatan = ({route, navigation}) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
-
-    // state New catatan
+    // state New Ruang Lingkup
     const [newCatatan, setNewCatatan] = useState('-')
     const [tmpArr, setTmpArr] = useState([])
 
@@ -51,7 +50,8 @@ const EditCatatan = ({route, navigation}) => {
     }, [navigation, isFocused])
 
     const setFormEdit = async data =>{
-        var catatanOld = await AsyncStorage.getItem('tmpCatatan')        
+        var catatanOld = await AsyncStorage.getItem('tmpCatatan')     
+           
         setTmpArr(catatanOld.split("%ry%"))
         setNewCatatan(catatanOld.split("%ry%")[indexData])
 
@@ -68,7 +68,7 @@ const EditCatatan = ({route, navigation}) => {
         await AsyncStorage.setItem('tmpCatatan', tmpArr.join("%ry%"))
         navigation.goBack()
 
-    }    
+    }
 
     return (
         <ScrollView>
@@ -96,7 +96,7 @@ const EditCatatan = ({route, navigation}) => {
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
                     <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Edit Catatan </Text>
                     <View style={{marginBottom:20}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {indexData+1}:</Text>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {indexData+1} :</Text>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
                                 <TextInput
@@ -113,7 +113,7 @@ const EditCatatan = ({route, navigation}) => {
                     </View>
                     <View style={{alignItems:"center"}}>
                         <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#39a339", marginBottom:20, borderRadius:15, alignItems:"center", justifyContent:"center"}} onPress={saveTmpData}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Update</Text>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Edit Catatan</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

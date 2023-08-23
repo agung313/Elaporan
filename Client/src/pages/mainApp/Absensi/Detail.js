@@ -101,18 +101,18 @@ const Detail = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
             const target_url = `${base_url}/absen?detail=true&id=${idAbsensi}`
-
+            console.log(target_url)
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
-                // console.log(res.data[0].foto, "<==== lokasi foto")       
-                console.log(res.data[0], "<===== data absensi")    
+                // console.log(res.data.data.foto, "<==== lokasi foto")       
+                console.log(res.data.data, "<===== data absensi")    
                 setAbsen({
-                    status:res.data[0].status,
-                    waktuMasuk: res.data[0].waktu_hadir,
-                    waktuPulang:res.data[0].waktu_pulang,
-                    fotoAbsensi:res.data[0].foto,
-                    keteranganAbsensin:res.data[0].keterangan_hadir,                    
+                    status:res.data.data.status,
+                    waktuMasuk: res.data.data.waktu_hadir,
+                    waktuPulang:res.data.data.waktu_pulang,
+                    fotoAbsensi:res.data.data.foto,
+                    keteranganAbsensin:res.data.data.keterangan_hadir,                    
                 })
             }) 
             

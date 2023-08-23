@@ -2,10 +2,8 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image
 import React, { useState, useEffect } from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, EditIcont, ExFoto, LgBappeda } from '../../assets/images'
 import ReactNativeModal from 'react-native-modal'
-import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from "@react-navigation/native";
-import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const TambahLingkup = ({navigation}) => {
 
@@ -55,12 +53,14 @@ const TambahLingkup = ({navigation}) => {
         setNomorRL(ruangLingkupOld.split("%ry%").length+1)
         setTmpArr(ruangLingkupOld.split("%ry%"))
 
+        console.log(tmpArr,'<--- tmp Array')
+
     }    
 
     const [modalForm, setModalForm] = useState(false)
 
     const saveItemArray = async ()=>{
-        if (newRL==null && newRL == '') {
+        if (newRL==null || newRL == '') {
             setModalForm(true)                    
         }
 
@@ -69,9 +69,6 @@ const TambahLingkup = ({navigation}) => {
         await AsyncStorage.setItem('tmpRuangLingkup', tmpData.join("%ry%"))
         navigation.goBack()
     }
-
-
-
 
     return (
         <ScrollView>

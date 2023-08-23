@@ -5,7 +5,6 @@ import ReactNativeModal from 'react-native-modal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from "@react-navigation/native";
 
-
 const TambahCatatan = ({route, navigation}) => {
 
     // width heigh
@@ -36,7 +35,6 @@ const TambahCatatan = ({route, navigation}) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
-
     // state New Ruang Lingkup
     const isFocused = useIsFocused();
     const [newCatatan, setNewCatatan] = useState('')
@@ -65,16 +63,14 @@ const TambahCatatan = ({route, navigation}) => {
 
 
         if (newCatatan==null || newCatatan == '') {
-            setModalForm(true)
-            return                    
+            setModalForm(true)                    
         }
 
         var tmpData = tmpArr
         tmpData.push(newCatatan)   
         await AsyncStorage.setItem('tmpCatatan', tmpData.join("%ry%"))
         navigation.goBack()
-    }    
-
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -101,7 +97,7 @@ const TambahCatatan = ({route, navigation}) => {
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
                     <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Tambah Catatan </Text>
                     <View style={{marginBottom:20}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan No {nomorCatatan}:</Text>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {nomorCatatan} :</Text>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
                                 <TextInput
@@ -123,7 +119,6 @@ const TambahCatatan = ({route, navigation}) => {
                     </View>
                 </View>
             </View>
-
             {/* modal Jika form tidak di isi */}
             <ReactNativeModal isVisible={modalForm} onBackdropPress={() => setModalForm(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
@@ -132,7 +127,7 @@ const TambahCatatan = ({route, navigation}) => {
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Catatan Tidak Boleh Kosong</Text>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Silakan lengkapi seluruh form yang ada</Text>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                         <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setModalForm(false)} >
@@ -141,33 +136,7 @@ const TambahCatatan = ({route, navigation}) => {
                     </View>
                 </View>
             </ReactNativeModal>            
-            {/* modal hapus */}
-            <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                    <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
-                        <Image source={CloseIcont} style={{width:30, height:30}}/>
-                    </TouchableOpacity>
-                    <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Detail Kegiatan Anda</Text>
-                    </View>
-
-                    <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Izin :</Text>
-                    <View style={{alignItems:"center"}}>
-                        <View style={{width:"90%", height:100, borderWidth:0.5, borderColor:"black",borderRadius:15}}>
-                            <TextInput
-                                placeholder=''
-                                placeholderTextColor={"#000"}
-                                value={detail}
-                                keyboardType= "default"
-                                onChangeText={(text) => setDetail(text)}
-                                style={{ color: "#000" }}
-                                multiline
-                            />
-                        </View>
-                    </View>
-                </View>
-            </ReactNativeModal>
         </ScrollView>
     )
 }

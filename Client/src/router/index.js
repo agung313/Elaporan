@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, SplashLogin, Tambah, TambahCatatan, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataKehadiran, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, HariLibur, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, SplashLogin, Tambah, TambahCatatan, TambahHariLibur, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
@@ -9,6 +9,7 @@ import EditLingkup from '../pages/mainUser/EditLingkup'
 import TambahKendala from '../pages/mainUser/TambahKendala'
 import EditKendala from '../pages/mainUser/EditKendala'
 import Preview from '../pages/mainUser/Prewiew'
+import RegisterSide from '../pages/splashScreen/Register'
 const Stack = createNativeStackNavigator()
 const Tab = createBottomTabNavigator()
 
@@ -87,6 +88,9 @@ const HomeAdmin = () => {
             <Stack.Screen name='DetailAsn' component={DetailAsn} options={{headerShown:false}}/>
             <Stack.Screen name='DataPengajuan' component={DataPengajuan} options={{headerShown:false}}/>
             <Stack.Screen name='DetailDataPengajuan' component={DetailDataPengajuan} options={{headerShown:false}}/>
+            <Stack.Screen name='HariLibur' component={HariLibur} options={{headerShown:false}}/>
+            <Stack.Screen name='TambahHariLibur' component={TambahHariLibur} options={{headerShown:false}}/>
+            <Stack.Screen name='DataKehadiran' component={DataKehadiran} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }
@@ -139,11 +143,12 @@ const Router = () => {
             
             {/* stack pertama akan menjadi stack yang dipanggil saat aplikasi dibuka */}
             <Stack.Screen name='MainSplash' component={MainSplash} options={{headerShown:false}}/>            
-            <Stack.Screen name='SplashLogin' component={SplashLogin} options={{headerShown:false}}/>            
+            <Stack.Screen name='SplashLogin' component={SplashLogin} options={{headerShown:false}}/>          
             <Stack.Screen name='AppScreen' component={AppScreen} options={{headerShown:false}}/>
             <Stack.Screen name='KasumScreen' component={KasumScreen} options={{headerShown:false}}/>
             <Stack.Screen name='AdminScreen' component={AdminScreen} options={{headerShown:false}}/>
             <Stack.Screen name='LoginSide' component={LoginSide} options={{headerShown:false}}/>
+            <Stack.Screen name='RegisterSide' component={RegisterSide} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }

@@ -82,7 +82,7 @@ class AuthController extends Controller{
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|min:6',
-            'password_confirmation' => 'required|min:6|same:password',
+            'password_confirmation' => 'required_with:password|min:6|same:password',
             'jabatan' => 'required',
         ]);
 
@@ -99,9 +99,9 @@ class AuthController extends Controller{
 
         //cek device 
         
-        // if ($existingUser) {
-        //     return response()->json(['error' => 'Device sudah terdaftar'], 422);
-        // }
+        if ($existingUser) {
+            return response()->json(['error' => 'Device sudah terdaftar'], 422);
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -110,7 +110,7 @@ class AuthController extends Controller{
             'role' => 'user',
             'jabatan' => $request->jabatan,
             'device' => $userAgent,
-            'menu' => json_encode(['tes','test'])
+            // 'menu' => json_encode(['tes','test'])
         ]);
 
         $profile = Profile::create([
