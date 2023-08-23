@@ -53,6 +53,8 @@ const TambahLingkup = ({navigation}) => {
         setNomorRL(ruangLingkupOld.split("%ry%").length+1)
         setTmpArr(ruangLingkupOld.split("%ry%"))
 
+        console.log(tmpArr,'<--- tmp Array')
+
     }    
 
     const [modalForm, setModalForm] = useState(false)

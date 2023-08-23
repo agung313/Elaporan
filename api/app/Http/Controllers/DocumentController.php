@@ -209,15 +209,11 @@ class DocumentController extends Controller
 
         if ($role == "admin" || $role == "kasum"){
 
-            $tanggal = $request->bulan;
-            $carbon = Carbon::createFromFormat('m-Y', $tanggal);
-
-            $tahun = $carbon->year;
-
             $doc = Document::where('id',$id)->first();
             $saran = $doc->saran;
             $kendala = $doc->kendala;
-            $bulan = $carbon->translatedFormat('F');
+            $bulan = $doc->bulan;
+            $tahun= $doc->tahun;
             $catatan = $request->catatan;
 
             //user
@@ -227,7 +223,7 @@ class DocumentController extends Controller
                         ->first();
             if ($query) {
                 $query->tahun = $tahun;
-                $query->saran = $saran;
+
                 $query->kendala = $kendala;
                 $query->bulan = $bulan;
                 $query->catatan = $catatan;
@@ -252,7 +248,7 @@ class DocumentController extends Controller
                         ->where('users.id', $doc->id_user)
                         ->get();
 
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $request]);
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala, 'catatan' => $catatan]);
 
             $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -278,6 +274,7 @@ class DocumentController extends Controller
             //update file di 
             $dokument = Document::findorNew($id);
             $dokument->path = $pathGas;
+            $dokument->catatan = $catatan;
             $dokument->status = "diapprove";
             $dokument->save();
 

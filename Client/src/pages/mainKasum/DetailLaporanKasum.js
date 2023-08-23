@@ -162,12 +162,9 @@ const DetailLaporanKasum = ({route, navigation}) => {
 
                     if (!checkCatatan && myCatatan.length == 0) {
     
-                        await AsyncStorage.setItem('tmpCatatan','')
-    
-                    }else if (!checkCatatan && myCatatan.length > 0) {
-    
-                        await AsyncStorage.setItem('tmpCatatan',JSON.parse(response.data.catatan).join("%ry%"))                    
-    
+                        let tmp = JSON.parse(response.data.catatan).join("%ry%")
+                        await AsyncStorage.setItem('tmpCatatan',tmp)  
+
                     } else{
                         setMyCatatan(checkCatatan.split("%ry%"))
                     }                    
@@ -323,6 +320,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
         )
     
     }    
+    
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -520,7 +518,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     </View>
                 </ReactNativeModal>
 
-                {/* modal succes */}
+                {/* modal confirm aksi */}
                 <ReactNativeModal isVisible={modaAlertPengajuan} onBackdropPress={() => setModaAlertPengajuan(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 

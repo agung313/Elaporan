@@ -68,28 +68,31 @@ class UserController extends Controller
                 }
             }
         }
-
         
-        $idProfile = Profile::select('*')->where('id_user', $users->id)->first();
+            $idProfile = Profile::select('*')->where('id_user', $users->id)->first();
 
-        if ($request->file) {
-            $path = $request->file('foto')->store('public');
-            $path2 = $request->file('ttd')->store('public');
-        }
 
-        $user = Profile::findorNew($idProfile->id);
-        $user->foto = $request->foto ? $path : null;
-        $user->ttd = $request->ttd ? $path2 : null;
-        $user->id_user = $users->id;
-        $user->latar_belakang = $request->latar_belakang == null ? $idProfile->latar_belakang : $request->latar_belakang;
-        $user->tujuan = $request->tujuan == null ? $idProfile->tujuan : $request->tujuan;
-        $user->ruang_lingkup = $request->ruang_lingkup == null ? $idProfile->ruang_lingkup : $request->ruang_lingkup;
-        $user->isComplete = true;
-        $user->save();
+            if ($request->file) {
+                $path = $request->file('foto')->store('public');
+                $path2 = $request->file('ttd')->store('public');
+            }
+    
+            $user = Profile::findorNew($idProfile->id);
 
-        return response()->json([
-            'data' => $user
-        ],200);
+            $user->foto = $request->file('foto') ? $path : $idProfile->foto;
+            $user->ttd = $request->file('ttd') ? $path2 : $idProfile->ttd;
+            $user->id_user = $users->id;
+            $user->latar_belakang = $request->latar_belakang == null ? $idProfile->latar_belakang : $request->latar_belakang;
+            $user->tujuan = $request->tujuan == null ? $idProfile->tujuan : $request->tujuan;
+            $user->ruang_lingkup = $request->ruang_lingkup == null ? $idProfile->ruang_lingkup : $request->ruang_lingkup;
+            $user->isComplete = true;
+            $user->save();
+    
+            return response()->json([
+                'data' => $user
+            ],200);
+        
+
     }
     public function updateFoto(Request $request)
     {

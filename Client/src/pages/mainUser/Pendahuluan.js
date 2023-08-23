@@ -27,6 +27,8 @@ const Pendahuluan = ({navigation}) => {
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
+
+    const [myError, setMyError] = useState([])    
     const base_url =ApiLink+"/api";
 
     const [profile, setProfile] = useState({
@@ -64,7 +66,6 @@ const Pendahuluan = ({navigation}) => {
             }})
 
             if (response.status === 200) {
-                console.log(response.data, "daaaaaaaaa")
 
                 setProfile({
                     latarBelakang:response.data.latar_belakang,
@@ -77,18 +78,16 @@ const Pendahuluan = ({navigation}) => {
 
                 var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
 
-                if (!checkTmpRL && arrRuangLingkup.length == 0) {
+                if (!checkTmpRL) {
 
-                    await AsyncStorage.setItem('tmpRuangLingkup','')
-
-                }else if (!checkTmpRL && arrRuangLingkup.length > 0) {
-
-
-                    await AsyncStorage.setItem('tmpRuangLingkup',JSON.parse(response.data.ruang_lingkup).join("%ry%"))                    
+                    let tmp = JSON.parse(response.data.ruang_lingkup).join("%ry%")
+                    await AsyncStorage.setItem('tmpRuangLingkup',tmp)
 
                 } else{
+
                     setArrRuangLingkup(checkTmpRL.split("%ry%"))
                 }
+
             }        
 
 
@@ -106,7 +105,7 @@ const Pendahuluan = ({navigation}) => {
     };
 
     const handlerUpdate = async data=>{
-        
+        setMyError([])
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
             var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
@@ -124,12 +123,21 @@ const Pendahuluan = ({navigation}) => {
                 tujuan: profile.maksudTujuan,
                 ruang_lingkup: paramsRL
             }
-            console.log(params,"<====")
+
             const response = await axios.post(base_url+"/user/update",params,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
 
-            if (response.status === 200) {
+            if (response.data.error) {
+
+                const tmpArr =[]
+                Object.keys(response.data.error).forEach(key => {
+                    tmpArr.push(response.data.error[key])
+                })
+                setMyError(tmpArr)
+                setModalLoad(false)
+
+            }else{
                 await AsyncStorage.removeItem('tmpRuangLingkup');
                 setMyModal({success:true})                
             }
@@ -143,7 +151,7 @@ const Pendahuluan = ({navigation}) => {
     // showcontent
     const [showContent, setShowContent] = useState(0)
     const toggleContent = (e)=>{
-        console.log(e,'<---- e')
+
         setShowContent(e);
     }
 
@@ -277,8 +285,15 @@ const Pendahuluan = ({navigation}) => {
                             ))
                         }
 
-                        <View >
-
+                        <View style={{alignItems:'center'}} >
+                        {
+                        myError.length > 0 &&
+                        myError.map((item,index)=>(
+                            <View style={{marginTop:20, display:"flex"}}>
+                            <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>{item}</Text>
+                            </View>
+                        ))                            
+                        }                            
                         </View>
                     </View>
                     
