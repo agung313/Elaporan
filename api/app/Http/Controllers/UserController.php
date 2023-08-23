@@ -21,17 +21,27 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
-        if (Auth::user()->role == 'kasum'){
+        if ($request->getAll){
+            $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+            ->join('Users', 'users.id', '=', 'profiles.id_user')
+            ->get();
+
+            return response()->json([
+                'data' => $user
+            ]);
+        }else if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
             ->where('users.id', $request->id)
-            ->first(); 
+            ->first();
         }else{
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
             ->where('users.id', Auth::user()->id)
             ->first();
         }
+        
+        
         
         
         return response(new UserResource($user));
