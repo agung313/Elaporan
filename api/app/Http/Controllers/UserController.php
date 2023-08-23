@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\User as UserResource;
+use App\Http\Resources\AllUser as AllUserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -25,10 +26,23 @@ class UserController extends Controller
         if (Auth::user()->role == 'kasum'){
 
             if ($request->id) {
+
                 $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
                 ->join('Users', 'users.id', '=', 'profiles.id_user')
                 ->where('users.id', $request->id)
                 ->first(); 
+
+            }elseif ($request->getAll) {
+                
+                $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+                ->join('Users', 'users.id', '=', 'profiles.id_user')
+                // ->where('role','user')
+                ->orderBy('name','ASC')
+                ->get();
+                
+                return response(AllUserResource::collection($user));    
+
+
             }else{
                 $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
                 ->join('Users', 'users.id', '=', 'profiles.id_user')

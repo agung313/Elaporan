@@ -52,7 +52,7 @@ const ThlIt = ({navigation}) => {
 
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
-            const target_url =`${base_url}/user/profile?all=true`
+            const target_url =`${base_url}/user/profile?getAll=true`
 
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
@@ -69,8 +69,7 @@ const ThlIt = ({navigation}) => {
     }
 
     const rowUser = (item,index)=>{
-
-
+        
         return(
             <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt' ,{idUser:item.id})}>
                 <Image source={item.URL ? {uri:item.URL}:PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>

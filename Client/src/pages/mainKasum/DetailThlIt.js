@@ -1,14 +1,21 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React, {useState} from 'react'
-import { BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images';
+import React, {useState, useEffect} from 'react'
+import { BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda, PasFoto } from '../../assets/images';
 import { PieChart } from 'react-native-chart-kit';
 import { Picker } from '@react-native-picker/picker';
 import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import { Grid  } from 'react-native-animated-spinkit'
+import { FlatList } from 'react-native';
 
 const DetailThlIt = ({route, navigation}) => {
 
     const {idUser} =route.params
+
 
     const [bulan, setBulan] = useState()
     // width heigh
@@ -51,6 +58,160 @@ const DetailThlIt = ({route, navigation}) => {
         setModalVisible3(!isModalVisible3);
     }
 
+    const isFocused = useIsFocused();
+    const base_url = ApiLink+'/api'  
+    
+    const [myDetail, setMyDetail] = useState([])
+
+
+    const [aktifBulan, setAktifBulan] = useState(monthUsed)
+
+    const [aktifTahun, setAktifTahun] = useState(getYear)
+    const [myProfile, setMyProfile] = useState({
+        nama:null,
+        jabatan:null,
+        foto:null,        
+    })    
+    
+    useEffect(() => {
+        handlerGetProfile()
+        handlerGetKegiatan()
+    
+    }, [navigation, isFocused])
+    
+    
+    const handlerGetProfile = async ()=>{
+        // setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const target_url =`${base_url}/user/profile?id=${idUser}`
+
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+                    setMyProfile({
+                        nama:response.data.nama,
+                        jabatan: response.data.jabatan,
+                        foto: response.data.URL
+                    })
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }        
+    }        
+    const handlerGetKegiatan = async ()=>{
+        // setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');  
+
+            const target_url =`${base_url}/laporan/listKegiatan`            
+            const params_url = `bulan=${aktifBulan}&tahun=${aktifTahun}&id_user=${idUser}`
+            const final_url = target_url+'?'+params_url
+
+
+            console.log(final_url,"<--- final")
+            const response = await axios.get(final_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+
+                setMyDetail(response.data)
+            }
+
+        } catch (error) {
+            console.log(error, "error get kegiatan")   
+        }        
+    }  
+    const tabelKegiatan = () =>{
+
+        return(
+            <View>
+                <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
+                    <View style={{width:"27%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                        <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Hari/Tanggal</Text>
+                    </View>
+                    <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                        <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
+                    </View>
+                    <View style={{width:"33%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
+                        <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Detail</Text>
+                    </View>
+                </View>
+                <View style={{maxHeight:WindowHeight*0.3}}>
+                    <FlatList
+                        data={myDetail}
+                        renderItem={({ item,index }) => (
+                            rowKegiatan(item,index)
+                        )}
+
+                        nestedScrollEnabled
+                    />                            
+                </View>
+            </View>            
+        )
+    }   
+    
+    const rowKegiatan = (item,index)=>{
+
+        return(
+            <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
+
+                <View style={{width:"27%", minHeight:25, justifyContent:'center', borderWidth:0.5, borderColor:"#000", alignItems:'center'}}>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.hari}</Text>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.tanggal}</Text>                    
+                </View>
+                <View style={{width:"40%", minHeight:25, borderWidth:0.5, borderColor:"#000", padding:8 }}>
+                    {
+                        item.kegiatan.length > 0 &&
+                            item.kegiatan.map((item2, index2)=>(
+
+                                <View style={{flexDirection:'row'}}>
+                                    <View>
+                                        <Text style={{color:"#000", marginBottom:5, fontSize:10, fontWeight:"500"}}>{index2+1}.</Text>
+                                    </View>
+                                    <View>
+                                        <Text style={{color:"#000", marginBottom:5, fontSize:10, fontWeight:"500"}}>{item2.judul_kegiatan}</Text>
+                                    </View>
+                                </View>
+
+
+                            ))                        
+                    }
+                    {
+                        item.kegiatan.length == 0 &&
+                        <View style={{flexDirection:'row'}}>
+                            <Text style={{color:"#000", marginBottom:5, fontSize:10, fontWeight:"500"}}> -</Text>
+                        </View>
+                    }
+                </View>
+                <View style={{width:"33%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", paddingVertical:5, }}>
+                <View style={{flexDirection:'row', paddingLeft:3, flexDirection:'column' }}>
+
+                            <View style={{flexDirection:'row', alignSelf:'center'}}>
+
+                                <TouchableOpacity style={{width:60, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={()=>{handlerViewDetail(item)}}>
+                                    <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Detail</Text>
+                                </TouchableOpacity>
+
+                            </View>                            
+
+                    {
+                        item.kegiatan.length == 0 &&
+                        <View style={{flexDirection:'row'}}>
+                            <Text style={{color:"#000", marginBottom:5, fontSize:10, fontWeight:"500"}}> -</Text>
+                        </View>
+                    }                    
+                    </View>
+                </View>                
+            </View>    
+        )
+    
+    }        
     // bar persentase
     const dataaa = [
         {
@@ -127,16 +288,16 @@ const DetailThlIt = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            <Image source={myProfile.foto ? {uri:myProfile.foto}:PasFoto} style={{width:"100%", height:190}}/>
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.nama}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Programmer</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.jabatan}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Hadir :</Text>
@@ -169,30 +330,9 @@ const DetailThlIt = ({route, navigation}) => {
                     />
 
                     <View style={{width:"100%",marginBottom:15}}>
-                        <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Hari/Tanggal</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
-                            </View>
-                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Detail</Text>
-                            </View>
-                        </View>
-                        <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
-                            </View>
-                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <TouchableOpacity style={{width:60, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={toggleModal3}>
-                                    <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Detail</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
+                        {
+                            tabelKegiatan()
+                        }
                     </View>
                 </View>
             </View>
@@ -204,34 +344,46 @@ const DetailThlIt = ({route, navigation}) => {
                     <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silakan Pilih Bulan Laporan</Text>
                     </View>
-                    <View style={{alignItems:"center", width:"100%"}}>
-                        <Picker
-                            selectedValue={bulan}
-                            onValueChange={(itemValue, itemIndex) => 
-                                setBulan(itemValue)
-                            }
-                            style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
-                            selectionColor={"#000"}
-                            // dropdownIconRippleColor={"transparent"}
-                            // dropdownIconColor={"transparent"}
-                        >
-                            <Picker.Item label="-" value="0"/>
-                            <Picker.Item label="Januari" value="1"/>
-                            <Picker.Item label="Februari" value="2"/>
-                            <Picker.Item label="Maret" value="3"/>
-                            <Picker.Item label="April" value="4"/>
-                            <Picker.Item label="Mei" value="5"/>
-                            <Picker.Item label="Juni" value="6"/>
-                            <Picker.Item label="Juli" value="7"/>
-                            <Picker.Item label="Agustus" value="8"/>
-                            <Picker.Item label="September" value="9"/>
-                            <Picker.Item label="Oktober" value="10"/>
-                            <Picker.Item label="November" value="11"/>
-                            <Picker.Item label="Desember" value="12"/>
-                        </Picker>
+                    <View style={{flexDirection:'row'}}>
+                        <View style={{alignItems:"center", width:"50%"}}>
+                            <Picker
+                                selectedValue={aktifBulan}
+                                onValueChange={(itemValue, itemIndex) => 
+                                    setAktifBulan(itemValue)
+                                    // console.log(itemValue)
+                                }
+                                style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                                selectionColor={"#000"}
+                            >
+                                {
+                                    namaBulan.map((item,index)=>(
+                                        <Picker.Item label={item} value={index}/>
+                                    ))
+                                }
+                            </Picker>
+                        </View>
+                        <View style={{alignItems:"center", width:"50%"}}>                        
+                            <Picker
+                                selectedValue={aktifTahun}
+                                onValueChange={(itemValue, itemIndex) => 
+                                    setAktifTahun(itemValue)
+                                }
+                                style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                                selectionColor={"#000"}
+                            >
+                            
+                                <Picker.Item label="2023" value="2023"/>
+                                <Picker.Item label="2024" value="2024"/>
+                                <Picker.Item label="2025" value="2025"/>
+                            </Picker>                        
+                        </View>
                     </View>
+
                     <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                        <TouchableOpacity style={bulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=> navigation.navigate('MainKasum')}>
+                        <TouchableOpacity style={aktifBulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=>{
+                            setModalVisible(false)
+                            handlerGetKegiatan()
+                         }}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Cek Kehadiran</Text>
                         </TouchableOpacity>
                     </View>
