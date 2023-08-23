@@ -76,7 +76,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             const target_url = base_url+`/document/approve/${params.id_dokumen}`
             const myForm={
                 catatan: JSON.stringify(myCatatan),
-                status:newStatus
+                status:status.new
             }
 
             const response = await axios.post(target_url,myForm,{headers:{
@@ -97,14 +97,22 @@ const DetailLaporanKasum = ({route, navigation}) => {
             message:'Approve Laporan ?',
             isVisible:true,
         })
-        setNewStatus('diapprove')
+
+        setStatus(prevState => ({
+            ...prevState, 
+            ['new']:'diapprove'
+        }))
+
     }
     const handlerModalTolak = ()=>{
         setMyAksi({
             message:'Tolak Laporan ?',
             isVisible:true,
         })
-        setNewStatus('ditolak')
+        setStatus(prevState => ({
+            ...prevState, 
+            ['new']:'ditolak'
+        }))
     }
     
     const [myProfile, setMyProfile] = useState({
@@ -116,7 +124,10 @@ const DetailLaporanKasum = ({route, navigation}) => {
 
     const [fileDoc, setFileDoc] = useState()
     const [myCatatan, setMyCatatan] = useState([])
-    const [newStatus, setNewStatus] = useState()
+    const [status, setStatus] = useState({
+        old:null,
+        new:null
+    })
 
     const isFocused = useIsFocused();
     const base_url = ApiLink+'/api'
@@ -190,7 +201,14 @@ const DetailLaporanKasum = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
+
             if (response.status == 200) {
+
+                setFileDoc(response.data[0].URL)
+                setStatus(prevState => ({
+                    ...prevState, 
+                    ['old']: response.data.status
+                }))
 
                 if (response.data.catatan) {
                     setMyCatatan(JSON.parse(response.data.catatan))
@@ -453,17 +471,28 @@ const DetailLaporanKasum = ({route, navigation}) => {
                             ))
                         }
                     </View>
-                    
-                    <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:10, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTerima}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Terima Laporan</Text>
+                    {
+                        status.old == 'diapprove' ? 
+                        <>
+                            <View style={{alignItems:"center"}}>
+                                <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:10, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTerima}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Terima Laporan</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <View style={{alignItems:"center"}}>
+                                <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#a8323c", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTolak}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Tolak Laporan</Text>
+                                </TouchableOpacity>
+                            </View>                    
+                        </>
+                        :
+                        <View style={{alignItems:"center"}}>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#dbdad5", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{navigation.goBack()}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kembali</Text>
                         </TouchableOpacity>
-                    </View>
-                    <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#a8323c", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTolak}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Tolak Laporan</Text>
-                        </TouchableOpacity>
-                    </View>                    
+                    </View>                                            
+                    }
+
                 </View>
 
                 <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
@@ -565,6 +594,26 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         </View>
                     </View>
                 </ReactNativeModal>
+
+                {/* modal read pdf */}
+                <ReactNativeModal isVisible={isModalVisible} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalVisible(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "95%", minHeight: "45%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                        <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:-10, alignItems:"center", marginBottom:20,}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Laporan Bulan {namaBulan[params.bulan]} {params.tahun}</Text>
+                        </View>
+                        <View>
+                            <Pdf
+                                trustAllCerts={false}
+                                source={{uri:fileDoc}}
+                                style={{width:"100%", height:450}}
+                                // renderActivityIndicator={loadSpinner}
+                            />
+                        </View>
+                    </View>
+                </ReactNativeModal>                
             </View>
         </ScrollView>
     )

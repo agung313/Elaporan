@@ -114,7 +114,7 @@ const LaporanKasum = ({navigation}) => {
 
     const rowLaporan = (item,index) =>{
 
-        console.log(item)
+
         const tmpObj = {
             id_user: item.id_user,        
             bulan: item.bulan,
@@ -175,14 +175,6 @@ const LaporanKasum = ({navigation}) => {
                         ))
 
                     }
-                    {/* <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
-                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Ondri Nurdiansyah, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
-                        </View>
-                    </TouchableOpacity> */}
-
 
                 </View>
             </View>
