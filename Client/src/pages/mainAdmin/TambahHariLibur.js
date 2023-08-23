@@ -216,7 +216,7 @@ const TambahHariLibur = ({navigation}) => {
                         />
                     </View>
 
-                    <View style={viewCal>0?{display:"none"}:{alignItems:"center", width:"100%"}}>
+                    <View style={{alignItems:"center", width:"100%"}}>
                         <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={prosesLibur}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Proses Hari Libur</Text>
                         </TouchableOpacity>

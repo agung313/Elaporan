@@ -178,6 +178,18 @@ const DetailDataPengajuan = ({navigation}) => {
                         </View>
                     </View>
 
+                    <View style={{marginTop:30}}>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:0, marginLeft:15}}>Waktu Izin :</Text>
+                        <View style={{width:"100%", height:350}}>
+                            <Calendar
+                                locale={CUSTOM_LOCALE}
+                                startDate=""
+                                endDate=""
+                                onChange={({ startDate, endDate }) => {setStartCal(startDate), setEndCal(endDate)}}
+                            />
+                        </View>
+                    </View>
+
                     <View style={{alignItems:"center"}}>
                         <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=> setProses(true)}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Proses Pengajuan</Text>
@@ -194,21 +206,18 @@ const DetailDataPengajuan = ({navigation}) => {
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:-10, alignItems:"center", marginBottom:10}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Proses Pengajuan </Text>
-                    </View>
-                    <View style={{width:"100%", height:350}}>
-                        <Calendar
-                            locale={CUSTOM_LOCALE}
-                            startDate=""
-                            endDate=""
-                            onChange={({ startDate, endDate }) => {setStartCal(startDate), setEndCal(endDate)}}
-                        />
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Proses kehadiran</Text>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                      <View style={{flexDirection:"row"}}>
+                          <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setProses(false)}>
+                              <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                          </TouchableOpacity>
 
-                        <TouchableOpacity style={{width:"100%", height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center",}} >
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Proses</Text>
-                        </TouchableOpacity>    
+                          <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={() => setProses(false)}>
+                              <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
+                          </TouchableOpacity>
+                      </View>     
                     </View>
                 </View>
             </ReactNativeModal>
