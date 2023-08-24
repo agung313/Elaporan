@@ -29,6 +29,20 @@ class DocumentController extends Controller
 
             if ($request->id_dokumen) {
                 $document = Document::where('documents.id',$request->id_dokumen)->get();
+
+            } elseif ($request->id_user) {
+
+                $document = Document::where('id_user',$request->id_user)
+                                        ->where('bulan', $request->bulan)
+                                        ->where('tahun', $request->tahun)
+                                        ->get();
+            }elseif ($request->countNew) {
+
+                $document = Document::where('status','diajukan')->count();
+
+                return response()->json([
+                    'jumlah' => $document
+                    ],200);                
             } else {
             
                 $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')

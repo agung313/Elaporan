@@ -6,6 +6,7 @@ import { useIsFocused } from "@react-navigation/native";
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Circle } from 'react-native-animated-spinkit';
+import ApiLink from '../../../assets/ApiHelper/ApiLink';
 
 
 const Detail = ({route, navigation}) => {
@@ -13,7 +14,7 @@ const Detail = ({route, navigation}) => {
     const {idAbsensi} = route.params
     const isFocused = useIsFocused();
 
-    const base_url ="http:10.0.2.2:8000/api"
+    const base_url =ApiLink+"/api";
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
