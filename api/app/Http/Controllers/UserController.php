@@ -17,7 +17,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware('auth:sanctum',['except' => ['setComplete']]);
     }
 
     public function profile(Request $request)
@@ -106,8 +106,9 @@ class UserController extends Controller
             $user->latar_belakang = $request->latar_belakang == null ? $idProfile->latar_belakang : $request->latar_belakang;
             $user->tujuan = $request->tujuan == null ? $idProfile->tujuan : $request->tujuan;
             $user->ruang_lingkup = $request->ruang_lingkup == null ? $idProfile->ruang_lingkup : $request->ruang_lingkup;
-            $user->isComplete = true;
             $user->save();
+
+            $this->setComplete($users->id);
     
             return response()->json([
                 'data' => $user
@@ -146,6 +147,8 @@ class UserController extends Controller
 
         $user->foto = $path;
         $user->update();
+        
+        $this->setComplete($id);
 
         return response()->json([
             'data' => $user
@@ -197,6 +200,8 @@ class UserController extends Controller
 
         $user->ttd = '/ttd/'.$filename;
         $user->update();
+
+        $this->setComplete($id);
 
         return response()->json([
             'data' => $user
@@ -271,5 +276,24 @@ class UserController extends Controller
         return response()->json([
             'messages' => 'update data succesfully'
         ],201);
+    }
+
+
+    function setComplete($id){
+        
+        $sql = Profile::where('id_user',$id)
+                        ->whereNotNull('foto')
+                        ->whereNotNull('ttd')
+                        ->whereNotNull('latar_belakang') 
+                        ->whereNotNull('tujuan')
+                        ->whereNotNull('ruang_lingkup')                       
+                        ->get();
+
+        if ($sql) {
+            $profile = Profile::findorNew($id);
+            $user->isComplete = true;
+            $user->update();
+        }
+
     }
 }

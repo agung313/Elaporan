@@ -146,7 +146,7 @@ const RegisterSide = ({route, navigation}) => {
                     >
                         <Picker.Item label="Silakan Pilih Jabatan" value="null"/>
                         <Picker.Item label="THL" value="THL"/>
-                        <Picker.Item label="THL-IT" value="THL-IT"/>
+                        <Picker.Item label="Tenaga Ahli" value="Tenaga Ahli"/>
                     </Picker>
                 </View>
 

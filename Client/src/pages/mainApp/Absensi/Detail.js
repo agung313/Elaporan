@@ -103,12 +103,12 @@ const Detail = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
             const target_url = `${base_url}/absen?detail=true&id=${idAbsensi}`
-            console.log(target_url)
+
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
-                // console.log(res.data.data.foto, "<==== lokasi foto")       
-                console.log(res.data.data, "<===== data absensi")    
+
+
                 setAbsen({
                     status:res.data.data.status,
                     waktuMasuk: res.data.data.waktu_hadir,
@@ -149,7 +149,6 @@ const Detail = ({route, navigation}) => {
 
     const modalDelete =  (data) =>{
         toggleContent(0)
-        console.log(data,"<---")
 
         setModalValue({
             id:data.id,
@@ -170,9 +169,8 @@ const Detail = ({route, navigation}) => {
             const response = await axios.delete(`${base_url}/laporan/${id}`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            getKegiatan()
-            console.log(response,"<--- delete")
 
+            getKegiatan()
             setModalLoad(false)
             setModalSuccess(true)
 

@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions, ImageBackground } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { BackIcon, BgApp, CloseIcont, EmailIcon, AddImg, LaporProfile, LgBappeda, NextIcont, PassProfile, Pendahuluan } from '../../assets/images';
+import { BackIcon, BgApp, CloseIcont, EmailIcon, AddImg, LaporProfile, LgBappeda, NextIcont, PassProfile, Pendahuluan, PassUsr, PasFoto } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -143,7 +143,7 @@ const MainUser = ({navigation}) => {
                 </View>
                 <View style={{alignItems:"center", width:WindowWidth, height:200, }}>
                     <View style={{alignItems:"center", marginTop:20}}>
-                        {imgFoto? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
+                        {imgFoto? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={PasFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                         <View style={{marginLeft:15, alignItems:"center", marginTop:15}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{namaUser}</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
@@ -233,7 +233,6 @@ const MainUser = ({navigation}) => {
                         <Picker
                             selectedValue={tahun}
                             onValueChange={(itemValue, itemIndex) =>{ 
-                                console.log(itemValue, ",----- tahuns")
                                 setTahun(itemValue)
                             }}
                             style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}

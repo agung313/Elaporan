@@ -93,13 +93,14 @@ const Laporan = ({route, navigation}) => {
 
             if (response.status === 200) {
 
+
                 if (response.data.length > 0) {
 
                     setIdLaporan(response.data[0].id)
                     setAdaDokumen(response.data[0].URL)
                     
                 }else{
-                    setAdaDokumen('')
+                    
                     getMyKegiatan()
                 }
 
@@ -125,17 +126,12 @@ const Laporan = ({route, navigation}) => {
                         }else{
                             setArrKendala([checkKendala])
                         }   
-
                     }
-
                 }                    
-
-
             }        
 
-
         } catch (error) {
-            console.log(error, "error get my profile")   
+            console.log(error.response.data, "error get my profile")   
         }
     }        
     const getMyKegiatan = async data =>{
@@ -340,6 +336,7 @@ const Laporan = ({route, navigation}) => {
 
 
         } catch (error) {
+            console.log(error.response.data)
             if (error.response.status == 400) {
 
                 setMessage('Harap Lengkapi Laporan Harian Anda !')
@@ -428,7 +425,7 @@ const Laporan = ({route, navigation}) => {
                         </TouchableOpacity>
                         <View style={{width:5}}></View>    
                         {
-                            adaDokumen !== ''&& 
+                            adaDokumen !== '' || adaDokumen !== null && 
 
                         <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"red", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setMyModal({hapusLaporan:true})}}>
                             <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus</Text>
@@ -443,7 +440,7 @@ const Laporan = ({route, navigation}) => {
 
                     <View style={{width:"100%",marginBottom:15}}>
                     {
-                        adaDokumen == '' ? tabelKegiatan(): readLaporan()
+                        adaDokumen == '' || adaDokumen == null ? tabelKegiatan(): readLaporan()
                             
                     }
 
