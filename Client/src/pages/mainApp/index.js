@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
+import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda, DangerIcont } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 import Geolocation from '@react-native-community/geolocation';
@@ -156,7 +156,8 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/absen/cekAbsen`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-    
+
+          
             var status = response.data.status
             var data = response.data.data
             var waktuPulang = data.waktu_pulang
@@ -209,6 +210,7 @@ const MainApp = ({route, navigation}) => {
             }
 
         } catch (error) {
+            // console.log(error.response.data, "error get today")   
             console.log(error, "error get today")   
         }
     }
@@ -420,27 +422,94 @@ const MainApp = ({route, navigation}) => {
             }
         }
         else if(item.ket_hadir === "Sakit"){
+            const setStSakit = ()=>{
+                if(item.isApprove=="diajukan"){
+                    return("Menunggu Persetujuan Kasubag Umum")
+                }else if(item.isApprove=="diterima"){
+                    return("Anda Mengajukan Keterangan Sakit")
+                }else if(item.isApprove=="ditolak"){
+                    return("Pengajuan Ditolak Kasubag Umum")
+                }
+            }
+
+            const stSakit = setStSakit()
+
+            const IcontSet = ()=> {
+                if(item.isApprove=="ditolak"){
+                    return(
+                        <>
+                            <Image source={DangerIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else if(item.isApprove=="diajukan"){
+                    return(
+                        <>
+                            <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else{
+                    return(
+                        <>
+                            <View></View>
+                        </>
+                    )
+                }
+            }
             
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}> {item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan sakit"}</Text>
+                        <Text style={item.isApprove=="ditolak"?{ color:"red",  fontSize:10, textTransform:"capitalize"}:{ color:"black",  fontSize:10, textTransform:"capitalize"}}> {stSakit}</Text>
                     </View>
-                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
+                    <IcontSet/>
                 </TouchableOpacity>
             )
         }
         else if(item.ket_hadir === "Izin"){
+            const setStIzin = ()=>{
+                if(item.isApprove=="diajukan"){
+                    return("Menunggu Persetujuan Kasubag Umum")
+                }else if(item.isApprove=="diterima"){
+                    return("Anda mengajukan keterangan izin")
+                }else if(item.isApprove=="ditolak"){
+                    return("Pengajuan Ditolak Kasubag Umum")
+                }
+            }
+
+            const stIzin = setStIzin()
+
+            const IcontSet = ()=> {
+                if(item.isApprove=="ditolak"){
+                    return(
+                        <>
+                            <Image source={DangerIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else if(item.isApprove=="diajukan"){
+                    return(
+                        <>
+                            <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else{
+                    return(
+                        <>
+                            <View></View>
+                        </>
+                    )
+                }
+            }
+
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{item.isApprove == false ? "Menunggu Persetujuan Kasubag Umum" : "Anda mengajukan keterangan izin"}</Text>
+                        <Text style={item.isApprove=="ditolak"?{ color:"red",  fontSize:10, textTransform:"capitalize"}:{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{stIzin}</Text>
                     </View>
-                    {item.isApprove == false ? <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />:<View></View>}
+                    <IcontSet/>
                 </TouchableOpacity>
             )
         }
@@ -564,7 +633,7 @@ const MainApp = ({route, navigation}) => {
                     {/* Profile */}
                     <View style={{marginTop:10, marginLeft:15, alignItems:"center"}}>
                         {imgFoto ? <Image source={imgFileFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>}
-                        <View style={{marginLeft:15, alignItems:"center"}}>
+                        <View style={{ alignItems:"center"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{ namaUser }</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
                         </View>
