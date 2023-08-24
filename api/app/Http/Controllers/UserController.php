@@ -29,7 +29,8 @@ class UserController extends Controller
             return response()->json([
                 'data' => $user
             ]);
-        }else if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
+
+        }else if($request->showId){
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
             ->where('users.id', $request->id)
@@ -222,5 +223,17 @@ class UserController extends Controller
                 'data' => $user
             ],200);
         }
+    }
+
+    function updateAccount(Request $request,$id) {
+        $user = User::findOrNew($id);
+        $user->name = $request->name;
+        $user->jabatan = $request->jabatan;
+        $user->email = $request->email;
+        $user->save();
+
+        return response()->json([
+            'message' => 'update account succesfully'
+        ],201);
     }
 }
