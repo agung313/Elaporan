@@ -3,7 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
-import Geolocation from '@react-native-community/geolocation';
+// import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
@@ -49,8 +51,7 @@ const MainApp = ({route, navigation}) => {
     const [statusAbsensi, setStatusAbsensi] = useState(true)
     const [labelStatus, setLabelStatus] = useState('Absensi Masuk')
     const [history, setHistory] = useState([]);
-    // console.log(history)
-    // modal
+    
     const [isModalVisible, setModalVisible] = useState(false);
     const [izinSakit, setIzinSakit] = useState()
     const [sakit, setSakit] = useState()
@@ -265,37 +266,53 @@ const MainApp = ({route, navigation}) => {
         try {
 
             const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-                title: 'Izinkan sistem mengambil data lokasi anda',
-                message:
-                'Izinkan sistem mengambil data lokasi untuk kehadiran',
-                buttonNeutral: 'Ask Me Later',
-                buttonNegative: 'Cancel',
-                buttonPositive: 'OK',
-            },
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Izinkan sistem mengambil data lokasi anda',
+                    message:
+                    'Izinkan sistem mengambil data lokasi untuk kehadiran',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                },
             );
-        //   jika telah diberikan akses lokasi
+            //   jika telah diberikan akses lokasi
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                Geolocation.getCurrentPosition(
+                    (position) => {
 
-            // ambil lokasi
-            Geolocation.getCurrentPosition(
-                //Will give you the current location
-                (position) => {
-                    //getting the Latitude from the location json
-                    const currentLatitude =
-                    JSON.stringify(position.coords.latitude);
-                    //getting the Longitude from the location json
-                    const currentLongitude =
-                    JSON.stringify(position.coords.longitude);
+                        const currentLatitude = position.coords.latitude;
+                //         //getting the Longitude from the location json
+                        const currentLongitude = position.coords.longitude
 
-                    setLat2(currentLatitude)
-                    setLon2(currentLongitude)
-                    
-                    }, (error) => alert(error.message), { 
-                    enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
-                    }
-                );
+                        setLat2(currentLatitude)
+                        setLon2(currentLongitude)                      
+                    },
+                    (error) => {
+                      // See error code charts below.
+                      console.log(error.code, error.message);
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                );                
+                // ambil lokasi
+                // Geolocation.getCurrentPosition(
+                //     //Will give you the current location
+                //     (position) => {
+                //         console.log(position,"<--- my positon")
+                //         //getting the Latitude from the location json
+                //         const currentLatitude =
+                //         JSON.stringify(position.coords.latitude);
+                //         //getting the Longitude from the location json
+                //         const currentLongitude =
+                //         JSON.stringify(position.coords.longitude);
+
+                //         setLat2(currentLatitude)
+                //         setLon2(currentLongitude)
+                        
+                //         }, (error) => alert(error.message), { 
+                //         enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
+                //         }
+                //     );
             } else {
             console.log('Lokasi gagal di akses');
             }
@@ -348,6 +365,7 @@ const MainApp = ({route, navigation}) => {
                 ) 
             }
             else{
+
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
@@ -512,7 +530,7 @@ const MainApp = ({route, navigation}) => {
         }
         else{
             return(
-                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('Absensi', {idAbsensi:idAbsensi})}>
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang', {idAbsensi:idAbsensi})}>
                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
                     {labelStatus}
                     </Text>
@@ -572,8 +590,8 @@ const MainApp = ({route, navigation}) => {
                    {/* End Profile */}                    
                 </View>
 
-                <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, minHeight:500, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center" }}>
-
+                {/* card absensi */}
+                <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, minHeight:500, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center" }}>                
                     <View style={{width:WindowWidth*0.7, height:200, backgroundColor:"white", borderRadius:15, marginTop:20, elevation:10, alignItems:"center"}}>
                         <Text style={{ color:"black", fontSize:14, marginTop:10, fontWeight:'600'}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
                         

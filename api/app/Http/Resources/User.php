@@ -20,9 +20,10 @@ class User extends JsonResource
     public function toArray($request)
     {
         $cekAbsen = Absensi::where('id_user', $this->id)
-                    ->whereYear('tanggal', Carbon::now()->year)
+                    ->whereYear('tanggal', $request->year)
                     ->whereMonth('tanggal', $request->month)
                     ->get();
+
 
         $totalHadir = $cekAbsen->where('status', 'hadir')->count();
         $totalIzin = $cekAbsen->where('status', 'izin')->count();

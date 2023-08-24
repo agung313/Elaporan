@@ -14,6 +14,7 @@ const Kasum = ({ navigation}) => {
         if (isFocused) {
             handlerGetPengajuan()
             handlerGetProfile()
+            handlerNewLaporan()
         }
 
     }, [navigation, isFocused])
@@ -74,6 +75,29 @@ const Kasum = ({ navigation}) => {
             console.log(error, "error get my profile")   
         }        
     }
+
+    const [countLaporanNew, setCountLaporanNew] = useState(0)
+    const handlerNewLaporan = async ()=>{
+        // setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url =`${base_url}/document?countNew=true`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+
+                setCountLaporanNew(response.data.jumlah)
+
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }        
+    }    
     const [myProfil, setMyProfil] = useState({
         nama:null,
         jabatan:null,
@@ -151,7 +175,7 @@ const Kasum = ({ navigation}) => {
                         <Image source={CekLaporan} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Laporan</Text>
                         <View style={{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}}>
-                            <Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>10</Text>
+                            <Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>{countLaporanNew}</Text>
                         </View>
                     </TouchableOpacity>
                     

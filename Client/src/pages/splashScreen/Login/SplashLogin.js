@@ -9,8 +9,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const SplashLogin = ({route, navigation}) => {
     const {username, password} = route.params
 
-    console.log(username, "<=== username")
-    console.log(password, "<=== password")
     useEffect(() => {
         handlerLogin()
     }, [])
