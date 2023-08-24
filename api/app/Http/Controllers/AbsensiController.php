@@ -111,7 +111,7 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false,
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
                     'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
@@ -129,7 +129,7 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false,
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
                     'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
