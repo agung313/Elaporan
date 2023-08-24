@@ -93,6 +93,7 @@ class UserController extends Controller
         
 
     }
+
     public function updateFoto(Request $request)
     {
         $id = Auth::user()->id;
@@ -224,5 +225,29 @@ class UserController extends Controller
                 'data' => $user
             ],200);
         }
+    }
+
+    function updateAccount(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messages' => 'Error validation',
+                'error' =>  $validator->errors()
+            ]);
+        } 
+
+        $user = User::findOrNew($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->jabatan = $request->jabatan;
+        $user->save();
+
+        return response()->json([
+            'messages' => 'update data succesfully'
+        ],201);
     }
 }
