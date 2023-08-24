@@ -10,11 +10,9 @@ import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf'
 import { Grid  } from 'react-native-animated-spinkit'
 
-const Laporan = ({route, navigation}) => {
+const DetailLaporanKasum = ({route, navigation}) => {
 
-    const {bulan, tahun} = route.params
-
-    const [cekBulan, setCekBulan] = useState(bulan)
+    const {idDokumen} = route.params
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
@@ -55,8 +53,6 @@ const Laporan = ({route, navigation}) => {
 
 
     const handlerModal = (type, message=null)=>{
-
-
         switch (type) {
             case 'hapus':
                 setMyModal({...myModal, hapus:true})
@@ -85,51 +81,13 @@ const Laporan = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
 
-            const target_url = `${base_url}/document?tahun=${tahun}&bulan=${bulan}`
+            const target_url = `${base_url}/document?id_dokumen=${idDokumen}`
 
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }})
 
             if (response.status === 200) {
-
-                if (response.data.length > 0) {
-
-                    setIdLaporan(response.data[0].id)
-                    setAdaDokumen(response.data[0].URL)
-                    
-                }else{
-                    setAdaDokumen('')
-                    getMyKegiatan()
-                }
-
-                var checkKendala = await AsyncStorage.getItem('tmpKendala')
-                // if (!checkKendala && arrKendala.length == 0) {
-                if (!checkKendala) {
-
-                    await AsyncStorage.setItem('tmpKendala','')
-
-                    if (adaDokumen) {
-                        let tmpArr = JSON.parse(response.data[0].kendala)
-                        setArrKendala(tmpArr)
-                        await AsyncStorage.setItem('tmpKendala',JSON.stringify(tmpArr))
-                    }
-                
-                }else{
-
-                    if (checkKendala.includes('(%ry%)')) {
-                        setArrKendala(checkKendala.split("(%ry%)"))                        
-                    } else {
-                        if (adaDokumen) {
-                            setArrKendala(JSON.parse(checkKendala))                            
-                        }else{
-                            setArrKendala([checkKendala])
-                        }   
-
-                    }
-
-                }                    
-
 
             }        
 
@@ -138,26 +96,7 @@ const Laporan = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }
     }        
-    const getMyKegiatan = async data =>{
-
-        try {
-
-            const myToken = await AsyncStorage.getItem('AccessToken');    
-            const target_url = `${base_url}/laporan?bulanan=true&bulan=${bulan}`
-
-            const response = await axios.get(target_url,{headers:{
-                Authorization: `Bearer ${myToken}`
-            }});        
-
-            if (response.status == 200) {
-                setArrKegiatan(response.data)
-            }
-
-        } catch (error) {
-            console.log(error, "error get my kegiatan")   
-        }
-    }       
-   
+ 
 
     const rowKegiatan = (item,index)=>{
 
@@ -279,18 +218,14 @@ const Laporan = ({route, navigation}) => {
                         <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Uraian</Text>
                     </View>
                 </View>
-                <View style={{maxHeight:WindowHeight*0.3}}>
-                    <FlatList
+                <ScrollView style={{maxHeight:WindowHeight*0.3}}>
+                    {/* <FlatList
                         data={arrKegiatan}
                         renderItem={({ item,index }) => (
                             rowKegiatan(item,index)
                         )}
-                        // contentContainerStyle={{
-                        //     flexGrow:1
-                        // }}
-                        nestedScrollEnabled
-                    />                            
-                </View>
+                    />                             */}
+                </ScrollView>
             </View>            
         )
     }
@@ -437,7 +372,7 @@ const Laporan = ({route, navigation}) => {
 
                     <View style={{width:"100%", alignItems:"center"}}>
                         <View style={{width:"100%"}}>
-                            <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Kegiatan Anda Pada Bulan {namaBulan[cekBulan]}</Text>
+                            <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Kegiatan Anda Pada Bulan </Text>
                         </View>
                     </View>
 
@@ -473,10 +408,10 @@ const Laporan = ({route, navigation}) => {
                         </View>                        
                     </View>
                     {
-                        arrKendala.length > 0 &&
-                        arrKendala.map((item,index)=>(
-                            rowKendala(item, index)
-                        ))
+                        // arrKendala.length > 0 &&
+                        // arrKendala.map((item,index)=>(
+                        //     rowKendala(item, index)
+                        // ))
 
                     }
 
@@ -579,7 +514,7 @@ const Laporan = ({route, navigation}) => {
     )
 }
 
-export default Laporan
+export default DetailLaporanKasum
 
 const styles = StyleSheet.create({
     header: {

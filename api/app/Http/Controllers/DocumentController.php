@@ -26,12 +26,24 @@ class DocumentController extends Controller
     {
         if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
 
-            $document = Document::select('documents.*','users.name','users.jabatan')
+            $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
                     ->join('Users','users.id', '=', 'documents.id_user')
-                    ->whereMonth('documents.bulan', $request->bulan)
-                    ->where('documents.status', $request->status)
+                    ->join('profiles','profiles.id_user', '=', 'documents.id_user')
+                    // ->whereMonth('documents.bulan', $request->bulan)
+                    ->where('documents.status','not like','draft')
+                    ->orderBy('documents.id','DESC')
+                    ->orderBy('documents.status','ASC')
                     ->get();
-        }else{
+
+        }elseif ($request->id_dokumen) {
+
+            $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
+                    ->join('Users','users.id', '=', 'documents.id_user')
+                    ->join('profiles','profiles.id_user', '=', 'documents.id_user')
+                    ->where('documents.id',$request->id_dokumen)
+                    ->get();
+        } else{
+
             $document = Document::select('documents.*','users.name','users.jabatan')
                         ->join('Users','users.id', '=', 'documents.id_user')
                         ->where('documents.bulan', $request->bulan)
@@ -60,14 +72,14 @@ class DocumentController extends Controller
         if ($checkData) {
             //store pdf path ke database
 
-            if ($status == 'diajukan') {
+            // if ($status == 'diajukan') {
 
-                if ($this->checkLaporan($idUser, $bulan)) {
-                    return response()->json([
-                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-                    ],400);
-                }        
-            }
+            //     if ($this->checkLaporan($idUser, $bulan)) {
+            //         return response()->json([
+            //             'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            //         ],400);
+            //     }        
+            // }
                         
             $dokument = Document::findorNew($checkData->id);
             $dokument->status = $status;
@@ -83,14 +95,14 @@ class DocumentController extends Controller
 
 
             // validasi laporan
-            if ($status == 'diajukan') {
+            // if ($status == 'diajukan') {
 
-                if ($this->checkLaporan($idUser, $bulan)) {
-                    return response()->json([
-                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-                    ],400);
-                }        
-            }
+            //     if ($this->checkLaporan($idUser, $bulan)) {
+            //         return response()->json([
+            //             'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            //         ],400);
+            //     }        
+            // }
 
             //user
             $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
@@ -184,7 +196,12 @@ class DocumentController extends Controller
                     ->toArray();
 
         $missingIds = array_diff($absensiIds, $laporanIds);
-        
+
+        if ($missingIds !== null){
+            return response()->json([
+                'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+            ],400);
+        }
         // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
         if ($missingIds !== null){
             return true;

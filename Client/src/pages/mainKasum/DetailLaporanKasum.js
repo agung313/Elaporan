@@ -1,11 +1,18 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf';
 import { Circle } from 'react-native-animated-spinkit';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import { Grid  } from 'react-native-animated-spinkit'
 
-const DetailLaporanKasum = ({navigation}) => {
+
+const DetailLaporanKasum = ({route, navigation}) => {
+    const {idDokumen} =route.params
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -58,6 +65,148 @@ const DetailLaporanKasum = ({navigation}) => {
         setModalLoad(true)
         setModalLoad(false)
         navigation.navigate("MainKasum")
+    }
+
+    const [myDetail, setMyDetail] = useState({
+        nama:'-',
+        jabatan:'-',
+        foto:'-',
+        hadir:0,
+        tidakHadir:0,
+        dokumen:'',
+        catatan:[]
+    })
+
+    const isFocused = useIsFocused();
+    const base_url = ApiLink+'/api'
+    
+    useEffect(() => {
+      
+        if (isFocused) {
+            handlerGetDetail()
+        }
+
+    }, [navigation, isFocused])
+
+
+    const handlerGetDetail = async ()=>{
+        // setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const target_url =`${base_url}/document?idDokumen=${idDokumen}`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            console.log(response.data)
+            if (response.status == 200) {
+
+                const res = response.data[0]
+
+                setMyDetail({
+                    ...myDetail,
+                    nama:res.nama,
+                    jabatan: res.jabatan,
+                    foto:res.fotoProfile,
+                    hadir:0,
+                    tidakHadir:0,
+                    dokumen:res.URL,
+
+                })
+
+                if (res.catatan) {
+                    setMyDetail({
+                        ...myDetail,
+                        catatan:JSON.parse(res.catatan)
+                    })
+                }
+
+
+                var checkCatatan = await AsyncStorage.getItem('tmpCatatan')
+
+                if (!checkCatatan && myDetail.catatan.length == 0) {
+
+                    await AsyncStorage.setItem('tmpCatatan','')
+
+                }else if (!checkTmpRL && arrRuangLingkup.length > 0) {
+
+                    await AsyncStorage.setItem('tmpCatatan',JSON.parse(res.catatan).join("%ry%"))                    
+
+                } else{
+                    setMyDetail({...myDetail, catatan:checkCatatan.split("%ry%")})
+                }                
+
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }        
+    }    
+    const loadSpinner = () =>{
+        return (
+            <View style={{ alignItems:"center", justifyContent:"center" }}>
+                <Grid size={50} color="#008080"/>
+                <Text style={{ color:"#000", fontFamily:"Spartan", marginTop:10, fontSize:11, fontWeight:"bold" }}>Loading File......</Text>
+            </View>
+        )
+    }
+
+    const readLaporan = () =>{
+
+        return(
+            <View style={{ flex: 1,
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                marginTop: 5}}>
+
+                        <Pdf
+                            trustAllCerts={false}
+                            source={{uri:myDetail.dokumen}}
+                            style={{ width: 300,
+                                height: 300, flex:1}}
+                            renderActivityIndicator={loadSpinner}
+                        />
+                        <TouchableOpacity style={{backgroundColor:'rgba(235,233,230,0.5)', width:300, position:'absolute', height:'100%', justifyContent:'center', alignItems:'center', opacity:0.9 }} onPress={()=> navigation.navigate('Preview',{fileUrl:myDetail.dokumen})}>
+                            <Text style={{color:'#000',backgroundColor:'#d8db2a', width:120, padding:6, textAlign:'center',borderRadius:10, fontWeight:'900'}}>Baca Laporan</Text>
+                        </TouchableOpacity>
+            </View >            
+        )
+    }    
+    
+    const rowCatatan = (item, index) =>{
+
+        return(
+            <View style={{width:"90%", borderBottomWidth:0.5, borderBottomColor:"black"}}>
+            <View style={{flexDirection:"row", backgroundColor:"#fff", marginTop:10, minHeight:50, marginBottom:15}}>
+                <View style={{width:"10%", minHeight:25,  alignItems:"center"}}>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
+                </View>
+                <View style={{width:"80%", minHeight:25,}}>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
+                </View>
+                <View style={{width:"10%", minHeight:25, alignItems:"center",}}>
+                    {showContent==1?
+                        <TouchableOpacity onPress={() => toggleContent(0)}>
+                            <Image source={DotAksi} style={{width:20, height:20}} />
+                        </TouchableOpacity>
+                    :
+                        <TouchableOpacity onPress={() => toggleContent(1)}>
+                            <Image source={DotAksi} style={{width:20, height:20}} />
+                        </TouchableOpacity>
+                    }
+                    <View style={showContent==1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={()=>navigation.navigate("EditCatatan")}>
+                            <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={toggleModal3}>
+                            <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+            </View>            
+        )
     }
 
     return (
@@ -118,38 +267,13 @@ const DetailLaporanKasum = ({navigation}) => {
                     </View>
 
                     <View style={{flexDirection:"row", marginBottom:5}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
-                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:120}} onPress={toggleModal}>
-                            <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Lihat Laporan</Text>
-                        </TouchableOpacity>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>File Laporan :</Text>
+
                     </View>
 
-                    <View style={{width:"100%",marginBottom:15}}>
-                        <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Hari/Tanggal</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kegiatan</Text>
-                            </View>
-                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Detail</Text>
-                            </View>
-                        </View>
-                        <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  padding:5, alignItems:"center"}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
-                            </View>
-                            <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5}}>
-                                <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
-                            </View>
-                            <View style={{width:"25%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                                <TouchableOpacity style={{width:60, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={toggleModal2}>
-                                    <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Detail</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
+                    {
+                        myDetail.dokumen == '' ?<Text style={{alignSelf:'center', color:'red', fontWeight:'600'}}>Laporan Belum Diupload</Text>:readLaporan()
+                    }
 
                     <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
@@ -160,35 +284,12 @@ const DetailLaporanKasum = ({navigation}) => {
                     </View>
                     <View style={{width:"100%", marginBottom:5, alignItems:"center", }}>
                         
-                        <View style={{width:"90%", borderBottomWidth:0.5, borderBottomColor:"black"}}>
-                            <View style={{flexDirection:"row", backgroundColor:"#fff", marginTop:10, minHeight:50, marginBottom:15}}>
-                                <View style={{width:"10%", minHeight:25,  alignItems:"center"}}>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>1.</Text>
-                                </View>
-                                <View style={{width:"80%", minHeight:25,}}>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>Kehadiran</Text>
-                                </View>
-                                <View style={{width:"10%", minHeight:25, alignItems:"center",}}>
-                                    {showContent==1?
-                                        <TouchableOpacity onPress={() => toggleContent(0)}>
-                                            <Image source={DotAksi} style={{width:20, height:20}} />
-                                        </TouchableOpacity>
-                                    :
-                                        <TouchableOpacity onPress={() => toggleContent(1)}>
-                                            <Image source={DotAksi} style={{width:20, height:20}} />
-                                        </TouchableOpacity>
-                                    }
-                                    <View style={showContent==1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
-                                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={()=>navigation.navigate("EditCatatan")}>
-                                            <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={toggleModal3}>
-                                            <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
+                        {
+                            // myDetail.catatan.length > 0 &&
+                            // myDetail.catatan.map((item,index)=>(
+                            //     rowCatatan(item, index)
+                            // ))
+                        }
                     </View>
                     
                     <View style={{alignItems:"center"}}>
@@ -196,6 +297,11 @@ const DetailLaporanKasum = ({navigation}) => {
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Terima Laporan</Text>
                         </TouchableOpacity>
                     </View>
+                    <View style={{alignItems:"center"}}>
+                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => setModaAlertPengajuan(true)}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Tolak Laporan</Text>
+                        </TouchableOpacity>
+                    </View>                    
                 </View>
 
                 <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
