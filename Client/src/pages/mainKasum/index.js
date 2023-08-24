@@ -13,6 +13,7 @@ const Kasum = ({ navigation}) => {
       
         if (isFocused) {
             handlerGetPengajuan()
+            handlerGetProfile()
         }
 
     }, [navigation, isFocused])
@@ -52,6 +53,7 @@ const Kasum = ({ navigation}) => {
     // api get pengajuan
     const [countPengajuan, setCountPengajuan] = useState()
     
+
     const handlerGetPengajuan = async ()=>{
         // setLoadHistory(true)
         try {
@@ -66,6 +68,35 @@ const Kasum = ({ navigation}) => {
             if (response.status == 200) {
 
                 setCountPengajuan(response.data.length)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }        
+    }
+    const [myProfil, setMyProfil] = useState({
+        nama:null,
+        jabatan:null,
+        foto:null
+    })    
+    const handlerGetProfile = async ()=>{
+        // setLoadHistory(true)
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url =`${base_url}/user/profile`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+
+                setMyProfil({
+                    nama: response.data.nama,
+                    jabatan: response.data.jabatan,
+                    foto: response.data.URL
+                })
             }
 
         } catch (error) {
@@ -93,10 +124,10 @@ const Kasum = ({ navigation}) => {
                     </View>
                 </View>
                 <View style={{marginTop:10, marginLeft:15, alignItems:"center",}}>
-                    <Image source={EmailIcon} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
+                    <Image source={myProfil.foto ? {uri:myProfil.foto}:EmailIcon} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>
                     <View style={{alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Iwan Kurniawan, S.E</Text>
-                        <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : Kasubag Umum</Text>
+                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{myProfil.nama}</Text>
+                        <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {myProfil.jabatan}</Text>
                     </View>
                 </View>
             </View>

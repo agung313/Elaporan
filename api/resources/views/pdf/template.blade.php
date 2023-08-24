@@ -168,12 +168,22 @@
             </tr>
         </table>
         <table style="margin: auto;" class="tabell">
-            <tr class="tabell">
-                <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Catatan dari KEPALA SUB BAGIAN UMUM</th>
+            <tr class="tabell" >
+                <th colspan="2" class="tabell" style="text-align: center; height: 50px; width: 330px;">Catatan dari KEPALA SUB BAGIAN UMUM</th>
             </tr>
+            @if ($user->catatan !== null && $user->catatan !== '')
+            @foreach (json_decode($user->catatan) as $k => $v)
+                <tr class="tabell">
+                    <td width="5%"  class="tabell">{{ $k+1 }}</td>                                            
+                    <td class="tabell" style="padding: 10px;">{{$v}}</td>
+                </tr>                
+            @endforeach                
+            @else
             <tr class="tabell">
-                <td class="tabell" style="width: 250px; padding: 10px;">{{$user->catatan == null ? 'belum ada catatan' : $user->catatan}}</td>
-            </tr>
+                <td colspan="2" class="tabell" style="width: 100%; padding: 10px;">Belum Ada Catatan</td>
+            </tr>                                
+            @endif
+
         </table>
     </div>
 </body>

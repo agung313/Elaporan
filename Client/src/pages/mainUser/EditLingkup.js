@@ -5,7 +5,7 @@ import ReactNativeModal from 'react-native-modal'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useIsFocused } from "@react-navigation/native";
-import ApiLink from '../../assets/ApiHelper/ApiLink';
+
 
 const EditLingkup = ({route, navigation}) => {
 

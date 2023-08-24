@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\User as UserResource;
+use App\Http\Resources\AllUser as AllUserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -21,15 +22,16 @@ class UserController extends Controller
 
     public function profile(Request $request)
     {
+
         if ($request->getAll){
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
+            ->orderBy('id', 'DESC')
             ->get();
 
             return response()->json([
                 'data' => $user
             ]);
-
         }else if($request->showId){
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
@@ -41,8 +43,6 @@ class UserController extends Controller
             ->where('users.id', Auth::user()->id)
             ->first();
         }
-        
-        
         
         
         return response(new UserResource($user));
@@ -69,28 +69,31 @@ class UserController extends Controller
                 }
             }
         }
-
         
-        $idProfile = Profile::select('*')->where('id_user', $users->id)->first();
+            $idProfile = Profile::select('*')->where('id_user', $users->id)->first();
 
-        if ($request->file) {
-            $path = $request->file('foto')->store('public');
-            $path2 = $request->file('ttd')->store('public');
-        }
 
-        $user = Profile::findorNew($idProfile->id);
-        $user->foto = $request->foto ? $path : null;
-        $user->ttd = $request->ttd ? $path2 : null;
-        $user->id_user = $users->id;
-        $user->latar_belakang = $request->latar_belakang == null ? $idProfile->latar_belakang : $request->latar_belakang;
-        $user->tujuan = $request->tujuan == null ? $idProfile->tujuan : $request->tujuan;
-        $user->ruang_lingkup = $request->ruang_lingkup == null ? $idProfile->ruang_lingkup : $request->ruang_lingkup;
-        $user->isComplete = true;
-        $user->save();
+            if ($request->file) {
+                $path = $request->file('foto')->store('public');
+                $path2 = $request->file('ttd')->store('public');
+            }
+    
+            $user = Profile::findorNew($idProfile->id);
 
-        return response()->json([
-            'data' => $user
-        ],200);
+            $user->foto = $request->file('foto') ? $path : $idProfile->foto;
+            $user->ttd = $request->file('ttd') ? $path2 : $idProfile->ttd;
+            $user->id_user = $users->id;
+            $user->latar_belakang = $request->latar_belakang == null ? $idProfile->latar_belakang : $request->latar_belakang;
+            $user->tujuan = $request->tujuan == null ? $idProfile->tujuan : $request->tujuan;
+            $user->ruang_lingkup = $request->ruang_lingkup == null ? $idProfile->ruang_lingkup : $request->ruang_lingkup;
+            $user->isComplete = true;
+            $user->save();
+    
+            return response()->json([
+                'data' => $user
+            ],200);
+        
+
     }
     public function updateFoto(Request $request)
     {
@@ -223,17 +226,5 @@ class UserController extends Controller
                 'data' => $user
             ],200);
         }
-    }
-
-    function updateAccount(Request $request,$id) {
-        $user = User::findOrNew($id);
-        $user->name = $request->name;
-        $user->jabatan = $request->jabatan;
-        $user->email = $request->email;
-        $user->save();
-
-        return response()->json([
-            'message' => 'update account succesfully'
-        ],201);
     }
 }

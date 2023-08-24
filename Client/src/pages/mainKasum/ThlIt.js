@@ -1,7 +1,11 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BackIcon, ExFoto, LgBappeda, PasFoto } from '../../assets/images';
 import SearchBar from 'react-native-dynamic-search-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useIsFocused } from "@react-navigation/native";
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const ThlIt = ({navigation}) => {
     // width heigh
@@ -31,6 +35,52 @@ const ThlIt = ({navigation}) => {
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
     }
+
+    const [allUser, setAllUser] = useState([])
+    const isFocused = useIsFocused();
+    const base_url = ApiLink+'/api'
+    
+    useEffect(() => {
+      
+        if (isFocused) {
+            handlerGetAsn()
+        }
+
+    }, [navigation, isFocused])
+
+    const handlerGetAsn = async ()=>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+            const target_url =`${base_url}/user/profile?getAll=true`
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+            if (response.status == 200) {
+                // console.log(response.data)
+                setAllUser(response.data)
+            }
+
+        } catch (error) {
+            console.log(error, "error get my profile")   
+        }                        
+    }
+
+    const rowUser = (item,index)=>{
+        
+        return(
+            <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt' ,{idUser:item.id})}>
+                <Image source={item.URL ? {uri:item.URL}:PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                <View style={{marginLeft:10}}>
+                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                    <Text style={{ color:"black",  fontSize:10}}>Jabatan : {item.jabatan}</Text>
+                </View>
+            </TouchableOpacity>            
+        )
+    }
+
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -63,29 +113,12 @@ const ThlIt = ({navigation}) => {
 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data THL-IT</Text>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt')}>
-                        <Image source={ExFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
-                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Ondri Nurdiansyah, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
-                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>M. Azhwan, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
-                        </View>
-                    </TouchableOpacity>
+                    {
+                        allUser.length > 0 &&
+                        allUser.map((item,index)=>(
+                            rowUser(item,index)
+                        ))
+                    }
                 </View>
             </View>
         </ScrollView>

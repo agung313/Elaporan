@@ -71,7 +71,7 @@ const Allabsensi = ({navigation}) => {
     const rowHistory = (item, index) =>{
 
         // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
-        console.log(item.ket_hadir)
+
         if (item.ket_hadir === 'Absen Tepat Waktu') {
             
             if(item.laporan == false){

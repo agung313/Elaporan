@@ -115,7 +115,7 @@ const MainApp = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get my profile")   
+            console.log(error, "error get my pengajuan")   
         }
     }    
 
@@ -209,7 +209,7 @@ const MainApp = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get my profile")   
+            console.log(error, "error get today")   
         }
     }
 
@@ -718,34 +718,7 @@ const MainApp = ({route, navigation}) => {
                             </View>
                         }
 
-                        
-                        
-                        {/* <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                            <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
-                            <View style={{marginLeft:10, width:"75%"}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Senin, 26 Juni 2023</Text>
-                                <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Terimakasih, anda telah melakukan absensi lengkap</Text>
-                            </View>
-                            <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
-                        </TouchableOpacity>
 
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                            <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
-                            <View style={{marginLeft:10}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Jumat, 23 Juni 2023</Text>
-                                <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum melakukan absensi sore</Text>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail")}>
-                            <Image source={TidakHadir} style={{width:40,height:40, marginLeft:15}}/>
-                            <View style={{marginLeft:10, width:"75%"}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Kamis, 23 Juni 2023</Text>
-                                <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda tidak hadir</Text>
-                            </View>
-                        </TouchableOpacity> */}
-
-                        
                         <TouchableOpacity style={{width:"95%", height:40, backgroundColor:'#39a339', borderRadius:15, elevation:5,alignItems:"center", justifyContent:"center"}} onPress={() => navigation.navigate("Allabsensi")}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Absensi Lainnya</Text>
                         </TouchableOpacity>
