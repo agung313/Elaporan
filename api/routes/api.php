@@ -25,6 +25,8 @@ Route::controller(UserController::class)->prefix('user')->group(function () {
     Route::get('/profile', 'profile');
     Route::get('/history', 'history');
     Route::post('/update', 'update');
+    Route::post('/updateAccount/{id}', 'updateAccount');
+
 });
 
 //ABSENSI

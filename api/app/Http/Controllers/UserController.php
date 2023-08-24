@@ -23,7 +23,12 @@ class UserController extends Controller
     public function profile(Request $request)
     {
 
-        if (Auth::user()->role == 'kasum'){
+        if ($request->getAll){
+            $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+            ->join('Users', 'users.id', '=', 'profiles.id_user')
+            ->where('users.role','user')
+            ->orderBy('id', 'DESC')
+            ->get();
 
             if ($request->id) {
 
@@ -110,6 +115,7 @@ class UserController extends Controller
         
 
     }
+
     public function updateFoto(Request $request)
     {
         $id = Auth::user()->id;
@@ -243,4 +249,27 @@ class UserController extends Controller
         }
     }
 
+    function updateAccount(Request $request, $id){
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messages' => 'Error validation',
+                'error' =>  $validator->errors()
+            ]);
+        } 
+
+        $user = User::findOrNew($id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->jabatan = $request->jabatan;
+        $user->save();
+
+        return response()->json([
+            'messages' => 'update data succesfully'
+        ],201);
+    }
 }

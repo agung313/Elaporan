@@ -22,6 +22,8 @@ class User extends JsonResource
         $cekAbsen = Absensi::where('id_user', $this->id)
                     ->whereYear('tanggal', $request->year)
                     ->whereMonth('tanggal', $request->month)
+                    ->where('isApprove', 'diterima')
+                    ->where('approveAdmin', true)
                     ->get();
 
 

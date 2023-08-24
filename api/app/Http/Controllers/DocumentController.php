@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Document as DocumentResource;
 setlocale(LC_TIME, 'id_ID');
+use Illuminate\Support\Facades\URL;
 
 class DocumentController extends Controller
 {
@@ -115,10 +116,14 @@ class DocumentController extends Controller
             //         ],400);
             //     }        
             // }
+            $getFoto = User::select('profiles.ttd')
+                        ->join('profiles','profiles.id_user', '=', 'users.id')
+                        ->where('users.id', $idUser)
+                        ->first();
 
             //user
             $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
-                        ->join('Profiles','profiles.id_user', '=', 'users.id')
+                        ->join('profiles','profiles.id_user', '=', 'users.id')
                         ->where('users.id', $idUser)
                         ->first();
 
@@ -126,6 +131,7 @@ class DocumentController extends Controller
                 $query->tahun = $tahun;
                 $query->kendala = $kendala;
                 $query->bulan = $bulan;
+                $query->URL = URL('storage/'.$getFoto->ttd );
             }
 
 

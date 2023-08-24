@@ -52,6 +52,7 @@ const Detail = ({route, navigation}) => {
         waktuPulang:'00:00:00',
         fotoAbsensi:'-',
         keteranganAbsensin:'-',
+        isApprove:""
 
     })
     const [modalValue, setModalValue] = useState({
@@ -113,7 +114,8 @@ const Detail = ({route, navigation}) => {
                     waktuMasuk: res.data.data.waktu_hadir,
                     waktuPulang:res.data.data.waktu_pulang,
                     fotoAbsensi:res.data.data.foto,
-                    keteranganAbsensin:res.data.data.keterangan_hadir,                    
+                    keteranganAbsensin:res.data.data.keterangan_hadir,      
+                    isApprove:res.data.data.isApprove              
                 })
             }) 
             
@@ -123,6 +125,8 @@ const Detail = ({route, navigation}) => {
             console.log(error, "error get absensi")   
         }
     }
+
+    const fotoKeterangan = {uri: absen.fotoAbsensi}
 
     const getKegiatan = async data =>{
 
@@ -225,6 +229,20 @@ const Detail = ({route, navigation}) => {
             </View>
         )
     }    
+
+    // status pengajuan
+    const setStPengajuan = () =>{
+        if(absen.isApprove=="diajukan"){
+            return("Menunggu Persetujuan Kasubag Umum")
+        }else if(absen.isApprove=="diterima"){
+            return("Telah Disetujui Kasubag Umum")
+        }else if(absen.isApprove=="ditolak"){
+            return("Pengajuan Ditolak Kasubag Umum")
+        }
+    }
+    const stPengajuan = setStPengajuan()
+
+
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -253,7 +271,7 @@ const Detail = ({route, navigation}) => {
                     <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Detail Absensi</Text>
 
                     <View style={{alignItems:"center"}}>
-                        <View style={{flexDirection:"row", marginBottom:15}}>
+                        <View style={{flexDirection:"row", marginBottom:15, alignItems:"center"}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
                             {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
@@ -270,15 +288,17 @@ const Detail = ({route, navigation}) => {
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.status}</Text>
                                 </View>
-                                {/* <View style={{marginBottom:10}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>Kantor Walikota Pekanbaru</Text>
-                                </View> */}
-                                <View style={{marginBottom:10}}>
+
+                                <View style={absen.status == "Izin" || absen.status == "Sakit" ?{marginBottom:10}:{display:"none"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
+                                    <Text style={absen.isApprove=="ditolak"?{color:"red", fontSize:10, fontWeight:"900", textTransform:"capitalize"}:{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{stPengajuan}</Text>
+                                </View>
+
+                                <View style={absen.status == "Izin" || absen.status == "Sakit" ?{display:"none"}:{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.waktuMasuk} WIB</Text>
                                 </View>
-                                <View style={{marginBottom:10}}>
+                                <View style={absen.status == "Izin" || absen.status == "Sakit" ?{display:"none"}:{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.waktuPulang? absen.waktuPulang+" WIB":'Anda Belum Absen Pulang' }</Text>
                                 </View>
@@ -289,22 +309,22 @@ const Detail = ({route, navigation}) => {
                     {
                         absen.status == 'hadir kegiatan' &&
                         <View>
-                    <View>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
-                        <View style={{alignItems:"center", marginBottom:20}}>
-                            <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
-                                <Image source={AddImg} style={{width:100, height:100}}/>
+                            <View>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
+                                <View style={{alignItems:"center", marginBottom:20}}>
+                                    <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                        <Image source={fotoKeterangan} style={{width:"100%", height:"100%", borderRadius:15}}/>
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-                    </View>
-                    <View>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
-                        <View style={{alignItems:"center", marginBottom:20}}>
-                            <View style={{width:"90%", minHeight:10, borderBottomWidth:0.5, borderColor:"black"}}>
-                                <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>Kehadiran</Text>
-                            </View>
-                        </View>
-                    </View>                            
+                            <View>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
+                                <View style={{alignItems:"center", marginBottom:20}}>
+                                    <View style={{width:"90%", minHeight:100, }}>
+                                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                    </View>
+                                </View>
+                            </View>                            
                         </View>
                     }
 
@@ -351,9 +371,48 @@ const Detail = ({route, navigation}) => {
                     </View>
 
                     <View style={absen.status == "Izin" || absen.status == "Sakit" ? {display:"flex", alignItems:"center"} : {display:"none"}}>
-                        <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}}>Terimakasih anda telah mengajukan {absen.status}</Text>
-                        <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, textTransform:"capitalize"}}>Status pengajuan {absen.status} anda telah disetujui kasubag umum</Text>
-                        <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, textTransform:"capitalize"}}>Selamat beraktifitas</Text>
+                        <View style={{alignItems:"center"}}>
+                            
+                            {/* diajukan */}
+                            <Text style={absen.isApprove=="diajukan"?{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}:{display:"none"}}>Terimakasih anda telah mengajukan {absen.status}</Text>
+
+                            {/* diterima */}
+                            <Text style={absen.isApprove=="diterima"?{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}:{display:"none"}}>selamat pengajuan {absen.status} anda telah disetujui kasubag umum</Text>
+
+                            {/* ditolak */}
+                            <Text style={absen.isApprove=="ditolak"?{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}:{display:"none"}}>maaf pengajuan {absen.status} anda ditolak kasubag umum</Text>
+
+
+                            <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize", marginBottom:30}}>Berikut detail pengajuan anda</Text>
+
+                        </View>
+
+                        <View style={absen.status == "Sakit" ?{display:"flex", width:"100%"}: {display:"none"} }>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto {absen.status} :</Text>
+                            <View style={{alignItems:"center", marginBottom:20}}>
+                                <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                    <Image source={fotoKeterangan} style={{width:"100%", height:"100%", borderRadius:15}}/>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{width:"100%"}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail {absen.status} :</Text>
+                            <View style={{alignItems:"center", marginBottom:20, }}>
+                                <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                </View>
+                            </View>
+                        </View> 
+
+                        <View style={{width:"100%"}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {absen.status} :</Text>
+                            <View style={{alignItems:"center", marginBottom:20, }}>
+                                <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                </View>
+                            </View>
+                        </View> 
                     </View>
 
 

@@ -44,11 +44,11 @@ class AbsensiController extends Controller
             ],200);            
 
         }else if($request->isApprove){
-            $absen = Absensi::where('isApprove', false)->get();
+            $absen = Absensi::where('isApprove', 'ditolak')->get();
 
         }else if ($request->izinSakit) {
 
-            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove',0)->get();
+            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove','diajukan')->get();
 
             return response(AbsenPengajuanResource::collection($absen));
             // return ['data'=> $absen];
@@ -67,7 +67,7 @@ class AbsensiController extends Controller
     // get jumlah pengajuan sakit/izin belum di approve
     function countNoAcc(Request $request){
         $id = Auth::user()->id; 
-        $data = Absensi::where('id_user', $id)->where('isApprove',0)->count();
+        $data = Absensi::where('id_user', $id)->where('isApprove','diajukan')->count();
         
         return response()->json([
             'messages' => 'success',
@@ -111,7 +111,7 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false,
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
                     'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 
@@ -129,7 +129,7 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false,
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
                     'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
                 ]);
 

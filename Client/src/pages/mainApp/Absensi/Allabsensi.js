@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { AbsensiKurang, Agenda, BackIcon, LgBappeda, SakitIcont, SakitIzin, TidakHadir, WarningIcont } from '../../../assets/images'
+import { AbsensiKurang, Agenda, BackIcon, DangerIcont, LgBappeda, SakitIcont, SakitIzin, TidakHadir, WarningIcont } from '../../../assets/images'
 import SearchBar from 'react-native-dynamic-search-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -175,24 +175,93 @@ const Allabsensi = ({navigation}) => {
             }
         }
         else if(item.ket_hadir === "Sakit"){
+            const setStSakit = ()=>{
+                if(item.isApprove=="diajukan"){
+                    return("Menunggu Persetujuan Kasubag Umum")
+                }else if(item.isApprove=="diterima"){
+                    return("Anda Mengajukan Keterangan Sakit")
+                }else if(item.isApprove=="ditolak"){
+                    return("Pengajuan Ditolak Kasubag Umum")
+                }
+            }
+
+            const stSakit = setStSakit()
+
+            const IcontSet = ()=> {
+                if(item.isApprove=="ditolak"){
+                    return(
+                        <>
+                            <Image source={DangerIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else if(item.isApprove=="diajukan"){
+                    return(
+                        <>
+                            <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else{
+                    return(
+                        <>
+                            <View></View>
+                        </>
+                    )
+                }
+            }
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan sakit</Text>
+                        <Text style={item.isApprove=="ditolak"?{ color:"red",  fontSize:10, textTransform:"capitalize"}:{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{stSakit}</Text>
                     </View>
+                    <IcontSet/>
                 </TouchableOpacity>
             )
         }
         else if(item.ket_hadir === "Izin"){
+            const setStIzin = ()=>{
+                if(item.isApprove=="diajukan"){
+                    return("Menunggu Persetujuan Kasubag Umum")
+                }else if(item.isApprove=="diterima"){
+                    return("Anda mengajukan keterangan izin")
+                }else if(item.isApprove=="ditolak"){
+                    return("Pengajuan Ditolak Kasubag Umum")
+                }
+            }
+
+            const stIzin = setStIzin()
+
+            const IcontSet = ()=> {
+                if(item.isApprove=="ditolak"){
+                    return(
+                        <>
+                            <Image source={DangerIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else if(item.isApprove=="diajukan"){
+                    return(
+                        <>
+                            <Image source={WarningIcont} style={{width:25, height:25, marginTop:-30, marginLeft:-15}} />
+                        </>
+                    )
+                }else{
+                    return(
+                        <>
+                            <View></View>
+                        </>
+                    )
+                }
+            }
+
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
-                        <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Anda mengajukan keterangan izin</Text>
+                        <Text style={item.isApprove=="ditolak"?{ color:"red",  fontSize:10, textTransform:"capitalize"}:{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{stIzin}</Text>
                     </View>
+                    <IcontSet/>
                 </TouchableOpacity>
             )
         }
