@@ -162,17 +162,6 @@ const DetailThlIt = ({route, navigation}) => {
     
     const rowKegiatan = (item,index)=>{
 
-        const tmpStatus = item.status.toLowerCase()
-
-        if (tmpStatus === 'sakit' || tmpStatus === 'izin') {
-
-            setJmlIzin(jmlIzin+1)
-
-        } else if(tmpStatus === 'hadir kegiatan' || tmpStatus === 'hadir'){
-            setJmlHadir(jmlHadir+1)            
-        }else{
-            setJmlHadir(jmlHadir+1)            
-        }
         return(
             <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
 

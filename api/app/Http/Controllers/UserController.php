@@ -49,17 +49,8 @@ class UserController extends Controller
                 ->where('users.id', Auth::user()->id)
                 ->first(); 
 
-            }
-
-        }else{
-            $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
-            ->join('Users', 'users.id', '=', 'profiles.id_user')
-            ->where('users.id', Auth::user()->id)
-            ->first();
-
-
-        }
-        
+            }      
+        }  
         
         return response(new UserResource($user));
     }

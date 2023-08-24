@@ -35,6 +35,9 @@ class LaporanAdmin extends JsonResource
             'hari' => $hari,
             'tanggal' => $tanggal,
             'status' => $this->status,
+            'foto' => $this->URL,
+            'keterangan_hadir' => $this->keterangan_hadir,
+            'keterangan_pulang' => $this->keterangan_pulang,
             'kegiatan' => $mergedKegiatan
         ];
     }

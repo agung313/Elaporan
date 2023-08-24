@@ -113,8 +113,6 @@ const LaporanKasum = ({navigation}) => {
 
 
     const rowLaporan = (item,index) =>{
-
-
         const tmpObj = {
             id_user: item.id_user,        
             bulan: item.bulan,
