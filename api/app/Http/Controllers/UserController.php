@@ -29,10 +29,8 @@ class UserController extends Controller
             ->orderBy('id', 'DESC')
             ->get();
 
-            return response()->json([
-                'data' => $user
-            ]);
-        }else if($request->showId){
+            return response(UserResource::collection($user));
+        }else if($request->id){
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
             ->where('users.id', $request->id)
