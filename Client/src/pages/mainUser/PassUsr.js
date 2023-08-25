@@ -128,7 +128,7 @@ const PassUsr = ({navigation,  }) => {
             }
 
         } catch(error){
-            console.log(error, "<= eroro")
+            console.log(error.response.data, "<= eroro")
         }
     }     
 

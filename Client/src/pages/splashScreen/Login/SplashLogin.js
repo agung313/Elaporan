@@ -29,7 +29,7 @@ const SplashLogin = ({route, navigation}) => {
             await AsyncStorage.setItem('RoleAcces', response.data.data.role)
             
             let myToken = await AsyncStorage.getItem('AccessToken')
-            console.log(myToken, "<---- my token")
+
 
             if (response.data.data.role === 'kasum') {
 

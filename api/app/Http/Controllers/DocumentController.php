@@ -77,26 +77,95 @@ class DocumentController extends Controller
         $status = $request->status;
         $tahun = $request->tahun;
 
+
         $bulan =  Carbon::create(Carbon::create(null, $request->bulan,1), 'Asia/Jakarta')->isoFormat('MMMM');
 
-        $checkData = Document::where('id_user',$idUser)->where('bulan',$request->bulan)->where('tahun',$tahun)->first();
 
+        if ($status == 'diajukan') {
+
+            if ($this->checkLaporan($idUser, $bulan)) {
+                return response()->json([
+                    'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+                ],400);
+            }        
+        }
+        
+        $getFoto = User::select('profiles.ttd')
+                    ->join('profiles','profiles.id_user', '=', 'users.id')
+                    ->where('users.id', $idUser)
+                    ->first();
+
+        //user
+        $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
+                    ->join('profiles','profiles.id_user', '=', 'users.id')
+                    ->where('users.id', $idUser)
+                    ->first();
+
+        if ($query) {
+            $query->tahun = $tahun;
+            $query->kendala = $kendala;
+            $query->bulan = $bulan;
+            $query->URL = URL('storage/'.$getFoto->ttd );
+        }
+
+
+        if ($query->isComplete == false){
+            return response()->json([
+                'messages' => 'silahkan lengkapi data profile anda terlebih dahulu'
+            ],400);
+        }
+
+        //absensi
+        $query2 = Absensi::select('absensis.*')
+                    ->join('users', 'users.id', '=', 'absensis.id_user')
+                    ->where('users.id', $idUser)
+                    ->get();
+
+        $query2->transform(function ($item) {
+            $tanggal = Carbon::createFromFormat('Y-m-d', $item->tanggal);
+            $item->tanggal = $tanggal->translatedFormat('l, j F Y');
+            return $item;
+        });
+
+        //laporan
+        $query3 = Laporan::select('laporans.*')
+                    ->join('absensis','absensis.id', 'laporans.id_absensi')
+                    ->join('users', 'users.id', '=', 'absensis.id_user')
+                    ->where('users.id', $idUser)
+                    ->get();
+
+        $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala]);
+
+        $filePath = storage_path('app/public/pdf/hasil.pdf');
+
+        $directory = dirname($filePath);
+
+        if (!File::isDirectory($directory)) {
+            File::makeDirectory($directory, 0755, true, true);
+        }
+        
+        $pdf->save($filePath); 
+
+        $path = Storage::disk('public')->putFile('pdf', $filePath);
+
+        $checkData = Document::where('id_user',$idUser)->where('bulan',$request->bulan)->where('tahun',$tahun)->first();
                 
         if ($checkData) {
             //store pdf path ke database
 
-            // if ($status == 'diajukan') {
+            if ($status == 'diajukan') {
 
-            //     if ($this->checkLaporan($idUser, $bulan)) {
-            //         return response()->json([
-            //             'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-            //         ],400);
-            //     }        
-            // }
+                if ($this->checkLaporan($idUser, $bulan)) {
+                    return response()->json([
+                        'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
+                    ],400);
+                }        
+            }
                         
             $dokument = Document::findorNew($checkData->id);
             $dokument->status = $status;
             $dokument->kendala = $kendala;
+            $dokument->path= $path;
             $dokument->save();
 
             return response()->json([
@@ -104,76 +173,7 @@ class DocumentController extends Controller
                 'data' => $dokument
                 ],200);
 
-        } else {
-
-
-            // validasi laporan
-            // if ($status == 'diajukan') {
-
-            //     if ($this->checkLaporan($idUser, $bulan)) {
-            //         return response()->json([
-            //             'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
-            //         ],400);
-            //     }        
-            // }
-            $getFoto = User::select('profiles.ttd')
-                        ->join('profiles','profiles.id_user', '=', 'users.id')
-                        ->where('users.id', $idUser)
-                        ->first();
-
-            //user
-            $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
-                        ->join('profiles','profiles.id_user', '=', 'users.id')
-                        ->where('users.id', $idUser)
-                        ->first();
-
-            if ($query) {
-                $query->tahun = $tahun;
-                $query->kendala = $kendala;
-                $query->bulan = $bulan;
-                $query->URL = URL('storage/'.$getFoto->ttd );
-            }
-
-
-            if ($query->isComplete == false){
-                return response()->json([
-                    'messages' => 'silahkan lengkapi data profile anda terlebih dahulu'
-                ],400);
-            }
-
-
-            //absensi
-            $query2 = Absensi::select('absensis.*')
-                        ->join('users', 'users.id', '=', 'absensis.id_user')
-                        ->where('users.id', $idUser)
-                        ->get();
-
-            $query2->transform(function ($item) {
-                $tanggal = Carbon::createFromFormat('Y-m-d', $item->tanggal);
-                $item->tanggal = $tanggal->translatedFormat('l, j F Y');
-                return $item;
-            });
-
-            //laporan
-            $query3 = Laporan::select('laporans.*')
-                        ->join('Absensis','absensis.id', 'laporans.id_absensi')
-                        ->join('users', 'users.id', '=', 'absensis.id_user')
-                        ->where('users.id', $idUser)
-                        ->get();
-
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala]);
-
-            $filePath = storage_path('app/public/pdf/hasil.pdf');
-
-            $directory = dirname($filePath);
-
-            if (!File::isDirectory($directory)) {
-                File::makeDirectory($directory, 0755, true, true);
-            }
-            
-            $pdf->save($filePath); 
-
-            $path = Storage::disk('public')->putFile('pdf', $filePath);
+        } else{
 
             //store pdf path ke database
             $document = New Document;
@@ -185,23 +185,20 @@ class DocumentController extends Controller
             $document->tahun = $tahun;
             $document->save();
 
-            return response()->json([
-                'messages' => 'laporan diteruskan ke kasubag umum',
-                'data' => $document
-                ],200);
-
-        }
-        
+        }    
+        return response()->json([
+            'messages' => 'laporan diupload',
+            'data' => $document
+            ],200);        
     }
 
     function saveFile() {
         
     }
 
-
     public function checkLaporan($idUser, $bulan){
         //validasi laporan
-        $laporanIds = Laporan::join('Absensis','absensis.id','=','laporans.id_absensi')
+        $laporanIds = Laporan::join('absensis','absensis.id','=','laporans.id_absensi')
                     ->join('users','users.id', '=', 'absensis.id_user')
                     ->where('users.id', $idUser)
                     ->pluck('laporans.id_absensi')
@@ -242,7 +239,7 @@ class DocumentController extends Controller
 
             //user
             $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
-                        ->join('Profiles','profiles.id_user', '=', 'users.id')
+                        ->join('profiles','profiles.id_user', '=', 'users.id')
                         ->where('users.id', $doc->id_user)
                         ->first();
             if ($query) {
@@ -266,7 +263,7 @@ class DocumentController extends Controller
 
             //laporan
             $query3 = Laporan::select('laporans.*')
-                        ->join('Absensis','absensis.id', 'laporans.id_absensi')
+                        ->join('absensis','absensis.id', 'laporans.id_absensi')
                         ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $doc->id_user)
                         ->get();

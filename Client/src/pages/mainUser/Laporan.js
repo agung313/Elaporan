@@ -93,7 +93,7 @@ const Laporan = ({route, navigation}) => {
 
             if (response.status === 200) {
 
-
+                console.log(response.data,"<----")
                 if (response.data.length > 0) {
 
                     setIdLaporan(response.data[0].id)
@@ -103,8 +103,8 @@ const Laporan = ({route, navigation}) => {
                     
                     getMyKegiatan()
                 }
-
                 var checkKendala = await AsyncStorage.getItem('tmpKendala')
+                console.log(checkKendala,"<-- kendala")
                 // if (!checkKendala && arrKendala.length == 0) {
                 if (!checkKendala) {
 
@@ -131,7 +131,7 @@ const Laporan = ({route, navigation}) => {
             }        
 
         } catch (error) {
-            console.log(error.response.data, "error get my profile")   
+            console.log(error, "error get my profile")   
         }
     }        
     const getMyKegiatan = async data =>{
@@ -145,6 +145,7 @@ const Laporan = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
+            console.log(response.data)
             if (response.status == 200) {
                 setArrKegiatan(response.data)
             }
@@ -170,7 +171,7 @@ const Laporan = ({route, navigation}) => {
                     {
                         item.kegiatan.length > 0 &&
                             item.kegiatan.map((item2, index2)=>(
-                                <View style={{flexDirection:'row'}}>
+                                <View key={index2} style={{flexDirection:'row'}}>
                                     <View>
                                         <Text style={{color:"#000", marginBottom:5, fontSize:10, fontWeight:"500"}}>{index2+1}.</Text>
                                     </View>
@@ -191,7 +192,7 @@ const Laporan = ({route, navigation}) => {
                 <View style={{flexDirection:'row', paddingLeft:3, flexDirection:'column' }}>
                     {
                         item.kegiatan.map((item2, index2)=>(
-                            <View style={{flexDirection:'row'}}>
+                            <View key={index2} style={{flexDirection:'row'}}>
                                 <View>
                                     <Text style={{color:"#000", marginBottom:5, fontSize:10, fontWeight:"500"}}>{index2+1}.</Text>
                                 </View>
@@ -215,10 +216,11 @@ const Laporan = ({route, navigation}) => {
     }
 
     const rowKendala = (item, index)=>{
+
         let tmpStr = item.split("(^*^)")
 
         return(
-            <View style={{flexDirection:"row", }}>
+            <View key={index} style={{flexDirection:"row", }}>
                 <View style={{width:"8%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{index+1}</Text>
                 </View>
@@ -313,6 +315,7 @@ const Laporan = ({route, navigation}) => {
     const handlerStore = async (status) =>{
 
         setModalLaporkan(false)
+        console.log(JSON.stringify(arrKendala), "--- my kendala")
         // setModalLoad(true)
         try {
 
@@ -425,11 +428,12 @@ const Laporan = ({route, navigation}) => {
                         </TouchableOpacity>
                         <View style={{width:5}}></View>    
                         {
-                            adaDokumen !== '' || adaDokumen !== null && 
+                            adaDokumen !== '' && adaDokumen !== null &&
 
                         <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"red", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setMyModal({hapusLaporan:true})}}>
                             <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus</Text>
-                        </TouchableOpacity>                                               }                     
+                        </TouchableOpacity>               
+                        }                     
                     </View>
 
                     <View style={{width:"100%", alignItems:"center"}}>

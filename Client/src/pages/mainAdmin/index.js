@@ -54,6 +54,7 @@ const Admin = ({navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
+
             if (response.status == 200) {
 
                 setProfile(response.data)
@@ -61,7 +62,7 @@ const Admin = ({navigation}) => {
                 setJabatanUser(response.data.jabatan)
                 setEmailUser(response.data.email)
                 setImgFoto(response.data.URL)
-                // setImgTtd(response.data.ttd)
+                setImgTtd(response.data.ttd)
 
             }
 
