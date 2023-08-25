@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React, {useState, useEffect} from 'react'
-import { BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda, PasFoto } from '../../assets/images';
+import { BackIcon,AddImg, CloseIcont, ExFoto, ExSakit, LgBappeda, PasFoto } from '../../assets/images';
 import { PieChart } from 'react-native-chart-kit';
 import { Picker } from '@react-native-picker/picker';
 import ReactNativeModal from 'react-native-modal';
@@ -70,36 +70,62 @@ const DetailThlIt = ({route, navigation}) => {
     const [myProfile, setMyProfile] = useState({
         nama:null,
         jabatan:null,
-        foto:null,        
+        foto:null,
+        hadir:0,
+        izinSakit:0,
+        alfa:0
     })    
 
-    const [jmlHadir, setJmlHadir] = useState(0)
-    const [jmlIzin, setJmlIzin] = useState(0)
-    const [jmlAlfa, setJmlAlfa] = useState(0)
 
     useEffect(() => {
         handlerGetProfile()
         handlerGetKegiatan()
+        handlerGetDocument()
     
     }, [navigation, isFocused])
     
-    
+    const [fileDoc, setFileDoc] = useState()
+    const handlerGetDocument = async ()=>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');  
+
+            const target_url =`${base_url}/document?id_user=${idUser}&bulan=${aktifBulan}&tahun=${aktifTahun}`            
+
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});        
+
+
+            if (response.status == 200) {
+
+                setFileDoc(response.data[0].URL)
+
+            }
+
+        } catch (error) {
+            console.log(error, "error get document")   
+        }        
+    }    
     const handlerGetProfile = async ()=>{
         // setLoadHistory(true)
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
-            const target_url =`${base_url}/user/profile?id=${idUser}`
-
+            const target_url =`${base_url}/user/profile?id=${idUser}&month=${aktifBulan}&year=${aktifTahun}`
 
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
 
             if (response.status == 200) {
+
                     setMyProfile({
                         nama:response.data.nama,
                         jabatan: response.data.jabatan,
-                        foto: response.data.URL
+                        foto: response.data.URL,
+                        hadir: response.data.totalHadir,
+                        izinSakit:response.data.totalIzin + response.data.totalSakit,
+                        alfa: response.data.totalTidakHadir
                     })
             }
 
@@ -216,25 +242,41 @@ const DetailThlIt = ({route, navigation}) => {
         )
     
     }        
+
+    const [formView, setFormView] = useState({
+        kegiatan:null,
+        uraian:null,
+        foto:null
+    })
+    const [modalDetail, setModalDetail] = useState(false)
+    const handlerViewDetail =(data)=>{
+        setModalDetail(true)
+        setFormView({
+            kegiatan:data.kegiatan[0].judul_kegiatan,
+            uraian:data.kegiatan[0].uraian_kegiatan,
+            foto: data.kegiatan[0].foto
+        })
+    }
+
     // bar persentase
     const dataaa = [
         {
             name: "Hadir",
-            population: 20,
+            population: myProfile.hadir,
             color: "#39a339",
             legendFontColor: "#000",
             legendFontSize: 12
         },
         {
             name: "Sakit & Izin",
-            population: 8,
+            population: myProfile.izinSakit,
             color: "rgb(0, 0, 255)",
             legendFontColor: "#000",
             legendFontSize: 12
         },
         {
             name: "Tidak Hadir",
-            population: 2,
+            population:  myProfile.alfa,
             color: "#F00",
             legendFontColor: "#000",
             legendFontSize: 12
@@ -279,7 +321,7 @@ const DetailThlIt = ({route, navigation}) => {
 
                     <View style={{justifyContent:"flex-end", marginBottom:10, flexDirection:"row" }}>
                         <TouchableOpacity style={{width:100, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginRight:10}} onPress={toggleModal}>
-                            <Text style={{color:"#fff", fontSize:12, fontWeight:"600"}}>Bulan : {getStrMonth}</Text>
+                            <Text style={{color:"#fff", fontSize:12, fontWeight:"600"}}>Bulan : {namaBulan[aktifBulan]}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={toggleModal2}>
@@ -305,15 +347,15 @@ const DetailThlIt = ({route, navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Hadir :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>20 Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.hadir} Hari</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Sakit & Izin :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>8 Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.izinSakit} Hari</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Tidak Hadir :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>2 Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.alfa} Hari</Text>
                                 </View>
                             </View>
                         </View>
@@ -340,6 +382,7 @@ const DetailThlIt = ({route, navigation}) => {
                     </View>
                 </View>
             </View>
+            {/* pilih bulan aktif */}
             <ReactNativeModal isVisible={isModalVisible} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalVisible(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
                     <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
@@ -387,6 +430,8 @@ const DetailThlIt = ({route, navigation}) => {
                         <TouchableOpacity style={aktifBulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=>{
                             setModalVisible(false)
                             handlerGetKegiatan()
+                            handlerGetProfile()
+                            handlerGetDocument()
                          }}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Cek Kehadiran</Text>
                         </TouchableOpacity>
@@ -400,12 +445,12 @@ const DetailThlIt = ({route, navigation}) => {
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Laporan Bulan {getStrMonth} {getYear}</Text>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Laporan Bulan {namaBulan[aktifBulan]} {aktifTahun}</Text>
                     </View>
                     <View>
                         <Pdf
                             trustAllCerts={false}
-                            source={require('../../assets/file/exFile.pdf')}
+                            source={{uri:fileDoc}}
                             style={{width:"100%", height:450}}
                             // renderActivityIndicator={loadSpinner}
                         />
@@ -456,6 +501,50 @@ const DetailThlIt = ({route, navigation}) => {
                     </View>
                 </View>
             </ReactNativeModal>
+
+            <ReactNativeModal isVisible={modalDetail} style={{ alignItems: 'center',  }} onBackdropPress={() => setModalDetail(false)} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "95%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                        <TouchableOpacity style={{alignItems:'flex-end'}} onPress={()=>{setModalDetail()}}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:-10, alignItems:"center", marginBottom:20}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Detail Kegiatan</Text>
+                        </View>
+
+                        <View>
+                            <View style={{marginBottom:20}}>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan:</Text>
+                                <View style={{alignItems:"center"}}>
+                                    <View style={{width:"90%", minHeight:30, borderColor:"black", borderBottomWidth:0.5, }}>
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>{formView.kegiatan}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{marginBottom:20}}>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Uraian Kegiatan:</Text>
+                                <View style={{alignItems:"center"}}>
+                                    <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"justify"}}>{formView.uraian}</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{marginBottom:20}}>
+                                <View style={{flexDirection:"row", marginBottom:10,  }}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
+                                    <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:100}}>
+                                        <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Download</Text>
+                                    </TouchableOpacity>
+                                    
+                                </View>
+                                <View style={{alignItems:"center"}}>
+                                    <View style={{width:"90%", height:180, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                        <Image source={formView.foto !== null ? {uri:formView.foto}:AddImg} style={{width:"100%", height:170}}/>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </ReactNativeModal>            
         </ScrollView>
     )
 }

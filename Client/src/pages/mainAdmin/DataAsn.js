@@ -1,9 +1,19 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { BackIcon, ExFoto, LgBappeda, PasFoto } from '../../assets/images';
 import SearchBar from 'react-native-dynamic-search-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
 
 const DataAsn = ({navigation}) => {
+    const isFocused = useIsFocused();
+    useEffect(()=>{
+        if (isFocused) {
+            getAllAsn()        
+        }
+    }, [navigation, isFocused])
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -30,6 +40,26 @@ const DataAsn = ({navigation}) => {
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
+    }
+
+    // api get all data asn
+    const base_url =ApiLink+"/api";
+    const [dataAsn, setDataAsn] = useState()
+    // console.log(dataAsn, "<========= data asn")
+    const getAllAsn = async data=>{
+        try{
+            const myToken = await AsyncStorage.getItem("AccessToken")
+            const response = await axios.get(`${base_url}/user/profile?getAll=true`,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});
+
+            if (response.status == 200) {
+                setDataAsn(response.data.data)
+            }
+        }
+        catch (error){
+            console.log(error, "error get data asn")  
+        }
     }
     return (
         <ScrollView>
@@ -63,6 +93,8 @@ const DataAsn = ({navigation}) => {
 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data THL-IT</Text>
 
+
+
                     <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailAsn')}>
                         <Image source={ExFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                         <View style={{marginLeft:10}}>
@@ -71,21 +103,6 @@ const DataAsn = ({navigation}) => {
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
-                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Ondri Nurdiansyah, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}}>
-                        <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>M. Azhwan, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Jabatan : IT Programmer</Text>
-                        </View>
-                    </TouchableOpacity>
                 </View>
             </View>
         </ScrollView>

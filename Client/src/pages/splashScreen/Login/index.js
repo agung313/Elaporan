@@ -86,7 +86,7 @@ const LoginSide = ({route, navigation}) => {
             <Image source={LgBappeda} style={{width:200, height:200}}/>
             <Text style={{fontWeight:"900", fontSize:25, color:"#000", textShadowColor:"#FFF", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 10}}>E - LAPORAN</Text>
 
-            <View style={{width:280, height:50, backgroundColor:"#fff", borderRadius:15, marginTop:15, flexDirection:"row", elevation:10, alignItems:"center",}}>
+            <View style={{width:WindowWidth*0.8, height:50, backgroundColor:"#fff", borderRadius:15, marginTop:15, flexDirection:"row", elevation:10, alignItems:"center",}}>
                 <View style={{marginLeft:5}}>
                     <Image source={EmailIcon} style={{width:25, height:25}}/>
                 </View>
@@ -104,14 +104,14 @@ const LoginSide = ({route, navigation}) => {
 
             </View>
 
-            <View style={{width:280, height:50, backgroundColor:"#fff", borderRadius:15, marginTop:15, flexDirection:"row", elevation:10, alignItems:"center",}}>
+            <View style={{width:WindowWidth*0.8, height:50, backgroundColor:"#fff", borderRadius:15, marginTop:15, flexDirection:"row", elevation:10, alignItems:"center",}}>
                 <View style={{marginLeft:5}}>
                     <Image source={PasswordIcon} style={{width:25, height:25}}/>
                 </View>
 
                 {showContent==1 ? 
                     <View style={{flexDirection:"row", alignItems:"center",}}>
-                        <View style={{marginLeft:5, width:200}}>
+                        <View style={{marginLeft:5, width:"80%"}}>
                             <TextInput
                                 placeholder='Password'
                                 placeholderTextColor={"#000"}
@@ -123,7 +123,7 @@ const LoginSide = ({route, navigation}) => {
                                 textContentType='password'
                             />
                         </View>
-                        <View>
+                        <View style={{alignItems:"flex-end"}}>
                             <TouchableOpacity onPress={()=> toggleContent(2)}>
                                 <Image source={EyeClose} style={{width:30, height:30}}/>
                             </TouchableOpacity>
@@ -131,7 +131,7 @@ const LoginSide = ({route, navigation}) => {
                     </View>
                 :
                     <View style={{flexDirection:"row", alignItems:"center",}}>
-                        <View style={{marginLeft:5, width:200}}>
+                        <View style={{marginLeft:5, width:"80%"}}>
                             <TextInput
                                 placeholder='Password'
                                 placeholderTextColor={"#000"}
@@ -143,7 +143,7 @@ const LoginSide = ({route, navigation}) => {
                                 textContentType='password'
                             />
                         </View>
-                        <View>
+                        <View style={{alignItems:"flex-end"}}>
                             <TouchableOpacity onPress={()=> toggleContent(1)}>
                                 <Image source={EyeOpen} style={{width:30, height:30}}/>
                             </TouchableOpacity>
@@ -156,13 +156,16 @@ const LoginSide = ({route, navigation}) => {
                 <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>Username atau Password anda salah !!</Text>
             </View>
             
-            <TouchableOpacity style={{width:200, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={handlerLogin}>
+            <TouchableOpacity style={{width:WindowWidth*0.8, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={handlerLogin}>
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>Login</Text>
             </TouchableOpacity>    
-                    
-            <TouchableOpacity style={{width:200, height:40, backgroundColor:"#dadde3", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:15}} onPress={() => navigation.navigate("RegisterSide", {errorValue:null})}>
-                <Text style={{color:"#000", fontWeight:"bold", fontSize:18}}>Register</Text>
-            </TouchableOpacity> 
+
+            <View style={{flexDirection:"row", width:WindowWidth*0.8, minHeight:50, marginTop:35, justifyContent:"center"}}>
+                <Text style={{color:"black", fontSize:14, fontWeight:"500", textTransform:"capitalize", marginRight:10}}>belum memiliki akun ?</Text>
+                <TouchableOpacity onPress={() => navigation.navigate("RegisterSide", {errorValue:null})}>
+                    <Text style={{color:"#0060cb", fontSize:14, fontWeight:"900", textTransform:"capitalize"}}>buat akun</Text>
+                </TouchableOpacity>
+            </View>
         </ImageBackground>
     )
 }

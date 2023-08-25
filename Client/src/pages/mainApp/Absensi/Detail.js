@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions, PermissionsAndroid } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont,  LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
@@ -6,6 +6,10 @@ import { useIsFocused } from "@react-navigation/native";
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Circle } from 'react-native-animated-spinkit';
+import ApiLink from '../../../assets/ApiHelper/ApiLink';
+
+import Geolocation from 'react-native-geolocation-service';
+import { Picker } from '@react-native-picker/picker';
 
 
 const Detail = ({route, navigation}) => {
@@ -13,7 +17,7 @@ const Detail = ({route, navigation}) => {
     const {idAbsensi} = route.params
     const isFocused = useIsFocused();
 
-    const base_url ="http:10.0.2.2:8000/api"
+    const base_url =ApiLink+"/api";
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -51,6 +55,7 @@ const Detail = ({route, navigation}) => {
         waktuPulang:'00:00:00',
         fotoAbsensi:'-',
         keteranganAbsensin:'-',
+        isApprove:""
 
     })
     const [modalValue, setModalValue] = useState({
@@ -63,9 +68,11 @@ const Detail = ({route, navigation}) => {
     useEffect(() => {
 
         if (isFocused) {
+            requestLocationPermission(),
             getProfile(),
             getAbsensi(),
             getKegiatan()
+            
         }
     
     }, [navigation, isFocused])
@@ -112,7 +119,8 @@ const Detail = ({route, navigation}) => {
                     waktuMasuk: res.data.data.waktu_hadir,
                     waktuPulang:res.data.data.waktu_pulang,
                     fotoAbsensi:res.data.data.foto,
-                    keteranganAbsensin:res.data.data.keterangan_hadir,                    
+                    keteranganAbsensin:res.data.data.keterangan_hadir,      
+                    isApprove:res.data.data.isApprove              
                 })
             }) 
             
@@ -122,6 +130,8 @@ const Detail = ({route, navigation}) => {
             console.log(error, "error get absensi")   
         }
     }
+
+    const fotoKeterangan = {uri: absen.fotoAbsensi}
 
     const getKegiatan = async data =>{
 
@@ -224,6 +234,95 @@ const Detail = ({route, navigation}) => {
             </View>
         )
     }    
+
+    // status pengajuan
+    const setStPengajuan = () =>{
+        if(absen.isApprove=="diajukan"){
+            return("Menunggu Persetujuan Kasubag Umum")
+        }else if(absen.isApprove=="diterima"){
+            return("Telah Disetujui Kasubag Umum")
+        }else if(absen.isApprove=="ditolak"){
+            return("Pengajuan Ditolak Kasubag Umum")
+        }
+    }
+    const stPengajuan = setStPengajuan()
+
+    // get location
+    const [distance, setDistance] = useState('');
+    const [lat2, setLat2] = useState();
+    const [lon2, setLon2] = useState();
+    const [lat1, setLat1] = useState(0.517096);
+    const [lon1, setLon1] = useState(101.540887);
+    const [kehadiran, setKehadiran] = useState()
+
+    const [isModalVisible2, setModalVisible2] = useState(false);
+
+    const toggleModal2 = () => {
+        const R = 6371; // radius bumi dalam kilometer
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const calculatedDistance = R * c;
+        setDistance(calculatedDistance.toFixed(2)); // jarak diambil dengan 2 desimal
+        function toRad(Value) {
+            return (Value * Math.PI) / 180;
+        }
+        setModalVisible2(!isModalVisible2);
+
+    }
+
+    // buat absensi
+    const jarakMeter = distance*1000
+    
+    const buatAbsensi = () => {
+        setModalVisible(false)
+        navigation.navigate('Absensi', {kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
+    }
+
+    // get location    
+    const requestLocationPermission = async () => {
+        try {
+
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Izinkan sistem mengambil data lokasi anda',
+                    message:
+                    'Izinkan sistem mengambil data lokasi untuk kehadiran',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                },
+            );
+            //   jika telah diberikan akses lokasi
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                Geolocation.getCurrentPosition(
+                    (position) => {
+
+                        const currentLatitude = position.coords.latitude;
+                //         //getting the Longitude from the location json
+                        const currentLongitude = position.coords.longitude
+
+                        setLat2(currentLatitude)
+                        setLon2(currentLongitude)                      
+                    },
+                    (error) => {
+                      // See error code charts below.
+                      console.log(error.code, error.message);
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                );                
+            } else {
+            console.log('Lokasi gagal di akses');
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    };
+
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -252,7 +351,7 @@ const Detail = ({route, navigation}) => {
                     <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Detail Absensi</Text>
 
                     <View style={{alignItems:"center"}}>
-                        <View style={{flexDirection:"row", marginBottom:15}}>
+                        <View style={{flexDirection:"row", marginBottom:15, alignItems:"center"}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
                             {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
@@ -269,15 +368,17 @@ const Detail = ({route, navigation}) => {
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.status}</Text>
                                 </View>
-                                {/* <View style={{marginBottom:10}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>Kantor Walikota Pekanbaru</Text>
-                                </View> */}
-                                <View style={{marginBottom:10}}>
+
+                                <View style={absen.status == "Izin" || absen.status == "Sakit" ?{marginBottom:10}:{display:"none"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
+                                    <Text style={absen.isApprove=="ditolak"?{color:"red", fontSize:10, fontWeight:"900", textTransform:"capitalize"}:{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{stPengajuan}</Text>
+                                </View>
+
+                                <View style={absen.status == "Izin" || absen.status == "Sakit" ?{display:"none"}:{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.waktuMasuk} WIB</Text>
                                 </View>
-                                <View style={{marginBottom:10}}>
+                                <View style={absen.status == "Izin" || absen.status == "Sakit" ?{display:"none"}:{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.waktuPulang? absen.waktuPulang+" WIB":'Anda Belum Absen Pulang' }</Text>
                                 </View>
@@ -288,22 +389,22 @@ const Detail = ({route, navigation}) => {
                     {
                         absen.status == 'hadir kegiatan' &&
                         <View>
-                    <View>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
-                        <View style={{alignItems:"center", marginBottom:20}}>
-                            <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
-                                <Image source={AddImg} style={{width:100, height:100}}/>
+                            <View>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
+                                <View style={{alignItems:"center", marginBottom:20}}>
+                                    <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                        <Image source={fotoKeterangan} style={{width:"100%", height:"100%", borderRadius:15}}/>
+                                    </View>
+                                </View>
                             </View>
-                        </View>
-                    </View>
-                    <View>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
-                        <View style={{alignItems:"center", marginBottom:20}}>
-                            <View style={{width:"90%", minHeight:10, borderBottomWidth:0.5, borderColor:"black"}}>
-                                <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>Kehadiran</Text>
-                            </View>
-                        </View>
-                    </View>                            
+                            <View>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
+                                <View style={{alignItems:"center", marginBottom:20}}>
+                                    <View style={{width:"90%", minHeight:100, }}>
+                                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                    </View>
+                                </View>
+                            </View>                            
                         </View>
                     }
 
@@ -350,15 +451,99 @@ const Detail = ({route, navigation}) => {
                     </View>
 
                     <View style={absen.status == "Izin" || absen.status == "Sakit" ? {display:"flex", alignItems:"center"} : {display:"none"}}>
-                        <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}}>Terimakasih anda telah mengajukan {absen.status}</Text>
-                        <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, textTransform:"capitalize"}}>Status pengajuan {absen.status} anda telah disetujui kasubag umum</Text>
-                        <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, textTransform:"capitalize"}}>Selamat beraktifitas</Text>
+                        <View style={{alignItems:"center"}}>
+                            
+                            {/* diajukan */}
+                            <Text style={absen.isApprove=="diajukan"?{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}:{display:"none"}}>Terimakasih anda telah mengajukan {absen.status}</Text>
+
+                            {/* diterima */}
+                            <Text style={absen.isApprove=="diterima"?{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}:{display:"none"}}>selamat pengajuan {absen.status} anda telah disetujui kasubag umum</Text>
+
+                            {/* ditolak */}
+                            <Text style={absen.isApprove=="ditolak"?{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize"}:{display:"none"}}>maaf pengajuan {absen.status} anda ditolak kasubag umum</Text>
+
+
+                            <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:12, marginTop:10, textTransform:"capitalize", marginBottom:30}}>Berikut detail pengajuan anda</Text>
+
+                        </View>
+
+                        <View style={absen.status == "Sakit" ?{display:"flex", width:"100%"}: {display:"none"} }>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto {absen.status} :</Text>
+                            <View style={{alignItems:"center", marginBottom:20}}>
+                                <View style={{width:"90%", height:150, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                    <Image source={fotoKeterangan} style={{width:"100%", height:"100%", borderRadius:15}}/>
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={{width:"100%"}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail {absen.status} :</Text>
+                            <View style={{alignItems:"center", marginBottom:20, }}>
+                                <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                </View>
+                            </View>
+                        </View> 
+
+                        <View style={{width:"100%"}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {absen.status} :</Text>
+                            <View style={{alignItems:"center", marginBottom:20, }}>
+                                <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                </View>
+                            </View>
+                        </View> 
+
+                        <View style={{width:"100%", alignItems:"center"}}>
+                            <TouchableOpacity style={{width:"95%", height:40, backgroundColor:'#39a339', borderRadius:15, elevation:5,alignItems:"center", justifyContent:"center"}} onPress={toggleModal2}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Perbarui Absensi</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
 
                 </View>
 
             </View>
+
+            {/* modal if sakit izin perbarui */}
+            <ReactNativeModal isVisible={isModalVisible2} onBackdropPress={() => setModalVisible2(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                    <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal2}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Absensi Anda</Text>
+                    </View>
+                    <View style={{alignItems:"center", width:"100%"}}>
+                        
+                        <Picker
+                            selectedValue={kehadiran}
+                            onValueChange={(itemValue, itemIndex) => 
+                                setKehadiran(itemValue)
+                            }
+                            style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                            selectionColor={"#000"}
+                            // dropdownIconRippleColor={"transparent"}
+                            // dropdownIconColor={"transparent"}
+                        >
+                            <Picker.Item label="-" value="0"/>
+                            <Picker.Item label="Hadir" value="1"/>
+                            <Picker.Item label="Hadir Kegiatan" value="2"/>
+                            <Picker.Item label="Sakit" value="3"/>
+                            <Picker.Item label="Izin" value="4"/>
+                        </Picker>
+                        
+
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
+                        <TouchableOpacity style={kehadiran>0 ? {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={buatAbsensi}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ReactNativeModal>
+
             {/* modal hapus */}
             <ReactNativeModal isVisible={isModalVisible} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>

@@ -30,17 +30,39 @@ class UserController extends Controller
             ->orderBy('id', 'DESC')
             ->get();
 
-            return response(UserResource::collection($user));
-        }else if($request->id){
-            $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
-            ->join('Users', 'users.id', '=', 'profiles.id_user')
-            ->where('users.id', $request->id)
-            ->first();
-        }else{
+            if ($request->id) {
+
+                $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+                ->join('Users', 'users.id', '=', 'profiles.id_user')
+                ->where('users.id', $request->id)
+                ->first(); 
+
+            }elseif ($request->getAll) {
+                
+                $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+                ->join('Users', 'users.id', '=', 'profiles.id_user')
+                // ->where('role','user')
+                ->orderBy('name','ASC')
+                ->get();
+                
+                return response(AllUserResource::collection($user));    
+
+
+            }else{
+
+                $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+                ->join('Users', 'users.id', '=', 'profiles.id_user')
+                ->where('users.id', Auth::user()->id)
+                ->first(); 
+    
+            }      
+        } else{
+
             $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
             ->join('Users', 'users.id', '=', 'profiles.id_user')
             ->where('users.id', Auth::user()->id)
-            ->first();
+            ->first(); 
+
         }
         
         return response(new UserResource($user));

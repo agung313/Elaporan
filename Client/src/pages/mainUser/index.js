@@ -144,7 +144,7 @@ const MainUser = ({navigation}) => {
                 <View style={{alignItems:"center", width:WindowWidth, height:200, }}>
                     <View style={{alignItems:"center", marginTop:20}}>
                         {imgFoto? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
-                        <View style={{marginLeft:15, alignItems:"center", marginTop:15}}>
+                        <View style={{ alignItems:"center", marginTop:15}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{namaUser}</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
                         </View>
