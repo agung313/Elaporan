@@ -192,7 +192,6 @@ class AbsensiController extends Controller
         } 
     }
 
-    //belum jadi karena ngk nampak tampilan seperti apa
     function approveAdmin(Request $request, $id){
         if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
             $startDate = Carbon::parse($request->startDate); 
