@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda, DangerIcont } from '../../assets/images';
+import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda, DangerIcont, SakitDanger, SakitIzinDanger } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 // import Geolocation from '@react-native-community/geolocation';
@@ -40,6 +40,7 @@ const MainApp = ({route, navigation}) => {
 
     const [lat2, setLat2] = useState();
     const [lon2, setLon2] = useState();
+    console.log(lat2,"<==== lat lat 2")
 
 
 
@@ -162,6 +163,7 @@ const MainApp = ({route, navigation}) => {
             var status = response.data.status
             var data = response.data.data
             var waktuPulang = data.waktu_pulang
+            // var isApprove = data.isApprove
             setStatusApprove(data.isApprove)
             // console.log(data.isApprove,"<===== status")
             var approve = data.isApprove
@@ -296,25 +298,6 @@ const MainApp = ({route, navigation}) => {
                     },
                     { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
                 );                
-                // ambil lokasi
-                // Geolocation.getCurrentPosition(
-                //     //Will give you the current location
-                //     (position) => {
-                //         console.log(position,"<--- my positon")
-                //         //getting the Latitude from the location json
-                //         const currentLatitude =
-                //         JSON.stringify(position.coords.latitude);
-                //         //getting the Longitude from the location json
-                //         const currentLongitude =
-                //         JSON.stringify(position.coords.longitude);
-
-                //         setLat2(currentLatitude)
-                //         setLon2(currentLongitude)
-                        
-                //         }, (error) => alert(error.message), { 
-                //         enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
-                //         }
-                //     );
             } else {
             console.log('Lokasi gagal di akses');
             }
@@ -476,7 +459,7 @@ const MainApp = ({route, navigation}) => {
             
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-                    <Image source={SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
+                    <Image source={statusApprove=="ditolak"?SakitDanger:SakitIcont} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                         <Text style={item.isApprove=="ditolak"?{ color:"red",  fontSize:10, textTransform:"capitalize"}:{ color:"black",  fontSize:10, textTransform:"capitalize"}}> {stSakit}</Text>
@@ -522,7 +505,7 @@ const MainApp = ({route, navigation}) => {
 
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
-                    <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
+                    <Image source={statusApprove=="ditolak"?SakitIzinDanger:SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
                     <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                         <Text style={item.isApprove=="ditolak"?{ color:"red",  fontSize:10, textTransform:"capitalize"}:{ color:"black",  fontSize:10, textTransform:"capitalize"}}>{stIzin}</Text>
@@ -610,7 +593,7 @@ const MainApp = ({route, navigation}) => {
 
     // keterangan approve
     const KetApprove = () =>{
-        if(statusApprove==false){
+        if(statusApprove=="diajukan"){
             return(
                 <>
                     <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>pengajuan {sakit? 'sakit':'izin'} anda sedang diproses</Text>
@@ -618,11 +601,18 @@ const MainApp = ({route, navigation}) => {
                 </>
                 
             )
+        }else if(statusApprove=="diterima"){
+            return(
+                <>
+                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Anda telah berhasil mengajukan {sakit? 'sakittttt':'izin'}</Text>
+                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{sakit? 'Semoga Lekas Sembuh' : 'Selamat beraktifitas'}</Text>
+                </>
+            )
         }else{
             return(
                 <>
-                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Anda telah berhasil mengajukan {sakit? 'sakit':'izin'}</Text>
-                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{sakit? 'Semoga Lekas Sembuh' : 'Selamat beraktifitas'}</Text>
+                    <Text style={{ color:"red", fontSize:11, marginTop:10, fontWeight:'900', textTransform:"capitalize"}}>pengajuan {sakit? 'sakit':'izin'} anda ditolak kasubag umum</Text>
+                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Harap periksa kembali kehadiran anda</Text>
                 </>
             )
         }
@@ -669,9 +659,9 @@ const MainApp = ({route, navigation}) => {
                                 <View style={{flexDirection:'row', marginTop:15}}>
                                     <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} >
                                         {sakit ? 
-                                            <Image source={SakitIcont} style={{width:80,height:80}}/>
+                                            <Image source={statusApprove=="ditolak"?SakitDanger:SakitIcont} style={{width:80,height:80}}/>
                                         :
-                                            <Image source={SakitIzin} style={{width:80,height:80}}/>
+                                            <Image source={statusApprove=="ditolak"?SakitIzinDanger:SakitIzin} style={{width:80,height:80}}/>
                                         }
                                         
                                     </View>
@@ -683,48 +673,65 @@ const MainApp = ({route, navigation}) => {
                             </View>
                         :
                             <View style={{alignItems:"center"}}>
-                                <View style={{flexDirection:'row', marginTop:15}}>
-
-                                    {menunggu? 
-                                        <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} onPress={() => toggleContent(1)}>
+                                
+                                {getStrDay=="Sabtu"||getStrDay=="Minggu"?
+                                    <View style={{alignItems:"center"}}>
+                                        <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginTop:15}} >
                                             <Image source={OffAbsensi} style={{width:80,height:80}}/>
-                                        </TouchableOpacity>
-                                    :
-                                        <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} onPress={() => toggleContent(1)}>
-                                            <Image source={Agenda} style={{width:80,height:80}}/>
-                                        </TouchableOpacity>
-                                    }
-                                    
-                                    
-
-                                    {pulang? 
-                                        <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}} onPress={() => toggleContent(2)}>
-                                            <Image source={Absensi} style={{width:80,height:80}}/>
-                                        </TouchableOpacity>
-                                    :
-                                        <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}}>
-                                            <Image source={offAgenda} style={{width:80,height:80}}/>
                                         </View>
-                                    }
-
-                                    
-                                </View>
-
-                                {menunggu?
-                                    <View style={showContent==1 ? {alignItems:"center"} : {display:"none"}}>
-                                        <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Harap Menunggu Waktu absensi pulang</Text>
-                                        <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan tambahkan agenda anda hari ini</Text>
+                                        <View style={{alignItems:"center"}}>
+                                            <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Selamat beraktifitas</Text>
+                                            <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>absensi ditiadakan dikarenakan libur</Text>
+                                        </View>
                                     </View>
                                 :
-                                   <BtnAbsen/>
-                                }
-                                
+                                    <View style={{alignItems:"center"}}>
 
-                                <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() =>  navigation.navigate('Agenda',{idAbsensi:idAbsensi})}>
-                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
-                                        Buat Agenda
-                                    </Text>
-                                </TouchableOpacity>
+                                        <View style={{flexDirection:'row', marginTop:15}}>
+
+                                            {menunggu? 
+                                                <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} onPress={() => toggleContent(1)}>
+                                                    <Image source={OffAbsensi} style={{width:80,height:80}}/>
+                                                </TouchableOpacity>
+                                            :
+                                                <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} onPress={() => toggleContent(1)}>
+                                                    <Image source={Agenda} style={{width:80,height:80}}/>
+                                                </TouchableOpacity>
+                                            }
+                                            
+                                            
+
+                                            {pulang? 
+                                                <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}} onPress={() => toggleContent(2)}>
+                                                    <Image source={Absensi} style={{width:80,height:80}}/>
+                                                </TouchableOpacity>
+                                            :
+                                                <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}}>
+                                                    <Image source={offAgenda} style={{width:80,height:80}}/>
+                                                </View>
+                                            }
+
+                                            
+                                        </View>
+
+                                        {menunggu?
+                                            <View style={showContent==1 ? {alignItems:"center"} : {display:"none"}}>
+                                                <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Harap Menunggu Waktu absensi pulang</Text>
+                                                <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan tambahkan agenda anda hari ini</Text>
+                                            </View>
+                                        :
+                                        <BtnAbsen/>
+                                        }
+                                        
+
+                                        <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() =>  navigation.navigate('Agenda',{idAbsensi:idAbsensi})}>
+                                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
+                                                Buat Agenda
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                    </View>
+                                }
 
                             </View>
                         }

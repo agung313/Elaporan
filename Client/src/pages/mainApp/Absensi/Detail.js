@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Image, Dimensions, PermissionsAndroid } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont,  LgBappeda } from '../../../assets/images'
 import ReactNativeModal from 'react-native-modal'
@@ -7,6 +7,9 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Circle } from 'react-native-animated-spinkit';
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
+
+import Geolocation from 'react-native-geolocation-service';
+import { Picker } from '@react-native-picker/picker';
 
 
 const Detail = ({route, navigation}) => {
@@ -65,9 +68,11 @@ const Detail = ({route, navigation}) => {
     useEffect(() => {
 
         if (isFocused) {
+            requestLocationPermission(),
             getProfile(),
             getAbsensi(),
             getKegiatan()
+            
         }
     
     }, [navigation, isFocused])
@@ -242,6 +247,81 @@ const Detail = ({route, navigation}) => {
     }
     const stPengajuan = setStPengajuan()
 
+    // get location
+    const [distance, setDistance] = useState('');
+    const [lat2, setLat2] = useState();
+    const [lon2, setLon2] = useState();
+    const [lat1, setLat1] = useState(0.517096);
+    const [lon1, setLon1] = useState(101.540887);
+    const [kehadiran, setKehadiran] = useState()
+
+    const [isModalVisible2, setModalVisible2] = useState(false);
+
+    const toggleModal2 = () => {
+        const R = 6371; // radius bumi dalam kilometer
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        const calculatedDistance = R * c;
+        setDistance(calculatedDistance.toFixed(2)); // jarak diambil dengan 2 desimal
+        function toRad(Value) {
+            return (Value * Math.PI) / 180;
+        }
+        setModalVisible2(!isModalVisible2);
+
+    }
+
+    // buat absensi
+    const jarakMeter = distance*1000
+    
+    const buatAbsensi = () => {
+        setModalVisible(false)
+        navigation.navigate('Absensi', {kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
+    }
+
+    // get location    
+    const requestLocationPermission = async () => {
+        try {
+
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    title: 'Izinkan sistem mengambil data lokasi anda',
+                    message:
+                    'Izinkan sistem mengambil data lokasi untuk kehadiran',
+                    buttonNeutral: 'Ask Me Later',
+                    buttonNegative: 'Cancel',
+                    buttonPositive: 'OK',
+                },
+            );
+            //   jika telah diberikan akses lokasi
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                Geolocation.getCurrentPosition(
+                    (position) => {
+
+                        const currentLatitude = position.coords.latitude;
+                //         //getting the Longitude from the location json
+                        const currentLongitude = position.coords.longitude
+
+                        setLat2(currentLatitude)
+                        setLon2(currentLongitude)                      
+                    },
+                    (error) => {
+                      // See error code charts below.
+                      console.log(error.code, error.message);
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+                );                
+            } else {
+            console.log('Lokasi gagal di akses');
+            }
+        } catch (err) {
+            console.warn(err);
+        }
+    };
 
     return (
         <ScrollView>
@@ -413,12 +493,57 @@ const Detail = ({route, navigation}) => {
                                 </View>
                             </View>
                         </View> 
+
+                        <View style={{width:"100%", alignItems:"center"}}>
+                            <TouchableOpacity style={{width:"95%", height:40, backgroundColor:'#39a339', borderRadius:15, elevation:5,alignItems:"center", justifyContent:"center"}} onPress={toggleModal2}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Perbarui Absensi</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
 
                 </View>
 
             </View>
+
+            {/* modal if sakit izin perbarui */}
+            <ReactNativeModal isVisible={isModalVisible2} onBackdropPress={() => setModalVisible2(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                    <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal2}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Absensi Anda</Text>
+                    </View>
+                    <View style={{alignItems:"center", width:"100%"}}>
+                        
+                        <Picker
+                            selectedValue={kehadiran}
+                            onValueChange={(itemValue, itemIndex) => 
+                                setKehadiran(itemValue)
+                            }
+                            style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                            selectionColor={"#000"}
+                            // dropdownIconRippleColor={"transparent"}
+                            // dropdownIconColor={"transparent"}
+                        >
+                            <Picker.Item label="-" value="0"/>
+                            <Picker.Item label="Hadir" value="1"/>
+                            <Picker.Item label="Hadir Kegiatan" value="2"/>
+                            <Picker.Item label="Sakit" value="3"/>
+                            <Picker.Item label="Izin" value="4"/>
+                        </Picker>
+                        
+
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
+                        <TouchableOpacity style={kehadiran>0 ? {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={buatAbsensi}>
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ReactNativeModal>
+
             {/* modal hapus */}
             <ReactNativeModal isVisible={isModalVisible} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", minHeight: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>

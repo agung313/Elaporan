@@ -43,6 +43,7 @@ const Laporan = ({route, navigation}) => {
     const [arrKegiatan, setArrKegiatan] = useState([])
     const [arrKendala, setArrKendala] = useState([])
     const [adaDokumen, setAdaDokumen] = useState()
+    console.log(adaDokumen,"<<<<=ada dokumen")
     
     const [idDeleted, setIdDeleted] = useState()
     const [message, setMessage] = useState()
@@ -135,7 +136,7 @@ const Laporan = ({route, navigation}) => {
 
 
         } catch (error) {
-            console.log(error, "error get my profile")   
+            console.log(error.response, "error get my laporan")   
         }
     }        
     const getMyKegiatan = async data =>{
@@ -380,16 +381,16 @@ const Laporan = ({route, navigation}) => {
                 alignItems: 'center',
                 marginTop: 5}}>
 
-                        <Pdf
-                            trustAllCerts={false}
-                            source={{uri:adaDokumen}}
-                            style={{ width: 300,
-                                height: 300, flex:1}}
-                            renderActivityIndicator={loadSpinner}
-                        />
-                        <TouchableOpacity style={{backgroundColor:'rgba(235,233,230,0.5)', width:300, position:'absolute', height:'100%', justifyContent:'center', alignItems:'center', opacity:0.9 }} onPress={()=> navigation.navigate('Preview',{fileUrl:adaDokumen})}>
-                            <Text style={{color:'#000',backgroundColor:'#d8db2a', width:120, padding:6, textAlign:'center',borderRadius:10, fontWeight:'900'}}>Baca Laporan</Text>
-                        </TouchableOpacity>
+                    <Pdf
+                        trustAllCerts={false}
+                        source={{uri:adaDokumen}}
+                        style={{ width: 300,
+                            height: 300, flex:1}}
+                        renderActivityIndicator={loadSpinner}
+                    />
+                    <TouchableOpacity style={{backgroundColor:'rgba(235,233,230,0.5)', width:300, position:'absolute', height:'100%', justifyContent:'center', alignItems:'center', opacity:0.9 }} onPress={()=> navigation.navigate('Preview',{fileUrl:adaDokumen})}>
+                        <Text style={{color:'#000',backgroundColor:'#d8db2a', width:120, padding:6, textAlign:'center',borderRadius:10, fontWeight:'900'}}>Baca Laporan</Text>
+                    </TouchableOpacity>
             </View >            
         )
     }
@@ -418,7 +419,7 @@ const Laporan = ({route, navigation}) => {
             <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
 
-                    <View style={{width:"100%", flexDirection:"row", justifyContent:'flex-end', marginTop:10}}>
+                    <View style={{width:"100%", flexDirection:"row", justifyContent:'center', marginTop:10}}>
                         <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={Laporkan}>
                             <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
                         </TouchableOpacity>
@@ -443,7 +444,7 @@ const Laporan = ({route, navigation}) => {
 
                     <View style={{width:"100%",marginBottom:15}}>
                     {
-                        adaDokumen == '' ? tabelKegiatan(): readLaporan()
+                        adaDokumen == null ? tabelKegiatan(): readLaporan()
                             
                     }
 
