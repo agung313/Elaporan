@@ -32,7 +32,8 @@ class AbsenPengajuan extends JsonResource
             'status' => $this->status,
             'hari' => $hari,
             'tanggal' => $tanggal,
-            'isApprove' => $this->isApprove
+            'isApprove' => $this->isApprove,
+            'approveAdmin' => $this->approveAdmin
 
         ];
     }

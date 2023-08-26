@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Http\Resources\Absen as AbsenResource;
+use App\Http\Resources\Libur as LiburResource;
 use App\Http\Resources\AbsenPengajuan as AbsenPengajuanResource;
 
 class AbsensiController extends Controller
@@ -31,12 +32,13 @@ class AbsensiController extends Controller
                             ->join('profiles','profiles.id_user', 'users.id')
                             ->where('absensis.id', $request->id)
                             ->first();
+
             $hari = Carbon::createFromFormat('Y-m-d', $absen->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
             $tanggal =  Carbon::parse($absen->tanggal)->isoFormat('D MMMM Y');
             $absen->tanggal = $hari.', '.$tanggal;
 
             $absen->fotoProfile = URL('storage/'.$absen->fotoProfile);
-            $absen->foto = URL('storage/'.$absen->foto);
+            $absen->foto = $absen->foto ? URL('storage/'.$absen->foto) : null;
 
             return response()->json([
                 'messages' => 'fetch data detail successfully',
@@ -48,8 +50,27 @@ class AbsensiController extends Controller
 
         }else if ($request->izinSakit) {
 
-            $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')->join('users','users.id','absensis.id_user')->where('isApprove','diajukan')->get();
+            if (Auth::user()->role == 'admin') {
 
+                $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')
+                                    ->join('users','users.id','absensis.id_user')
+                                    ->where('isApprove','diterima')
+                                    ->where(function($q){
+                                        $q->where('absensis.status','izin')
+                                            ->orWhere('absensis.status','sakit');
+                                    })
+                                    ->orderBy('approveAdmin','ASC')
+                                    ->get();
+
+            }elseif (Auth::user()->role == 'kasum') {
+
+                $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')
+                                    ->join('users','users.id','absensis.id_user')
+                                    ->where('isApprove','diajulan')
+                                    ->get();
+                
+
+            }
             return response(AbsenPengajuanResource::collection($absen));
             // return ['data'=> $absen];
         }else if ($request->approveAdmin) {
@@ -193,7 +214,9 @@ class AbsensiController extends Controller
     }
 
     function approveAdmin(Request $request, $id){
-        if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
+
+        if (Auth::user()->role == 'admin'){
+
             $startDate = Carbon::parse($request->startDate); 
             $nextDay = $startDate->copy()->addDay(); // menambah 1 hari karena hari sebelumnya sudah di inputkan
             $endDate = Carbon::parse($request->endDate);
@@ -201,6 +224,8 @@ class AbsensiController extends Controller
             $dateRange = CarbonPeriod::create($nextDay, $endDate); // cek range izin
 
             $user = Absensi::where('id',$id)->first(); // cek data lama
+            $user->approveAdmin = true;
+            $user->update();        
 
             $insertedAbsences;
 
@@ -311,20 +336,31 @@ class AbsensiController extends Controller
     }
 
     function updateLibur(Request $request){
-        $role = Auth::user()->role;
-        $hari = Carbon::createFromFormat('Y-m-d', $request->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
+
+
         if($role == 'admin' || $role == 'kasum'){
-            
-            $libur = Libur::create([
-                'tanggal' => $request->tanggal,
-                'ket' => $request->ket,
-                'day' => $hari
-            ]);
+
+            $startDate = Carbon::parse($request->startDate); 
+            $endDate = Carbon::parse($request->endDate);
+    
+            $dateRange = CarbonPeriod::create($startDate, $endDate); // cek range izin
+            $insertedLiburs=[];
+
+            foreach ($dateRange as $date) {
+
+                $libur = Libur::create([
+                    'tanggal' => $date->format('Y-m-d'),
+                    'ket' => $request->ket,
+                ]);
+
+                $insertedLiburs[] = $libur;
+            }
 
             return response()->json([
-                'messages' => 'update tanggal libur berhasil',
-                'data' => $libur
+                'messages' => 'Data Libur Berhasil Ditambah',
+                'data' => $insertedLiburs
             ]);
+
         }else{
             return response()->json([
                 'messages' => 'anda tidak memiliki akses',
@@ -333,15 +369,15 @@ class AbsensiController extends Controller
     }
 
     function listLibur(Request $request){
+
         $role = Auth::user()->role;
+
         if($role == 'admin' || $role == 'kasum'){
             
-            $libur = Libur::all();
+            $libur = Libur::whereMonth('tanggal', $request->bulan)->whereYear('tanggal',$request->tahun)->get();
 
-            return response()->json([
-                'messages' => 'list tanggal libur',
-                'data' => $libur
-            ]);
+            return response(LiburResource::collection($libur));
+
         }else{
             return response()->json([
                 'messages' => 'anda tidak memiliki akses',

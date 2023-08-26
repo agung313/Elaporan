@@ -115,7 +115,7 @@ class UserController extends Controller
 
     public function updateFoto(Request $request)
     {
-        $id = Auth::user()->id;
+
         $validator = Validator::make($request->all(), [
             'foto' => 'required',
         ]);
@@ -125,7 +125,17 @@ class UserController extends Controller
                 'messages' => 'Error validation',
                 'error' =>  $validator->errors()
             ]);
+        }        
+
+        if (Auth::user()->role == 'admin') {
+
+            $id = $request->id;
+
+        }else {
+            $id = Auth::user()->id;
         }
+
+
         $idProfile = Profile::select('id')->where('id_user', $id)->first();
 
         $user = Profile::findorNew($idProfile->id);
@@ -204,11 +214,21 @@ class UserController extends Controller
 
     public function changePassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'password' => 'required',
-            'newPassword' => 'required|min:6',
-            'confirm_newPassword' => 'required|min:6|same:newPassword'
-        ]);
+
+        if (Auth::user()->role == 'admin') {
+            
+            $validator = Validator::make($request->all(), [
+                'password' => 'required',
+                'newPassword' => 'required|min:6'
+            ]);
+        }else{
+            $validator = Validator::make($request->all(), [
+                'password' => 'required',
+                'newPassword' => 'required|min:6',
+                'confirm_newPassword' => 'required|min:6|same:newPassword'
+            ]);
+        }
+
 
         if ($validator->fails()) {
             return response()->json([
@@ -249,9 +269,11 @@ class UserController extends Controller
     }
 
     function updateAccount(Request $request, $id){
+
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email',
+            'jabatan' =>'required'
         ]);
 
         if ($validator->fails()) {
@@ -262,6 +284,7 @@ class UserController extends Controller
         } 
 
         $user = User::findOrNew($id);
+        
         $user->name = $request->name;
         $user->email = $request->email;
         $user->jabatan = $request->jabatan;
