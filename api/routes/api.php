@@ -26,7 +26,7 @@ Route::controller(UserController::class)->prefix('user')->group(function () {
     Route::get('/history', 'history');
     Route::post('/update', 'update');
     Route::post('/updateAccount/{id}', 'updateAccount');
-
+    Route::get('/setComplete/{id}', 'setComplete');
 });
 
 //ABSENSI

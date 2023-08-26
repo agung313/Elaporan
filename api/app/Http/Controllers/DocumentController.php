@@ -46,7 +46,7 @@ class DocumentController extends Controller
             } else {
             
                 $document = Document::select('documents.*','users.name','users.jabatan','profiles.foto')
-                    ->join('Users','users.id', '=', 'documents.id_user')
+                    ->join('users','users.id', '=', 'documents.id_user')
                     ->join('profiles','profiles.id_user', '=', 'documents.id_user')
                     // ->whereMonth('documents.bulan', $request->bulan)
                     ->where('documents.status','not like','draft')
@@ -58,7 +58,7 @@ class DocumentController extends Controller
         } else{
 
             $document = Document::select('documents.*','users.name','users.jabatan')
-                        ->join('Users','users.id', '=', 'documents.id_user')
+                        ->join('users','users.id', '=', 'documents.id_user')
                         ->where('documents.bulan', $request->bulan)
                         ->where('documents.tahun', $request->tahun)                        
                         // ->where('documents.status',$request->status)
@@ -144,7 +144,7 @@ class DocumentController extends Controller
 
             //absensi
             $query2 = Absensi::select('absensis.*')
-                        ->join('Users', 'users.id', '=', 'absensis.id_user')
+                        ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $idUser)
                         ->get();
 
@@ -157,7 +157,7 @@ class DocumentController extends Controller
             //laporan
             $query3 = Laporan::select('laporans.*')
                         ->join('Absensis','absensis.id', 'laporans.id_absensi')
-                        ->join('Users', 'users.id', '=', 'absensis.id_user')
+                        ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $idUser)
                         ->get();
 
@@ -202,14 +202,17 @@ class DocumentController extends Controller
     public function checkLaporan($idUser, $bulan){
         //validasi laporan
         $laporanIds = Laporan::join('Absensis','absensis.id','=','laporans.id_absensi')
-                    ->join('Users','users.id', '=', 'absensis.id_user')
+                    ->join('users','users.id', '=', 'absensis.id_user')
                     ->where('users.id', $idUser)
                     ->pluck('laporans.id_absensi')
                     ->toArray();
         $absensiIds = Absensi::where('absensis.status', 'hadir')
-                    ->join('Users','users.id', '=', 'absensis.id_user')
+                    ->join('users','users.id', '=', 'absensis.id_user')
                     ->whereMonth('absensis.tanggal',$bulan)
                     ->where('users.id', $idUser)
+                    ->where(function($q){
+                        $q->where('absensis.status','hadir kegiatan')->orWhere('absensis.status','hadir');
+                    })
                     ->pluck('absensis.id')
                     ->toArray();
 
@@ -251,7 +254,7 @@ class DocumentController extends Controller
 
             //absensi
             $query2 = Absensi::select('absensis.*')
-                        ->join('Users', 'users.id', '=', 'absensis.id_user')
+                        ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $doc->id_user)
                         ->get();
 
@@ -264,7 +267,7 @@ class DocumentController extends Controller
             //laporan
             $query3 = Laporan::select('laporans.*')
                         ->join('Absensis','absensis.id', 'laporans.id_absensi')
-                        ->join('Users', 'users.id', '=', 'absensis.id_user')
+                        ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $doc->id_user)
                         ->get();
 

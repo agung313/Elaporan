@@ -81,7 +81,9 @@ const MainApp = ({route, navigation}) => {
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-            const response = await axios.get(`${base_url}/user/profile`,{headers:{
+            const target_url =`${base_url}/user/profile`
+
+            const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
             // console.log(response.data, "<==== my profile")
@@ -107,7 +109,9 @@ const MainApp = ({route, navigation}) => {
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-            const response = await axios.get(`${base_url}/absen/countNoAcc`,{headers:{
+            const target_url =  `${base_url}/absen/countNoAcc`
+
+            const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
     
@@ -155,7 +159,9 @@ const MainApp = ({route, navigation}) => {
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-            const response = await axios.get(`${base_url}/absen/cekAbsen`,{headers:{
+            const target_url = `${base_url}/absen/cekAbsen`
+
+            const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
 
@@ -224,6 +230,9 @@ const MainApp = ({route, navigation}) => {
         setLoadHistory(true)
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url =`${base_url}/absen/`
+
 
             const response = await axios.get(`${base_url}/absen/`,{headers:{
                 Authorization: `Bearer ${myToken}`
@@ -640,7 +649,7 @@ const MainApp = ({route, navigation}) => {
                     </View>
                     {/* Profile */}
                     <View style={{marginTop:10, marginLeft:15, alignItems:"center"}}>
-                        {imgFoto ? <Image source={imgFileFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>}
+                        {imgFoto ? <Image source={imgFileFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>:<Image source={PasFoto} style={{width:80, height:80, borderRadius:50,}} resizeMode='cover'/>}
                         <View style={{ alignItems:"center"}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>{ namaUser }</Text>
                             <Text style={{ fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:12, marginTop:5}}>Jabatan : {jabatanUser}</Text>
