@@ -86,17 +86,50 @@ class AbsensiController extends Controller
             ->first();
         
         if($absensi !== null){
+            //buat update absensi
+            
+            if($absensi->isApprove == 'ditolak'){ //jika status izin/sakit di tolak admin maka dia bisa mengulangi izinnya atau dia bisa absen
+                //buat hapus file dan upload file foto
+                if($request->foto){
+                    $path = $request->file('foto')->store('public');
+                    $path = preg_replace('/public/','', $path);
+                }
+                
+                $absen = Absensi::findOrNew($absensi->id);
+                $absen->id_user = $id;
+                $absen->status = $request->status;
+                $absen->foto = $request->foto ? $path : null;
+                $absen->keterangan_hadir = $request->keterangan_hadir;
+                $absen->waktu_hadir = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null;
+                $absen->tanggal = $tanggal;
+                $absen->longitude = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null;
+                $absen->latitude = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null;
+                $absen->isApprove = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan';
+                $absen->save();
+
+                return response()->json([
+                    'messages' => 'absensi berhasil',
+                    'data' => $absen
+                ]);
+            }else if($absensi->isApprove == 'diajukan' || $absensi->approveAdmin == false){ //jika sudah melakukan absen izin/sakit yang diajukan/diterima
+                return response()->json([
+                    'messages' => 'anda sudah absen hari ini, silahkan absen lagi besok nyet',
+                ],200);
+            }else if($absensi->waktu_pulang !== null){ //jika dia sudah melakukan full absen (pulang/pergi)
+                return response()->json([
+                    'messages' => 'anda sudah absen hari ini, silahkan absen lagi besok nyet',
+                ],200);
+            }else{
+                $absen = Absensi::updateOrCreate(
+                    ['id_user' => $id, 'tanggal' => $tanggal],
+                    ['waktu_pulang' => $waktu,'keterangan_pulang' => $request->keterangan_pulang]
+                );
     
-            $absen = Absensi::updateOrCreate(
-                ['id_user' => $id, 'tanggal' => $tanggal],
-                ['waktu_pulang' => $waktu,'keterangan_pulang' => $request->keterangan_pulang]
-            );
-
-            return response()->json([
-                'messages' => 'absensi pulang berhasil',
-                'data' => $absen
-            ]);
-
+                return response()->json([
+                    'messages' => 'absensi pulang berhasil',
+                    'data' => $absen
+                ]);
+            }
         }else{
             if($request->foto){
                 $path = $request->file('foto')->store('public');
@@ -109,10 +142,9 @@ class AbsensiController extends Controller
                     'keterangan_hadir' => $request->keterangan_hadir,
                     'waktu_hadir' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null,
                     'tanggal' => $tanggal,
-                    'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
+                    'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
-                    'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan'
                 ]);
 
                 return response()->json([
@@ -127,10 +159,9 @@ class AbsensiController extends Controller
                     'keterangan_hadir' => $request->keterangan_hadir,
                     'waktu_hadir' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null,
                     'tanggal' => $tanggal,
-                    'longtitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longtitude : null,
+                    'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
-                    'approveAdmin' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? true : false
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan'
                 ]);
 
                 return response()->json([
@@ -161,7 +192,6 @@ class AbsensiController extends Controller
         } 
     }
 
-    //belum jadi karena ngk nampak tampilan seperti apa
     function approveAdmin(Request $request, $id){
         if (Auth::user()->role == 'admin' || (Auth::user()->role == 'kasum')){
             $startDate = Carbon::parse($request->startDate); 
@@ -231,8 +261,10 @@ class AbsensiController extends Controller
 
         if ($cek != null){
             if ($cek->status == 'Sakit'){
+                //buat cek status di tolak
                 $status = 'Anda sakit';
             }else if($cek->status == 'Izin'){
+                //buat cek status di tolak
                 $status = 'Anda izin';
             }else if (Carbon::now()->gte($absenPulang)){
                 $status = 'sudah bisa absen pulang';
@@ -262,8 +294,9 @@ class AbsensiController extends Controller
             
             //accept izin
             $absen = Absensi::findorNew($id);
-            $absen->isApprove = $request->status;
+            $absen->isApprove = $request->isApprove;
             $absen->catatan_kasum = $request->catatan;
+            $absen->approveAdmin = $request->isApprove == 'ditolak' ? false : true;
             $absen->save();
 
             return response()->json([

@@ -328,7 +328,8 @@ const Absensi = ({route, navigation}) => {
                             </TouchableOpacity>
                         </View>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Sakit :</Text>
-                        <View style={{alignItems:"center"}}>
+                        
+                        <View style={{alignItems:"center", marginBottom:10}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
                                         placeholder='-'
@@ -341,6 +342,7 @@ const Absensi = ({route, navigation}) => {
                                     />
                             </View>
                         </View>
+                        <Text style={{color:"#000", fontSize:8, fontWeight:"500", marginBottom:10, marginLeft:15, textTransform:"capitalize"}}>Harap masukan secara detail jumlah dan tanggal pengajuan sakit</Text>
 
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
@@ -365,6 +367,7 @@ const Absensi = ({route, navigation}) => {
                                     />
                             </View>
                         </View>
+                        <Text style={{color:"#000", fontSize:8, fontWeight:"500", marginBottom:10, marginLeft:15, textTransform:"capitalize"}}>Harap masukan secara detail jumlah dan tanggal pengajuan izin</Text>
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStoreIzin(true)}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
@@ -381,7 +384,7 @@ const Absensi = ({route, navigation}) => {
                                 <Image source={CloseIcont} style={{width:30, height:30}}/>
                             </TouchableOpacity>
 
-                            {fileKeterangan||detail ?
+                            {fileKeterangan&&detail ?
                                 <View>
                                     <View style={{width:"100%", marginTop:10, alignItems:"center",}}>
                                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Lanjut Absensi ?</Text>
