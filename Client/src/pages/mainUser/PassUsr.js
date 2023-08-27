@@ -68,6 +68,7 @@ const PassUsr = ({navigation,  }) => {
     });
 
     const [modalLoad, setModalLoad] = useState(false)
+    const [errMaxSize, setErrMaxSize] = useState(false)
 
     const base_url =ApiLink+"/api";
     const getMyProfile = async data =>{
@@ -255,6 +256,9 @@ const PassUsr = ({navigation,  }) => {
                 type: [DocumentPicker.types.images],
             })
 
+            if (doc.size > 1000000) {
+                setErrMaxSize(true)
+            }
             setFileFoto(doc)
             setImgFoto(doc.uri)
 
@@ -399,9 +403,15 @@ const PassUsr = ({navigation,  }) => {
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateFoto}>
+                                {
+                                    errMaxSize ? 
+                                    <Text style={{color:'red', fontSize:12, fontWeight:'500'}}>Max Size File 1 MB</Text>
+                                    :
+                                    <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateFoto}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Foto</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity>                                    
+                                }
+
 
                             </View>
                         </View>

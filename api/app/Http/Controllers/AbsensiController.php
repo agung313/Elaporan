@@ -66,10 +66,19 @@ class AbsensiController extends Controller
 
                 $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')
                                     ->join('users','users.id','absensis.id_user')
-                                    ->where('isApprove','diajulan')
-                                    ->get();
-                
+                                    ->where('isApprove','diajukan')
+                                    ->get();            
+            }else{
 
+                $absen = Absensi::select('absensis.*', 'users.name','users.jabatan')
+                                    ->join('users','users.id','absensis.id_user')
+                                   ->where('absensis.id_user', Auth::user()->id)
+                                    ->where(function($q){
+                                        $q->where('isApprove','ditolak')
+                                            ->orWhere('isApprove','diajukan');
+                                    })
+                                    ->orderBy('approveAdmin','ASC')
+                                    ->get();
             }
             return response(AbsenPengajuanResource::collection($absen));
             // return ['data'=> $absen];
@@ -134,11 +143,11 @@ class AbsensiController extends Controller
                 ]);
             }else if($absensi->isApprove == 'diajukan' || $absensi->approveAdmin == false){ //jika sudah melakukan absen izin/sakit yang diajukan/diterima
                 return response()->json([
-                    'messages' => 'anda sudah absen hari ini, silahkan absen lagi besok nyet',
+                    'messages' => 'anda sudah absen hari ini, silahkan absen lagi besok',
                 ],200);
             }else if($absensi->waktu_pulang !== null){ //jika dia sudah melakukan full absen (pulang/pergi)
                 return response()->json([
-                    'messages' => 'anda sudah absen hari ini, silahkan absen lagi besok nyet',
+                    'messages' => 'anda sudah absen hari ini, silahkan absen lagi besok',
                 ],200);
             }else{
                 $absen = Absensi::updateOrCreate(
@@ -165,7 +174,8 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan'
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
+                    'approveAdmin' => 0
                 ]);
 
                 return response()->json([
@@ -182,7 +192,8 @@ class AbsensiController extends Controller
                     'tanggal' => $tanggal,
                     'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
-                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan'
+                    'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
+                    'approveAdmin' => strtolower($request->status) == 'izin' ? 0 :1
                 ]);
 
                 return response()->json([
@@ -321,8 +332,9 @@ class AbsensiController extends Controller
             $absen = Absensi::findorNew($id);
             $absen->isApprove = $request->isApprove;
             $absen->catatan_kasum = $request->catatan;
-            $absen->approveAdmin = $request->isApprove == 'ditolak' ? false : true;
-            $absen->save();
+            // $absen->approveAdmin = $request->isApprove == 'ditolak' ? false : true;
+
+            $absen->update();
 
             return response()->json([
                 'messages' => 'absen create successfully',

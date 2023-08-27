@@ -42,15 +42,13 @@ const PengajuanHadir = ({navigation}) => {
     const [historyNotif, setHistoryNotif] = useState([]);
     const [loadHistory, setLoadHistory] = useState(false)
 
-    console.log(history, "<===== historyyyy")
-
 
     const getMyHistory = async data =>{
         setLoadHistory(true)
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-            const response = await axios.get(`${base_url}/absen/`,{headers:{
+            const response = await axios.get(`${base_url}/absen?izinSakit=true`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
             // console.log(response.data, "<====data history")
@@ -68,7 +66,7 @@ const PengajuanHadir = ({navigation}) => {
 
     const rowHistory = (item, index) =>{
 
-        if(item.ket_hadir === "Sakit"){
+        if(item.status === "Sakit"){
             
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
@@ -81,7 +79,7 @@ const PengajuanHadir = ({navigation}) => {
                 </TouchableOpacity>
             )
         }
-        else if(item.ket_hadir === "Izin"){
+        else if(item.status === "Izin"){
             return(
                 <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
                     <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>

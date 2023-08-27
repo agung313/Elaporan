@@ -22,7 +22,7 @@ class LaporanAdmin extends JsonResource
         $detail = Laporan::where('id_absensi', $this->id)->get();
         $temp = [
             'judul_kegiatan' => $this->status == 'hadir' ? 'Kehadiran' : $this->status,
-            'foto' => URL('storage/'. $this->foto),
+            'foto' => $this->foto ? URL('storage/'. $this->foto) : null,
             'uraian_kegiatan' => 'Masuk \t : '.$this->waktu_hadir.'WIB \n Pulang \t : '.$this->waktu_pulang.' WIB \n'. $this->keterangan_hadir
             // 'waktu_hadir' => $this->waktu_hadir. ' WIB',
             // 'waktu_pulang' => $this->waktu_pulang. ' WIB'

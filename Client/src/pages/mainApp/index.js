@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda, DangerIcont, SakitDanger, SakitIzinDanger } from '../../assets/images';
+import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda, DangerIcont, SakitDanger, SakitIzinDanger, PasFoto } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
 import { Picker } from '@react-native-picker/picker';
 // import Geolocation from '@react-native-community/geolocation';
@@ -40,8 +40,6 @@ const MainApp = ({route, navigation}) => {
 
     const [lat2, setLat2] = useState();
     const [lon2, setLon2] = useState();
-    console.log(lat2,"<==== lat lat 2")
-
 
 
     const [distance, setDistance] = useState('');
@@ -271,7 +269,7 @@ const MainApp = ({route, navigation}) => {
     
     const buatAbsensi = () => {
         setModalVisible(false)
-        navigation.navigate('Absensi', {kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
+        navigation.navigate('Absensi', {idAbsensi:0,kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
     }
 
     // get location    
@@ -613,7 +611,7 @@ const MainApp = ({route, navigation}) => {
         }else if(statusApprove=="diterima"){
             return(
                 <>
-                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Anda telah berhasil mengajukan {sakit? 'sakittttt':'izin'}</Text>
+                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Anda telah berhasil mengajukan {sakit? 'Sakit':'Izin'}</Text>
                     <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{sakit? 'Semoga Lekas Sembuh' : 'Selamat beraktifitas'}</Text>
                 </>
             )
@@ -683,7 +681,7 @@ const MainApp = ({route, navigation}) => {
                         :
                             <View style={{alignItems:"center"}}>
                                 
-                                {getStrDay=="Sabtu"||getStrDay=="Minggu"?
+                                {getStrDay=="Sabtu" && getStrDay=="Minggu"?
                                     <View style={{alignItems:"center"}}>
                                         <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginTop:15}} >
                                             <Image source={OffAbsensi} style={{width:80,height:80}}/>

@@ -8,7 +8,8 @@ import { useIsFocused } from '@react-navigation/native';
 
 
 const Kasum = ({ navigation}) => {
-
+    const isFocused = useIsFocused();
+    
     useEffect(() => {
       
         if (isFocused) {
@@ -20,7 +21,7 @@ const Kasum = ({ navigation}) => {
     }, [navigation, isFocused])
 
     const base_url = ApiLink+'/api'
-    const isFocused = useIsFocused();
+
 
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;

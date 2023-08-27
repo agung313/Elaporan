@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
+import { StyleSheet,Linking, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import { AddImg, BackIcon, CloseIcont, DeletedIcont, DotAksi, EditIcont, ExFoto, ExSakit, LgBappeda, PasFoto } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal';
@@ -313,6 +313,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
     })
     const handlerViewDetail =(data)=>{
         setModalVisible2(true)
+        console.log(data.kegiatan[0].foto)
         setFormView({
             kegiatan:data.kegiatan[0].judul_kegiatan,
             uraian:data.kegiatan[0].uraian_kegiatan,
@@ -529,15 +530,24 @@ const DetailLaporanKasum = ({route, navigation}) => {
                             <View style={{marginBottom:20}}>
                                 <View style={{flexDirection:"row", marginBottom:10,  }}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Kegiatan :</Text>
-                                    <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:100}}>
+
+                                    {
+                                        formView.foto &&
+                                    <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:100}} onPress={()=>{ Linking.openURL(formView.foto)}}>
                                         <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Download</Text>
-                                    </TouchableOpacity>
-                                    
+                                    </TouchableOpacity>                                       }                                    
                                 </View>
+
                                 <View style={{alignItems:"center"}}>
-                                    <View style={{width:"90%", height:180, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
-                                        <Image source={formView.foto !== null ? {uri:formView.foto}:AddImg} style={{width:"100%", height:170}}/>
-                                    </View>
+                                    {
+                                        formView.foto ? 
+                                        <View style={{width:"90%", height:180, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}}>
+                                            <Image source={formView.foto !== null ? {uri:formView.foto}:AddImg} style={{width:"100%", height:170}}/>
+                                        </View>
+                                        :
+                                        <Text>Tidak Ada Foto</Text>
+                                    }
+
                                 </View>
                             </View>
                         </View>

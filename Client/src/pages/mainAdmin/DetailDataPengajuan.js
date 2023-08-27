@@ -1,12 +1,22 @@
-import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions, TextInput } from 'react-native'
-import React, {useState} from 'react'
-import { AddImg, AddImgUser, BackIcon, CloseIcont, EmailIcon, EmailUser, ExFoto, ExSakit, ExTtd, EyeClose, EyeOpen2, JabatanUser, LgBappeda, PasswordIcon } from '../../assets/images';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity, Dimensions, Linking } from 'react-native'
+import React, {useState, useEffect} from 'react'
+import {  BackIcon, CloseIcont, ExSakit, LgBappeda, PasFoto } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker'
 import Calendar from "react-native-calendar-range-picker";
+import { useIsFocused } from "@react-navigation/native";
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import ApiLink from '../../assets/ApiHelper/ApiLink';
 
-const DetailDataPengajuan = ({navigation}) => {
-    const [bulan, setBulan] = useState()
+
+const DetailDataPengajuan = ({route, navigation}) => {
+
+    const {idAbsen, idUser} = route.params
+
+    const isFocused = useIsFocused();
+    const base_url= ApiLink+'/api'
+
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -32,6 +42,8 @@ const DetailDataPengajuan = ({navigation}) => {
 
     const getYear = cekTgl.getFullYear()
 
+    const [modalSuccess, setModalSuccess] = useState(false)
+
     // modal
     const [proses, setProses] = useState(false)
 
@@ -43,15 +55,92 @@ const DetailDataPengajuan = ({navigation}) => {
 
     // profile
     const [formProfile, setFormProfile] = useState({
-        nama:"Muhammad Agung Sholihhudin, S.T",
-        jabatan:"Programmer",
-        status:"Izin",
+        nama:null,
+        jabatan:null,
+        status:null,
+        statusKasum:'Telah Disetujui Kasubag Umum',
+        statusAdmin:0,
+        detailIzin:null,
+        catatanKasum:null,
+        tanggalPengajuan:null,
+        fotoProfile:null,
+        fotoSakit:null
     })
+
+    useEffect(() => {
+        if (isFocused) {
+            getDetail()
+        }
+    }, [navigation, isFocused])    
+    // console.log(dataDetail.status)
+    const getDetail = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url = `${base_url}/absen?detail=true&id=${idAbsen}`
+
+            await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{     
+
+                const data = res.data.data
+
+                setFormProfile({
+                    nama:data.nama,
+                    jabatan:data.jabatan,
+                    status:data.status,
+                    statusKasum:'Telah Disetujui Kasubag Umum',
+                    statusAdmin: data.approveAdmin,
+                    detailIzin: data.keterangan_hadir,
+                    catatanKasum:data.catatan_kasum,
+                    tanggalPengajuan:data.tanggal,
+                    fotoProfile:data.fotoProfile,
+                    fotoSakit: data.foto
+                })
+
+            }) 
+            
+
+        } catch (error) {
+            console.log(error, "error get absensi")   
+        }
+    }    
+
+    const handlerProses = async()=>{
+
+        setProses(false)
+
+        try {
+
+            const params ={
+                startDate: startCal,
+                endDate: endCal,
+            }
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const response = await axios.post(base_url+`/absen/approveAdmin/${idAbsen}`, params,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }})            
+
+            if (response.status == 200) {
+                setModalSuccess(true)
+            }
+
+        } catch (error) {
+            console.log(error,"<--- error handler hadir")            
+        }        
+
+    }
 
     // selectimage
     const [fileFoto,setFileFoto] = useState()
     const [imgFoto, setImgFoto] = useState()
+    
     const selectImageFoto = async () => {
+
+
         try{
 
             const doc =  await DocumentPicker.pickSingle({
@@ -70,6 +159,8 @@ const DetailDataPengajuan = ({navigation}) => {
             }
         }
     }
+
+
 
     // calender
     const CUSTOM_LOCALE = {
@@ -122,7 +213,7 @@ const DetailDataPengajuan = ({navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                                <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                                <Image source={formProfile.fotoProfile !== null ? {uri:formProfile.fotoProfile}: PasFoto} style={{width:"100%", height:190}}/>
                             </View>
                             
                             <View style={{width:"55%", minHeight:25}}>
@@ -140,12 +231,16 @@ const DetailDataPengajuan = ({navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pengajuan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>18 Agustus 2023</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{formProfile.tanggalPengajuan}</Text>
                                 </View>
                                 <View>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Telah Disetujui Kasubag Umum</Text>
                                 </View>
+                                <View>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Acc Admin :</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{formProfile.statusAdmin ? 'Disetujui Admin':'Belum Diproses'}</Text>
+                                </View>                                
                             </View>
                         </View>
                     </View>
@@ -162,10 +257,15 @@ const DetailDataPengajuan = ({navigation}) => {
                     </View>
 
                     <View style={{marginBottom:15}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Izin :</Text>
+                        <View style={{justifyContent:'space-between',  flexDirection:'row'}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail {formProfile.status} :</Text>
+                            <TouchableOpacity style={{ backgroundColor:'#b02749', paddingHorizontal:10, paddingVertical:5, borderRadius:5 }} onPress={()=>{ Linking.openURL(formProfile.fotoSakit) }}>
+                                <Text style={{fontSize:12, fontWeight:'900', color:'white'}}>Lihat Surat</Text>
+                            </TouchableOpacity>
+                        </View>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
-                                <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>iziiiiiiiiiin</Text>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>{formProfile.detailIzin}</Text>
                             </View>
                         </View>
                     </View>
@@ -173,28 +273,40 @@ const DetailDataPengajuan = ({navigation}) => {
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan :</Text>
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
-                                <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>iziiiiiiiiiin</Text>
+                                <Text style={{color:"#000", fontSize:12, fontWeight:"500"}}>{formProfile.catatanKasum}</Text>
                             </View>
                         </View>
                     </View>
 
-                    <View style={{marginTop:30}}>
-                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:0, marginLeft:15}}>Waktu Izin :</Text>
-                        <View style={{width:"100%", height:350}}>
-                            <Calendar
-                                locale={CUSTOM_LOCALE}
-                                startDate=""
-                                endDate=""
-                                onChange={({ startDate, endDate }) => {setStartCal(startDate), setEndCal(endDate)}}
-                            />
-                        </View>
-                    </View>
+                    {
 
-                    <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=> setProses(true)}>
-                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Proses Pengajuan</Text>
-                        </TouchableOpacity>
-                    </View>
+                        formProfile.statusAdmin !== 1? 
+                        <>
+                        <View style={{marginTop:30}}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:0, marginLeft:15}}>Waktu Izin :</Text>
+                            <View style={{width:"100%", height:350}}>
+                                <Calendar
+                                    locale={CUSTOM_LOCALE}
+                                    startDate=""
+                                    endDate=""
+                                    onChange={({ startDate, endDate }) => {setStartCal(startDate), setEndCal(endDate)}}
+                                />
+                            </View>
+                        </View>
+                        <View style={{alignItems:"center"}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=> setProses(true)}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Proses Pengajuan</Text>
+                            </TouchableOpacity>
+                        </View>
+                        </>
+                        :
+                        <View style={{alignItems:"center"}}>
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#e3e3e3", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"#e3e3e3"}} onPress={()=> navigation.goBack()}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kembali</Text>
+                            </TouchableOpacity>
+                        </View>                        
+                    }
+
                     
                 </View>
             </View>
@@ -214,7 +326,7 @@ const DetailDataPengajuan = ({navigation}) => {
                               <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
                           </TouchableOpacity>
 
-                          <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={() => setProses(false)}>
+                          <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={handlerProses}>
                               <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
                           </TouchableOpacity>
                       </View>     
@@ -222,6 +334,24 @@ const DetailDataPengajuan = ({navigation}) => {
                 </View>
             </ReactNativeModal>
 
+            {/* success */}
+            <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => setModalSuccess(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, alignItems:"center", justifyContent:"center" }}>
+
+                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat! Pengajuan Berhasil Diproses</Text>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => {
+                                        navigation.goBack()
+                                        setModalSuccess(false)
+                                    } }>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                                </TouchableOpacity>      
+                            </View>
+                        </View>
+            </ReactNativeModal>
+                
         </ScrollView>
     )
 }

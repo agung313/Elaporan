@@ -213,10 +213,10 @@ android {
     }
     signingConfigs {
         debug {
-            storeFile file('elaporan.keystore')
-            storePassword '123456'
-            keyAlias 'elaporan'
-            keyPassword '123456'
+            storeFile file('key_elaporan.keystore')
+            storePassword 'Ondri21'
+            keyAlias 'key_elaporan'
+            keyPassword 'Ondri21'
         }
     }
     buildTypes {

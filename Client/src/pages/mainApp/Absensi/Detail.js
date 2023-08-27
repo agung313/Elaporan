@@ -50,12 +50,14 @@ const Detail = ({route, navigation}) => {
         jabatan:'-'
     })
     const [absen, setAbsen] = useState({
+        id:null,
         status:'-',
         waktuMasuk:'00:00:00',
         waktuPulang:'00:00:00',
         fotoAbsensi:'-',
         keteranganAbsensin:'-',
-        isApprove:""
+        isApprove:"",
+        approveAdmin:null
 
     })
     const [modalValue, setModalValue] = useState({
@@ -78,6 +80,7 @@ const Detail = ({route, navigation}) => {
     }, [navigation, isFocused])
     
     const [imgFoto, setImgFoto] = useState()
+    
     const getProfile = async data =>{
 
         try {
@@ -113,14 +116,15 @@ const Detail = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
 
-
                 setAbsen({
+                    id: res.data.data.id,
                     status:res.data.data.status,
                     waktuMasuk: res.data.data.waktu_hadir,
                     waktuPulang:res.data.data.waktu_pulang,
                     fotoAbsensi:res.data.data.foto,
                     keteranganAbsensin:res.data.data.keterangan_hadir,      
-                    isApprove:res.data.data.isApprove              
+                    isApprove:res.data.data.isApprove,
+                    approveAdmin: res.data.data.approveAdmin              
                 })
             }) 
             
@@ -238,7 +242,13 @@ const Detail = ({route, navigation}) => {
         if(absen.isApprove=="diajukan"){
             return("Menunggu Persetujuan Kasubag Umum")
         }else if(absen.isApprove=="diterima"){
-            return("Telah Disetujui Kasubag Umum")
+
+            if (absen.approveAdmin) {
+                return("Pengajuan Selesai")                
+            }else{
+                return("Diproses Admin")
+            }
+
         }else if(absen.isApprove=="ditolak"){
             return("Pengajuan Ditolak Kasubag Umum")
         }
@@ -277,7 +287,7 @@ const Detail = ({route, navigation}) => {
     
     const buatAbsensi = () => {
         setModalVisible(false)
-        navigation.navigate('Absensi', {kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
+        navigation.navigate('Absensi', {idAbsensi:absen.id, kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})
     }
 
     // get location    
@@ -491,12 +501,21 @@ const Detail = ({route, navigation}) => {
                                 </View>
                             </View>
                         </View> 
+                        {
+                            absen.isApprove == 'ditolak' ?
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <TouchableOpacity style={{width:"95%", height:40, backgroundColor:'#39a339', borderRadius:15, elevation:5,alignItems:"center", justifyContent:"center"}} onPress={toggleModal2}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Perbarui Absensi</Text>
+                                </TouchableOpacity>
+                            </View>
+                            :
+                                !absen.isApprove || !absen.approveAdmin &&
+                                    <View style={{ marginVertical:10, alignItems:'center'}}>
+                                        <Text style={{color:'red', fontWeight:'800'}}>Pengajuan Anda Masih Diproses</Text>
+                                        <Text style={{fontSize:10, color:'black'}}>Mohon Cek Secara Berkala</Text>
+                                    </View>
+                        }
 
-                        <View style={{width:"100%", alignItems:"center"}}>
-                            <TouchableOpacity style={{width:"95%", height:40, backgroundColor:'#39a339', borderRadius:15, elevation:5,alignItems:"center", justifyContent:"center"}} onPress={toggleModal2}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Perbarui Absensi</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
 
 

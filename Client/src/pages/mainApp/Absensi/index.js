@@ -54,6 +54,7 @@ const Absensi = ({route, navigation}) => {
     const [modalStoreSakit, setModalStoreSakit] = useState(false)
     const [modalStoreIzin, setModalStoreIzin] = useState(false)
 
+    const [errMaxSize, setErrMaxSize] = useState(false)
 
     const [modalSuccess, setModalSuccess] = useState(false)
     const [modalLoad, setModalLoad] = useState(false)
@@ -168,7 +169,11 @@ const Absensi = ({route, navigation}) => {
             const doc =  await DocumentPicker.pickSingle({
                 type: [DocumentPicker.types.images],
             })
-
+            
+            if (doc.size > 1) {
+                setErrMaxSize(true)
+            }
+            
             setFileKeterangan(doc)
             setImgKeterangan(doc.uri)
 
@@ -284,7 +289,7 @@ const Absensi = ({route, navigation}) => {
                             </TouchableOpacity>
                         :
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerHadir}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
                             </TouchableOpacity>
                         }
                     </View>
@@ -315,7 +320,7 @@ const Absensi = ({route, navigation}) => {
                         </View>
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -346,7 +351,7 @@ const Absensi = ({route, navigation}) => {
 
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -370,7 +375,7 @@ const Absensi = ({route, navigation}) => {
                         <Text style={{color:"#000", fontSize:8, fontWeight:"500", marginBottom:10, marginLeft:15, textTransform:"capitalize"}}>Harap masukan secara detail jumlah dan tanggal pengajuan izin</Text>
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStoreIzin(true)}}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

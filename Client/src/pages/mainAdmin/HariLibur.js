@@ -1,8 +1,13 @@
 import { Dimensions, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BackIcon, CloseIcont, LgBappeda } from '../../assets/images'
 import { Picker } from '@react-native-picker/picker';
 import ReactNativeModal from 'react-native-modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ApiLink from '../../assets/ApiHelper/ApiLink';
+import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
+import { Circle } from 'react-native-animated-spinkit';
 
 const HariLibur = ({navigation}) => {
     // width heigh
@@ -24,9 +29,93 @@ const HariLibur = ({navigation}) => {
     const getYear = cekTgl.getFullYear()
 
     // modal
-    const [dataBln, setDataBln] = useState()
+    const [dataBln, setDataBln] = useState(monthUsed)
+    const [dataTahun, setDataTahun] = useState(getYear)
+    
     const [modalBln, setModalBln] = useState(false)
     const [modalOption, setModalOption] = useState(false)
+    const [modalLoad, setModalLoad] = useState(false)    
+    const [modalConfirm, setModalConfirm] = useState(false)
+
+    const [arrLibur, setArrLibur] = useState([])
+    const [modalForm, setModalForm] = useState({
+        tanggal:null,
+        keterangan:null
+    })
+
+    const base_url =ApiLink+"/api";
+    const isFocused = useIsFocused();
+
+    
+
+    useEffect(() => {
+        if (isFocused) {
+            handlerGetLibur()
+        }
+    }, [navigation, isFocused])   
+    
+
+
+    const handlerGetLibur = async data=>{
+
+        setModalBln(false)
+        setModalLoad(true)
+        try{
+            const myToken = await AsyncStorage.getItem("AccessToken")
+
+            const target_url = `${base_url}/absen/listLibur?bulan=${dataBln}&tahun=${dataTahun}`
+            const response = await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }});
+
+            if (response.status == 200) {
+
+                console.log(response.data)
+                setArrLibur(response.data)
+
+            }
+            setModalLoad(false)            
+        }
+        catch (error){
+            console.log(error, "error get data asn")  
+        }
+    }
+
+    const handlerHapusLibur = async()=>{
+        
+        setModalConfirm(false)
+
+    }
+    const rowData = (item,index)=>{
+
+        return(
+            <View key={index} style={{width:"100%", marginTop:10, flexDirection:"row"}}>
+                <View style={{marginLeft:"5%",}}>
+                    <View style={{width:50, backgroundColor:"#e82a39", borderRadius:50, height:50, justifyContent:"center", alignItems:"center"}}>
+                        <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>{item.tanggal}</Text>
+                    </View>
+                    
+                    <View style={{width:50, alignItems:"center"}}>
+                        <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
+                        <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
+                        <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
+                        <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
+                    </View>
+                </View>
+                <View style={{justifyContent:"center", marginLeft:25}}>
+                    <TouchableOpacity style={{width:WindowWidth*0.6, height:50, backgroundColor:"white", borderRadius:10, elevation:10, alignItems:"center", justifyContent:"center", padding:5}} onPress={() => {
+                        setModalForm({
+                            tanggal: item.hari+', '+ item.tanggal,
+                            keterangan: item.keterangan
+                        })
+                        setModalOption(true)
+                    }}>
+                        <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center"}}>{item.keterangan}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>            
+        )
+    }
 
     return (
         <ScrollView>
@@ -62,7 +151,7 @@ const HariLibur = ({navigation}) => {
                                 <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15}}>Bulan : </Text>
                             </View>
                             <View style={{justifyContent:"center", borderBottomWidth:0.5, borderBottomColor:"black"}}>
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15}}>{dataBln? dataBln : getStrMonth} </Text>
+                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15}}>{dataBln? namaBulan[dataBln] : getStrMonth} {dataTahun} </Text>
                             </View>
                         </TouchableOpacity>
                         <View style={{width:"50%", alignItems:"flex-end", justifyContent:"center" }}>
@@ -72,87 +161,16 @@ const HariLibur = ({navigation}) => {
                         </View>
                     </View>
 
-                    <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center", }}>Berikut Data Hari Libur Bulan Agustus</Text>
+                    <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center", }}> Hari Libur {namaBulan[dataBln]} {dataTahun}</Text>
 
-                    <View style={{width:"100%", marginTop:10, flexDirection:"row"}}>
-                        <View style={{marginLeft:"5%",}}>
-                            <View style={{width:50, backgroundColor:"#e82a39", borderRadius:50, height:50, justifyContent:"center", alignItems:"center"}}>
-                                <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>17</Text>
-                            </View>
-                            
-                            <View style={{width:50, alignItems:"center"}}>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                            </View>
-                        </View>
-                        <View style={{justifyContent:"center", marginLeft:25}}>
-                            <TouchableOpacity style={{width:WindowWidth*0.6, height:50, backgroundColor:"white", borderRadius:10, elevation:10, alignItems:"center", justifyContent:"center", padding:5}} onPress={() => setModalOption(true)}>
-                                <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center"}}>Hari Kemerdekaan republik indonesia ke 78</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View style={{width:"100%", marginTop:10, flexDirection:"row"}}>
-                        <View style={{marginLeft:"5%",}}>
-                            <View style={{width:50, backgroundColor:"#e82a39", borderRadius:50, height:50, justifyContent:"center", alignItems:"center"}}>
-                                <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>17</Text>
-                            </View>
-                            
-                            <View style={{width:50, alignItems:"center"}}>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                            </View>
-                        </View>
-                        <View style={{justifyContent:"center", marginLeft:25}}>
-                            <TouchableOpacity style={{width:WindowWidth*0.6, height:50, backgroundColor:"white", borderRadius:10, elevation:10, alignItems:"center", justifyContent:"center", padding:5}} onPress={() => setModalOption(true)}>
-                                <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center"}}>Hari Kemerdekaan republik indonesia ke 78</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View style={{width:"100%", marginTop:10, flexDirection:"row"}}>
-                        <View style={{marginLeft:"5%",}}>
-                            <View style={{width:50, backgroundColor:"#e82a39", borderRadius:50, height:50, justifyContent:"center", alignItems:"center"}}>
-                                <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>17</Text>
-                            </View>
-                            
-                            <View style={{width:50, alignItems:"center"}}>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                            </View>
-                        </View>
-                        <View style={{justifyContent:"center", marginLeft:25}}>
-                            <TouchableOpacity style={{width:WindowWidth*0.6, height:50, backgroundColor:"white", borderRadius:10, elevation:10, alignItems:"center", justifyContent:"center", padding:5}} onPress={() => setModalOption(true)}>
-                                <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center"}}>Hari Kemerdekaan republik indonesia ke 78</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    <View style={{width:"100%", marginTop:10, flexDirection:"row"}}>
-                        <View style={{marginLeft:"5%",}}>
-                            <View style={{width:50, backgroundColor:"#e82a39", borderRadius:50, height:50, justifyContent:"center", alignItems:"center"}}>
-                                <Text style={{ color: "#fff", fontWeight: "900", fontSize: 20, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1,}}>17</Text>
-                            </View>
-                            
-                            <View style={{width:50, alignItems:"center"}}>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                                <Text style={{ color: "#000", fontWeight: "900", fontSize: 8, fontFamily: "Spartan" }}>|</Text>
-                            </View>
-                        </View>
-                        <View style={{justifyContent:"center", marginLeft:25}}>
-                            <TouchableOpacity style={{width:WindowWidth*0.6, height:50, backgroundColor:"white", borderRadius:10, elevation:10, alignItems:"center", justifyContent:"center", padding:5}} onPress={() => setModalOption(true)}>
-                                <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center"}}>Hari Kemerdekaan republik indonesia ke 78</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    {
+                        arrLibur.length > 0 ?
+                        arrLibur.map((item,index)=>(
+                            rowData(item,index)
+                        ))
+                        :
+                        <Text>Tidak Ada Data</Text>
+                    }
 
                 </View>
             </View>
@@ -166,44 +184,56 @@ const HariLibur = ({navigation}) => {
                     <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Bulan</Text>
                     </View>
-                    <View style={{alignItems:"center", width:"100%"}}>
-                        
-                        <Picker
-                            selectedValue={dataBln}
-                            onValueChange={(itemValue, itemIndex) => 
-                                setDataBln(itemValue)
+                    <View style={{flexDirection:'row'}}>
+                        <View style={{alignItems:"center", width:"50%"}}>                        
+                            <Picker
+                                selectedValue={dataBln}
+                                onValueChange={(itemValue, itemIndex) => 
+                                    setDataBln(itemValue)
+                                }
+                                style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                                selectionColor={"#000"}
+                            >
+                            {
+                                namaBulan.map((item,index)=>(
+                                    <Picker.Item label={item} value={index}/>
+                                ))
                             }
-                            style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
-                            selectionColor={"#000"}
-                            // dropdownIconRippleColor={"transparent"}
-                            // dropdownIconColor={"transparent"}
-                        >
-                            <Picker.Item label="-" value="-"/>
-                            <Picker.Item label="Januari" value="Januari"/>
-                            <Picker.Item label="Februari" value="Februari"/>
-                            <Picker.Item label="Maret" value="Maret"/>
-                            <Picker.Item label="April" value="April"/>
-                            <Picker.Item label="Mei" value="Mei"/>
-                            <Picker.Item label="Juni" value="Juni"/>
-                            <Picker.Item label="Juli" value="Juli"/>
-                            <Picker.Item label="Agustus" value="Agustus"/>
-                            <Picker.Item label="September" value="September"/>
-                            <Picker.Item label="Oktober" value="Oktober"/>
-                            <Picker.Item label="November" value="November"/>
-                            <Picker.Item label="Desember" value="Desember"/>
-                        </Picker>
-                        
+                            </Picker>
+                            
 
-                    </View>
+                        </View>
+                        <View style={{alignItems:"center", width:"50%"}}>                        
+                            <Picker
+                                selectedValue={dataBln}
+                                onValueChange={(itemValue, itemIndex) => 
+                                    setDataTahun(itemValue)
+                                }
+                                style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                                selectionColor={"#000"}
+                            >
+                                    <Picker.Item label="2023" value="2023"/>
+                                    <Picker.Item label="2024" value="2024"/>
+                                    <Picker.Item label="2025" value="2025"/>                                
+                            </Picker>
+                            
+
+                        </View>
+                    </View>                    
                     <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                        <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={()=>setModalBln(false)}>
+                        {
+                            dataBln ?
+                            <TouchableOpacity style={{width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={handlerGetLibur}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Cek Hari Libur</Text>
                         </TouchableOpacity>
+                        :
+                        <></> 
+                        }
                     </View>
                 </View>
             </ReactNativeModal>
 
-            {/* edit / hapus */}
+            {/*  hapus */}
             <ReactNativeModal isVisible={modalOption} onBackdropPress={() => setModalOption(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                 <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 
@@ -211,22 +241,54 @@ const HariLibur = ({navigation}) => {
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}> 17 Agustus 2023</Text>
-                        <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center", marginTop:15}}>Hari Kemerdekaan republik indonesia ke 78</Text>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}> {modalForm.tanggal}</Text>
+                        <Text style={{ color: "#000", fontWeight: "500", fontSize: 10, fontFamily: "Spartan", textTransform:"capitalize", textAlign:"center", marginTop:15}}>{modalForm.keterangan}</Text>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                         <View style={{flexDirection:"row"}}>
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#fcc419", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalOption(false)}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Edit</Text>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9d8d7", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalOption(false)}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center",}} onPress={() => setModalOption(false)}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center",}} onPress={() => {
+                                setModalOption(false)
+                                setModalConfirm(true)
+                                }}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Hapus</Text>
                             </TouchableOpacity>
                         </View>     
                     </View>
                 </View>
             </ReactNativeModal>
+
+            {/*  confirm hapus */}
+            <ReactNativeModal isVisible={modalConfirm} onBackdropPress={() => setModalConfirm(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalConfirm(false)}>
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}> Lanjut Hapus Data ?</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9d8d7", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={() => setModalConfirm(false)}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center",}} onPress={handlerHapusLibur}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>            
+
+            {/* modal loading */}
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <Circle size={100} color="white"/>
+            </ReactNativeModal>            
         </ScrollView>
     )
 }

@@ -46,8 +46,9 @@ const DetailPengajuan = ({route ,navigation}) => {
         setModalVisible(!isModalVisible);
     }
 
+    const [modalSuccess, setModalSuccess] = useState(false)
     const [modalLoad, setModalLoad] = useState(false)
-    const [pengajuan, setPengajuan] = useState(false)
+    const [pengajuan, setPengajuan] = useState()
 
     const [modaAlertPengajuan, setModaAlertPengajuan] = useState(false)
 
@@ -57,19 +58,19 @@ const DetailPengajuan = ({route ,navigation}) => {
     
 
     const tolakPengajuan=()=>{
-        setPengajuan(0)
+        setMyForm({...myForm, ['isApprove']:'ditolak'})
         setModaAlertPengajuan(true)
     }
 
     const setujuiPengajuan=()=>{
-        setPengajuan(1)
+        setMyForm({...myForm, ['isApprove']:'diterima'})
         setModaAlertPengajuan(true)
     }
 
     const UpdatePengajuan = async () => {
 
-        setModalLoad(true)
-
+            setModalLoad(true)
+        // console.log(myForm)
         try {
 
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -79,11 +80,12 @@ const DetailPengajuan = ({route ,navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{
                 setModalLoad(false)
-                navigation.navigate("MainKasum")
+                setModalSuccess(true)
+                // navigation.navigate("MainKasum")
             })
 
         } catch (error) {
-            console.log(error,"<--- error handler hadir")            
+            console.log(error.response.data,"<--- error handler update pengajuan")            
         }
 
 
@@ -102,10 +104,9 @@ const DetailPengajuan = ({route ,navigation}) => {
         fotoProfile:''
     })
 
-    const [catatanKasum, setCatatanKasum] = useState('-')
     const [myForm, setMyForm] = useState({
         catatan:'-',
-        status:'0'
+        isApprove:null
     })
     // console.log(dataDetail.status)
     const getDetail = async data =>{
@@ -121,7 +122,6 @@ const DetailPengajuan = ({route ,navigation}) => {
             }}).then((res)=>{     
 
                 const data = res.data.data
-                console.log(data.fotoProfile)
                 setDataDetail({
                     nama:data.nama,
                     jabatan:data.jabatan,
@@ -131,7 +131,9 @@ const DetailPengajuan = ({route ,navigation}) => {
                     keterangan:data.keterangan_hadir,
                     foto:data.foto,
                     fotoProfile: data.fotoProfile
-                })   
+                })                   
+
+                setMyForm({...myForm, ['catatan']:data.catatan_kasum})                
             }) 
             
 
@@ -194,7 +196,7 @@ const DetailPengajuan = ({route ,navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{dataDetail.statusPengajuan ? 'Diapprove':'Menunggu Aprrove Kasum'}</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:'capitalize'}}>{dataDetail.statusPengajuan }</Text>
                                 </View>
                             </View>
                         </View>
@@ -243,13 +245,12 @@ const DetailPengajuan = ({route ,navigation}) => {
 
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#d9dcdf", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:0,}} onPress={()=>{
-                                tolakPengajuan(),
-                                setMyForm({...myForm, ['status']:2})
+                                tolakPengajuan()
+
                             }} >
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Tolak Pengajuan</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{
-                                        setMyForm({...myForm, ['status']:1})
                                         setujuiPengajuan()
                                         }}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Setujui Pengajuan</Text>
@@ -262,7 +263,28 @@ const DetailPengajuan = ({route ,navigation}) => {
                     <Circle size={100} color="white"/>
                 </ReactNativeModal>
 
-                
+                {/* modal success */}
+                <ReactNativeModal isVisible={modalSuccess} onBackdropPress={() => setModalSuccess(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                        <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setModalSuccess(false)}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Selamat !</Text>
+                            <Text> Pengajuan Berhasil Diproses</Text>
+                        </View>
+                        <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                            <View style={{flexDirection:"row"}}>
+
+                                <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=>{setModalSuccess(false), navigation.goBack()}}>
+                                    <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ok</Text>
+                                </TouchableOpacity>
+                            </View>     
+                        </View>
+                    </View>
+                </ReactNativeModal>
+
                 {/* modal approve */}
                 <ReactNativeModal isVisible={modaAlertPengajuan} onBackdropPress={() => setModaAlertPengajuan(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                     <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
