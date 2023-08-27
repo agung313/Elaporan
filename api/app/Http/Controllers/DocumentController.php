@@ -196,6 +196,29 @@ class DocumentController extends Controller
         
     }
 
+    // cek apakah ada laporan yg sudah diajukan/ diapprove kasum pada bulan dan tahun tsb dg id user
+    function checkLaporanDiajukan(Request $request) {
+        
+        $id_user = $request->idUser;
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+
+        if (Auth::user()->role == 'user' ) {
+            $id_user = Auth::user()->id;
+        }
+
+        $doc = Document::where('tahun', $tahun)
+                        ->where('bulan', $bulan)
+                        ->where('id_user', $id_user)
+                        ->first();
+
+        return response()->json([
+            'message' => 'berhasil mengambil data',
+            'data' => $doc ? $doc->status : null
+        ]);
+
+    }
+
     public function checkLaporan($idUser, $bulan){
         //validasi laporan
         $laporanIds = Laporan::join('absensis','absensis.id','=','laporans.id_absensi')

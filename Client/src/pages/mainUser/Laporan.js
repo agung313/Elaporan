@@ -43,7 +43,7 @@ const Laporan = ({route, navigation}) => {
     const [arrKegiatan, setArrKegiatan] = useState([])
     const [arrKendala, setArrKendala] = useState([])
     const [adaDokumen, setAdaDokumen] = useState()
-    console.log(adaDokumen,"<<<<=ada dokumen")
+    const [statusDokumen, setStatusDokumen] = useState()
     
     const [idDeleted, setIdDeleted] = useState()
     const [message, setMessage] = useState()
@@ -85,7 +85,6 @@ const Laporan = ({route, navigation}) => {
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
-
             const target_url = `${base_url}/document?tahun=${tahun}&bulan=${bulan}`
 
             const response = await axios.get(target_url,{headers:{
@@ -98,6 +97,7 @@ const Laporan = ({route, navigation}) => {
 
                     setIdLaporan(response.data[0].id)
                     setAdaDokumen(response.data[0].URL)
+                    setStatusDokumen(response.data[0].status)
                     
                 }else{
                     
@@ -230,31 +230,31 @@ const Laporan = ({route, navigation}) => {
                 <View style={{width:"41%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, }}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>{tmpStr[1]}</Text>
                 </View>
-                <View style={{width:"10%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  alignItems:"center"}}>
-                        {/* <TouchableOpacity onPress={ () => navigation.navigate("EditKendala", {indexData:index}) } style={{ flexDirection: 'row' }}>
-                            <Image source={DotAksi} style={{width:20, height:20, marginLeft:7}} />
-                        </TouchableOpacity> */}
-                            {showContent==index+1?
-                                <TouchableOpacity onPress={() => toggleContent(0)}>
-                                    <Image source={DotAksi} style={{width:20, height:20}} />
-                                </TouchableOpacity>
-                            :
-                                <TouchableOpacity onPress={() => toggleContent(index+1)}>
-                                    <Image source={DotAksi} style={{width:20, height:20}} />
-                                </TouchableOpacity>
-                            }                        
-                        <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
-                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditKendala", {indexData:index}) }>
-                                    <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
-                                </TouchableOpacity>
 
-                                <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setIdDeleted(index),handlerModal('hapus')}}>
-                                    <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
-                                </TouchableOpacity>
-                            </View>                        
-                </View> 
-                               
-                
+                    <View style={{width:"10%", minHeight:52, justifyContent:"center", borderWidth:0.5, borderColor:"#000",  alignItems:"center"}}>
+                    {
+                    statusDokumen !== 'diapprove' ?
+                        showContent==index+1?
+                            <TouchableOpacity onPress={() => toggleContent(0)}>
+                                <Image source={DotAksi} style={{width:20, height:20}} />
+                            </TouchableOpacity>
+                        :
+                            <TouchableOpacity onPress={() => toggleContent(index+1)}>
+                                <Image source={DotAksi} style={{width:20, height:20}} />
+                            </TouchableOpacity>
+                    :
+                    <></>
+                    }                        
+                <View style={showContent==index+1?{width:50, height:50, marginTop:-20, marginLeft:-70, alignItems:"center"}:{display:"none"}}>
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"#fcc419", borderRadius:10, marginBottom:5, alignItems:"center", justifyContent:"center"}} onPress={ () => navigation.navigate("EditKendala", {indexData:index}) }>
+                            <Text style={{fontWeight:'700', color:"black", fontSize:10}}>Edit</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={{width:50, height:20, backgroundColor:"red", borderRadius:10, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setIdDeleted(index),handlerModal('hapus')}}>
+                            <Text style={{fontWeight:'700', color:"white", fontSize:10}}>Hapus</Text>
+                        </TouchableOpacity>
+                    </View>                        
+                </View>                 
             </View>            
         )
     }
@@ -315,7 +315,6 @@ const Laporan = ({route, navigation}) => {
     const handlerStore = async (status) =>{
 
         setModalLaporkan(false)
-        console.log(JSON.stringify(arrKendala), "--- my kendala")
         // setModalLoad(true)
         try {
 
@@ -417,24 +416,26 @@ const Laporan = ({route, navigation}) => {
             </View>
             <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:WindowHeight*0.3, backgroundColor:"white", borderRadius:15, elevation:5, marginBottom:15, padding:10, }}>
+                    {
+                        statusDokumen !== 'diapprove' &&
+                        <View style={{width:"100%", flexDirection:"row", justifyContent:'center', marginTop:10}}>
+                            <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={Laporkan}>
+                                <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
+                            </TouchableOpacity>
+                            <View style={{width:5}}></View>
+                            <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={ ()=>{handlerStore('draft')}}>
+                                <Text style={{ fontWeight:'900', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Draft</Text>
+                            </TouchableOpacity>
+                            <View style={{width:5}}></View>    
+                            {
+                                adaDokumen !== '' && adaDokumen !== null &&
 
-                    <View style={{width:"100%", flexDirection:"row", justifyContent:'center', marginTop:10}}>
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#0060cb", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={Laporkan}>
-                            <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Laporkan</Text>
-                        </TouchableOpacity>
-                        <View style={{width:5}}></View>
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#d9dcdf", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={ ()=>{handlerStore('draft')}}>
-                            <Text style={{ fontWeight:'900', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Draft</Text>
-                        </TouchableOpacity>
-                        <View style={{width:5}}></View>    
-                        {
-                            adaDokumen !== '' && adaDokumen !== null &&
-
-                        <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"red", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setMyModal({hapusLaporan:true})}}>
-                            <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus</Text>
-                        </TouchableOpacity>               
-                        }                     
-                    </View>
+                            <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"red", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setMyModal({hapusLaporan:true})}}>
+                                <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus</Text>
+                            </TouchableOpacity>               
+                            }                     
+                        </View>
+                    }
 
                     <View style={{width:"100%", alignItems:"center"}}>
                         <View style={{width:"100%"}}>
@@ -454,9 +455,15 @@ const Laporan = ({route, navigation}) => {
                         <View style={{flexDirection:'row', display:'flex',  justifyContent:'space-between'}}>
                             <Text style={{ color: "#000", fontSize: 15, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, }}> Kendala & Solusi</Text>
 
-                            <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#fcc419", marginTop:6, alignItems:"center", justifyContent:"center"}} onPress={()=> navigation.navigate('TambahKendala', {bulan:bulan, tahun:tahun})} >
-                            <Text style={{ fontWeight:'900', color:"black", fontSize:14}}>Tambah</Text>
-                        </TouchableOpacity>
+                            {
+                                statusDokumen !== 'diapprove' ?
+                                <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"#fcc419", marginTop:6, alignItems:"center", justifyContent:"center"}} onPress={()=> navigation.navigate('TambahKendala', {bulan:bulan, tahun:tahun})} >
+                                    <Text style={{ fontWeight:'900', color:"black", fontSize:14}}>Tambah {statusDokumen}</Text>
+                                </TouchableOpacity>                                
+                                :
+                                <></>
+                            }
+
                         </View>
                     </View>
                     <View style={{flexDirection:"row", backgroundColor:"#d9dcdf"}}>

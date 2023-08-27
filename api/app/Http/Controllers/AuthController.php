@@ -48,15 +48,25 @@ class AuthController extends Controller{
 
 
         if ($cekEmail->isActive == false){
-            return response()->json(['messages' => 'Akun sudah di nonaktifkan'], 401);
+            return response()->json(['messages' => 'Akun Anda Belum Aktif'], 401);
         }
 
         if (!$cekEmail) {
             return response()->json([
                 'messages' => 'maaf email tidak terdaftar'
-            ],402);
+            ],401);
 
         } else if (Auth::attempt($credentials)) {
+
+            if (!$cekEmail->device) {
+
+                $cekEmail->device = $deviceNow;
+                $cekEmail->update();
+
+            }else if ($cekEmail->device !== $deviceNow) {
+                return response()->json(['messages' => 'Perangkat Anda Tidak Sesuai'], 401);
+            }
+
             $authUser = Auth::user();
             $success['token'] =  $authUser->createToken('MyAuthApp')->plainTextToken;
             $success['email'] = $authUser->email;

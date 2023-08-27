@@ -54,6 +54,7 @@ const Detail = ({route, navigation}) => {
         status:'-',
         waktuMasuk:'00:00:00',
         waktuPulang:'00:00:00',
+        tanggal:null,
         fotoAbsensi:'-',
         keteranganAbsensin:'-',
         isApprove:"",
@@ -74,6 +75,7 @@ const Detail = ({route, navigation}) => {
             getProfile(),
             getAbsensi(),
             getKegiatan()
+            checkDocument()
             
         }
     
@@ -81,6 +83,12 @@ const Detail = ({route, navigation}) => {
     
     const [imgFoto, setImgFoto] = useState()
     
+    const [docDiajukan, setDocDiajukan] = useState()
+    const [periodDoc, setPeriodDoc] = useState({
+        bulan:null,
+        tahun:null
+    })
+
     const getProfile = async data =>{
 
         try {
@@ -116,7 +124,15 @@ const Detail = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
 
-                setAbsen({
+                const arrTgl = res.data.data.realTanggal.split('-');
+
+                setPeriodDoc({
+                    tahun:arrTgl[0],
+                    bulan: parseInt(arrTgl[1], 10) 
+                })
+
+
+                setAbsen({  
                     id: res.data.data.id,
                     status:res.data.data.status,
                     waktuMasuk: res.data.data.waktu_hadir,
@@ -124,7 +140,8 @@ const Detail = ({route, navigation}) => {
                     fotoAbsensi:res.data.data.foto,
                     keteranganAbsensin:res.data.data.keterangan_hadir,      
                     isApprove:res.data.data.isApprove,
-                    approveAdmin: res.data.data.approveAdmin              
+                    approveAdmin: res.data.data.approveAdmin,
+                    tanggal: res.data.data.tanggal           
                 })
             }) 
             
@@ -137,6 +154,27 @@ const Detail = ({route, navigation}) => {
 
     const fotoKeterangan = {uri: absen.fotoAbsensi}
 
+
+    const checkDocument = async() =>{
+
+        try {
+
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url = `${base_url}/document/laporanDiajukan?`
+            const params_url  = `bulan=${periodDoc.bulan}&tahun=${periodDoc.tahun}`
+            const final_url = target_url+''+params_url
+            
+            const response =await axios.get(final_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }})
+            
+            setDocDiajukan(response.data.data)       
+        
+        } catch (error) {
+            console.log(error, "error check pengajuan ")   
+        }
+    }
     const getKegiatan = async data =>{
 
         try {
@@ -360,7 +398,7 @@ const Detail = ({route, navigation}) => {
 
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15, alignItems:"center"}}>
-                            <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
+                            <View style={{width:"35%", marginTop:-40, minHeight:25, justifyContent:"center", marginRight:10}}>
                             {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
@@ -373,6 +411,10 @@ const Detail = ({route, navigation}) => {
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{profile.jabatan}</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Tanggal :</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.tanggal}</Text>
+                                </View>                                
+                                <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
                                     <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.status}</Text>
                                 </View>
@@ -380,7 +422,7 @@ const Detail = ({route, navigation}) => {
                                 <View style={absen.status == "Izin" || absen.status == "Sakit" ?{marginBottom:10}:{display:"none"}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Pengajuan :</Text>
                                     <Text style={absen.isApprove=="ditolak"?{color:"red", fontSize:10, fontWeight:"900", textTransform:"capitalize"}:{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{stPengajuan}</Text>
-                                </View>
+                                </View> 
 
                                 <View style={absen.status == "Izin" || absen.status == "Sakit" ?{display:"none"}:{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
@@ -418,13 +460,19 @@ const Detail = ({route, navigation}) => {
 
 
                     <View style={absen.status == "Izin" || absen.status == "Sakit" ? {display:"none"} : {display:"flex"}}>
-                        <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
-                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan Hari Ini :</Text>
-                            <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi, backNavigation:"Detail"})}>
+                        <View style={{flexDirection:"row", justifyContent:'space-between', marginBottom:10, marginTop:20 }}>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan Saya :</Text>
+                            {
+                                docDiajukan === 'null' || docDiajukan === 'draft' ? 
+                                <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi, backNavigation:"Detail"})}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>
                                     Tambah Kegiatan
                                 </Text>
-                            </TouchableOpacity>
+                                </TouchableOpacity>
+                                :
+                                <></>
+                            }
+
                             
                         </View>
                         <View style={{width:"100%",marginBottom:15, marginTop:10}}>

@@ -57,6 +57,7 @@ Route::controller(LaporanController::class)->prefix('laporan')->group(function (
 //DOCUMENT LAPORAN
 Route::controller(DocumentController::class)->prefix('document')->group(function () {
     Route::get('/', 'index');
+    Route::get('/laporanDiajukan', 'checkLaporanDiajukan');
     Route::post('/store', 'store');
     Route::post('/upload', 'upload');
     Route::post('/approve/{id}', 'approve');

@@ -170,8 +170,10 @@ const Absensi = ({route, navigation}) => {
                 type: [DocumentPicker.types.images],
             })
             
-            if (doc.size > 1) {
+            if (doc.size > 1000000) {
                 setErrMaxSize(true)
+            }else{
+                setErrMaxSize(false)                
             }
             
             setFileKeterangan(doc)
@@ -318,10 +320,18 @@ const Absensi = ({route, navigation}) => {
                                     />
                             </View>
                         </View>
+
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
-                            </TouchableOpacity>
+                            {
+                                errMaxSize ? 
+                                <Text style={{color:'red',alignSelf:'center', marginVertical:10}}>Foto Kegiatan Terlalu Besar ! Maks 1 MB</Text>
+                                :
+                                <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                                   <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
+                                </TouchableOpacity>
+                            }
+                            
+
                         </View>
                     </View>
 
@@ -350,9 +360,15 @@ const Absensi = ({route, navigation}) => {
                         <Text style={{color:"#000", fontSize:8, fontWeight:"500", marginBottom:10, marginLeft:15, textTransform:"capitalize"}}>Harap masukan secara detail jumlah dan tanggal pengajuan sakit</Text>
 
                         <View style={{alignItems:"center"}}>
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                            {
+                                errMaxSize ? 
+                                <Text style={{color:'red',alignSelf:'center', marginVertical:10}}>Foto Kegiatan Terlalu Besar ! Maks 1 MB</Text>
+                                :
+                                <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
                             </TouchableOpacity>
+                            }
+
                         </View>
                     </View>
 

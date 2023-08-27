@@ -5,6 +5,7 @@ import { Bounce } from 'react-native-animated-spinkit'
 import axios from 'axios'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { err } from 'react-native-svg/lib/typescript/xml'
 
 const SplashLogin = ({route, navigation}) => {
     const {username, password} = route.params
@@ -46,8 +47,11 @@ const SplashLogin = ({route, navigation}) => {
                 navigation.replace('AppScreen');
             }
         } catch (error) {
-            navigation.replace('LoginSide', {errorValue:1})
-            return Alert.alert("Login", "Username atau Password Anda Salah")
+
+            navigation.replace('LoginSide', {errorValue:error.response.data.messages})
+            
+            console.log(error.response.status)
+            // return Alert.alert("Login", "Username atau Password Anda Salah")
         }
 
     }

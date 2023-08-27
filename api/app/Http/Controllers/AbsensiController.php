@@ -33,9 +33,11 @@ class AbsensiController extends Controller
                             ->where('absensis.id', $request->id)
                             ->first();
 
+            $absen->realTanggal = $absen->tanggal;                            
             $hari = Carbon::createFromFormat('Y-m-d', $absen->tanggal, 'Asia/Jakarta')->isoFormat('dddd');
             $tanggal =  Carbon::parse($absen->tanggal)->isoFormat('D MMMM Y');
             $absen->tanggal = $hari.', '.$tanggal;
+
 
             $absen->fotoProfile = URL('storage/'.$absen->fotoProfile);
             $absen->foto = $absen->foto ? URL('storage/'.$absen->foto) : null;

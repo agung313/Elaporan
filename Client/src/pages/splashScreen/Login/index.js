@@ -152,8 +152,8 @@ const LoginSide = ({route, navigation}) => {
                 }
 
             </View>
-            <View style={errorValue==1 ? {marginTop:20, display:"flex"}:{display:"none"}}>
-                <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>Username atau Password anda salah !!</Text>
+            <View style={errorValue ? {marginTop:20, display:"flex"}:{display:"none"}}>
+                <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>{errorValue}</Text>
             </View>
             
             <TouchableOpacity style={{width:WindowWidth*0.8, height:40, backgroundColor:"green", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center", marginTop:30}} onPress={handlerLogin}>
