@@ -58,7 +58,7 @@ const DetailAsn = ({route, navigation}) => {
             getProfile()
         }
     }, [navigation, isFocused])    
-    // console.log(dataDetail.status)
+
 
     // profile
     const [myProfile, setMyProfile] = useState({

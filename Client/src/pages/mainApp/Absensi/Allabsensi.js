@@ -311,7 +311,6 @@ const Allabsensi = ({navigation}) => {
 
     }       
 
-    // console.log(rawHistory, "<======= raw history")
     const searchFilterFunction = (text) => {
         // Check if searched text is not blank
             if (text) {

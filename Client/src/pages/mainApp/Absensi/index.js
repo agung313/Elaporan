@@ -14,7 +14,6 @@ import { useIsFocused } from '@react-navigation/native';
 const Absensi = ({route, navigation}) => {
     const isFocused = useIsFocused()
     const {kehadiran, latit, longtit, jarak, idAbsensi} = route.params
-    console.log(jarak, "<==============jaraka meter")
     
     // const kehadiran=2
      const [cekStatus, setCekStatus] = useState(kehadiran)
@@ -153,8 +152,6 @@ const Absensi = ({route, navigation}) => {
                 'Content-Type': `multipart/form-data`
             }})            
         
-            console.log(response.data,"<--- post ")
-            
             setModalLoad(false)
             setModalSuccess(true)
 

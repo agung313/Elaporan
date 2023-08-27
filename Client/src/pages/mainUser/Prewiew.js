@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native'
+import { StyleSheet, Linking, Text, View, Dimensions, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { BackIcon, LgBappeda, DotAksi, CloseIcont } from '../../assets/images';
 import { FlatList } from 'react-native';
@@ -102,7 +102,10 @@ const Preview = ({route, navigation}) => {
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Batal</Text>
                             </TouchableOpacity>
 
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=> setModalDownoad(false)} >
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=>{
+                                setModalDownoad(false),
+                                Linking.openURL(fileUrl)
+                            }} >
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Ya</Text>
                             </TouchableOpacity>
                         </View>     

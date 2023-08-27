@@ -83,7 +83,6 @@ const DetailLaporanKasum = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{
                 setModalLoad(false)
-                console.log(res.data)
                 navigation.navigate("MainKasum")
             })
 
@@ -313,7 +312,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
     })
     const handlerViewDetail =(data)=>{
         setModalVisible2(true)
-        console.log(data.kegiatan[0].foto)
+
         setFormView({
             kegiatan:data.kegiatan[0].judul_kegiatan,
             uraian:data.kegiatan[0].uraian_kegiatan,

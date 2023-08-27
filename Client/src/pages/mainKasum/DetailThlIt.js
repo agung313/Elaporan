@@ -142,8 +142,6 @@ const DetailThlIt = ({route, navigation}) => {
             const params_url = `bulan=${aktifBulan}&tahun=${aktifTahun}&id_user=${idUser}`
             const final_url = target_url+'?'+params_url
 
-
-            console.log(final_url,"<--- final")
             const response = await axios.get(final_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        

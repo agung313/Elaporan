@@ -51,7 +51,6 @@ const PengajuanHadir = ({navigation}) => {
             const response = await axios.get(`${base_url}/absen?izinSakit=true`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            // console.log(response.data, "<====data history")
     
             if (response.status == 200) {
                 setHistoryNotif(response.data)

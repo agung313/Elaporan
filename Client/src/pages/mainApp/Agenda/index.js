@@ -96,7 +96,7 @@ const Agenda = ({route, navigation}) => {
 
 
             const target_url = `${base_url}/absen?detail=true&id=${idAbsensi}`
-            console.log(target_url)
+
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{       
@@ -141,8 +141,6 @@ const Agenda = ({route, navigation}) => {
 
     const modalDelete =  (data) =>{
 
-        console.log(data,"<---")
-
         setModalValue({
             id:data.id,
             judulKegiatan: data.judul_kegiatan,
@@ -164,8 +162,6 @@ const Agenda = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
             getKegiatan()
-            console.log(response,"<--- delete")
-
             setModalLoad(false)
             setModalSuccess(true)
 

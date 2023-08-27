@@ -10,7 +10,7 @@ import ApiLink from '../../../assets/ApiHelper/ApiLink'
 const Tambah = ({route, navigation}) => {
 
     const {idAbsensi, backNavigation} = route.params
-    console.log(backNavigation, "<===== back navigation")
+
     const base_url =ApiLink+"/api"
     // width heigh
     const WindowWidth = Dimensions.get('window').width;

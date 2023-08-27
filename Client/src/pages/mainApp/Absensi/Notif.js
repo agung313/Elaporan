@@ -38,7 +38,6 @@ const Notif = ({route, navigation}) => {
 
     // api
     const [history, setHistory] = useState([])
-    console.log(history, "<=== cek data")
 
     const isFocused = useIsFocused();
     const base_url =ApiLink+"/api"
@@ -73,7 +72,6 @@ const Notif = ({route, navigation}) => {
     const rowHistory = (item, index) =>{
 
         // if (item.ket_hadir === 'Datang Tepat Waktu' && item.ket_pulang === 'Pulang Tepat Waktu') {
-        console.log(item.ket_hadir)
         if (item.ket_hadir === 'Absen Tepat Waktu') {
             
             if(item.laporan == false){

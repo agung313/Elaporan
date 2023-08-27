@@ -26,7 +26,6 @@ const DetailDataPengajuan = ({route, navigation}) => {
 
     // date time tanggal
     const [startCal, setStartCal] = useState()
-    // console.log(startCal, "<==== start")
     const [endCal, setEndCal] = useState()
 
     const cekTgl = new Date
@@ -72,7 +71,7 @@ const DetailDataPengajuan = ({route, navigation}) => {
             getDetail()
         }
     }, [navigation, isFocused])    
-    // console.log(dataDetail.status)
+
     const getDetail = async data =>{
 
         try {

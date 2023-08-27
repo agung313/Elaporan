@@ -24,7 +24,7 @@ const DataKehadiran = ({navigation}) => {
 
     // selectsearch
     const [selected, setSelected] = useState()
-    console.log(selected)
+
     const data = [
         {key:'1', value:'Muhammad Agung Sholihhudin'},
         {key:'2', value:'Ondri Nurdiansyah'},
@@ -43,8 +43,7 @@ const DataKehadiran = ({navigation}) => {
     const [dayEnd, setDayEnd] = useState()
     const [yearEnd, setYearEnd] = useState()
 
-    console.log(blnStart, "<<<<< bln start")
-    console.log(blnEnd, "<<<<< bln end")
+
     // start bulan
     const stringStartCal = ()=>{
         if(startCal){

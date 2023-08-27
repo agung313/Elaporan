@@ -10,7 +10,6 @@ import ApiLink from '../../assets/ApiHelper/ApiLink';
 
 const DetailPengajuan = ({route ,navigation}) => {
     const {idPengajuan, idUser} = route.params
-    // console.log(idUser, "id user")
 
     useEffect(() => {
         if (isFocused) {
@@ -108,7 +107,7 @@ const DetailPengajuan = ({route ,navigation}) => {
         catatan:'-',
         isApprove:null
     })
-    // console.log(dataDetail.status)
+
     const getDetail = async data =>{
 
         try {

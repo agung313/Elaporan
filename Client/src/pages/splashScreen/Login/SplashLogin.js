@@ -24,8 +24,6 @@ const SplashLogin = ({route, navigation}) => {
 
             let response = await axios.post(ApiLink+'/api/auth/login', dataLogin)
 
-            console.log(response.data.data.token,"<--- response login");
-
             await AsyncStorage.setItem('AccessToken', response.data.data.token)
             await AsyncStorage.setItem('RoleAcces', response.data.data.role)
             
@@ -50,7 +48,6 @@ const SplashLogin = ({route, navigation}) => {
 
             navigation.replace('LoginSide', {errorValue:error.response.data.messages})
             
-            console.log(error.response.status)
             // return Alert.alert("Login", "Username atau Password Anda Salah")
         }
 

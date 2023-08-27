@@ -25,7 +25,7 @@ const DetailKehadiran = ({navigation}) => {
 
     // select kehadiran
     const [selected, setSelected] = useState()
-    console.log(selected)
+
     const data = [
         {key:'Hadir', value:'Hadir'},
         {key:'Hadir Kegiatan', value:'Hadir Kegiatan'},

@@ -20,8 +20,6 @@ const TambahHariLibur = ({navigation}) => {
 
     // date time tanggal
     const cekTgl = new Date
-    // console.log(cekTgl, "<======cek tanggak")
-    // const localeTime = cekTgl.toLocaleTimeString()
     
     const getDay = cekTgl.getDate()
     const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
@@ -44,8 +42,6 @@ const TambahHariLibur = ({navigation}) => {
     const [dayEnd, setDayEnd] = useState()
     const [yearEnd, setYearEnd] = useState()
 
-    console.log(blnStart, "<<<<< bln start")
-    console.log(blnEnd, "<<<<< bln end")
     // start bulan
     const stringStartCal = ()=>{
         if(startCal){
