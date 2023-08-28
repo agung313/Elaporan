@@ -1,13 +1,13 @@
 import { StyleSheet, Text, View, ImageBackground, Image, Dimensions, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { BgMain, EmailIcon, EyeClose, EyeOpen, LgBappeda, PasswordIcon } from '../../../assets/images'
-import axios from 'axios';
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { err } from 'react-native-svg/lib/typescript/xml';
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
 
+
+
 const LoginSide = ({route, navigation}) => {
+    
     const {errorValue} = route.params
     // console.log(errorValue)
     const base_url = ApiLink+'/api';
@@ -17,7 +17,7 @@ const LoginSide = ({route, navigation}) => {
         password:''
     })
 
-
+    
     const handleChangeInput  = (inputName, text)=>{
         setInputs({
             ...inputs,
@@ -25,7 +25,6 @@ const LoginSide = ({route, navigation}) => {
         })
     }
     
-
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
 
@@ -93,7 +92,7 @@ const LoginSide = ({route, navigation}) => {
 
                 <View style={{marginLeft:5}}>
                     <TextInput
-                        placeholder='Username'
+                        placeholder='Email'
                         placeholderTextColor={"#000"}
                         value={inputs.username}
                         keyboardType= "default"
@@ -160,12 +159,12 @@ const LoginSide = ({route, navigation}) => {
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>Login</Text>
             </TouchableOpacity>    
 
-            {/* <View style={{flexDirection:"row", width:WindowWidth*0.8, minHeight:50, marginTop:35, justifyContent:"center"}}>
+            <View style={{flexDirection:"row", width:WindowWidth*0.8, minHeight:50, marginTop:35, justifyContent:"center"}}>
                 <Text style={{color:"black", fontSize:14, fontWeight:"500", textTransform:"capitalize", marginRight:10}}>belum memiliki akun ?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("RegisterSide", {errorValue:null})}>
                     <Text style={{color:"#0060cb", fontSize:14, fontWeight:"900", textTransform:"capitalize"}}>buat akun</Text>
                 </TouchableOpacity>
-            </View> */}
+            </View>
         </ImageBackground>
     )
 }

@@ -25,6 +25,7 @@ class AuthController extends Controller{
     }
     public function login(Request $request)
     {
+     
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|min:6'
@@ -37,14 +38,22 @@ class AuthController extends Controller{
             ]);
         }
 
+
         $credentials = [
             'email' => $request->email,
             'password' => $request->password
         ];
 
+        $cekAkun = User::where('email', $credentials['email'])->get();
+
+        if (!$cekAkun->count()){
+
+            return response()->json(['messages' => 'Akun Tidak Terdaftar'], 401);
+        }
+
         $cekEmail = User::where('email', $credentials['email'])->first();
 
-        $deviceNow = $request->header('User-Agent');
+        $deviceNow = $request->device;
 
 
         if ($cekEmail->isActive == false){
@@ -75,6 +84,7 @@ class AuthController extends Controller{
             $success['longitude'] = '101.540909';
             $success['lantitude'] = '0.517099';
 
+
             return response()->json([
                 'messages' => 'Loggin successfully',
                 'data' => $success
@@ -103,7 +113,7 @@ class AuthController extends Controller{
             ]);
         }
 
-        $userAgent = $request->header('User-Agent');
+        $userAgent = $request->device;
 
         $existingUser = User::where('device', $userAgent)->first();
 
