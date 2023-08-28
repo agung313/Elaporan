@@ -123,8 +123,10 @@ class AbsensiController extends Controller
             if($absensi->isApprove == 'ditolak'){ //jika status izin/sakit di tolak admin maka dia bisa mengulangi izinnya atau dia bisa absen
                 //buat hapus file dan upload file foto
                 if($request->foto){
-                    $pathToFile = 'path/ke/file/gambar.jpg'; // Ganti dengan path file yang sesuai
-                    Storage::delete($pathToFile);
+                    $pathToFile = 'storage/'. $absensi->foto; // Ganti dengan path file yang sesuai
+                    if (Storage::exists($pathToFile)) {
+                        Storage::delete($pathToFile);
+                    }
 
                     $path = $request->file('foto')->store('public');
                     $path = preg_replace('/public/','', $path);
