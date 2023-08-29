@@ -11,6 +11,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Auth as AuthResource;
 
+use Illuminate\Support\Facades\Storage;
+
+
 class AuthController extends Controller{
     public function __construct()
     {
@@ -20,8 +23,13 @@ class AuthController extends Controller{
     function tes() {
 
 
-        $bln = Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
-        return json_encode(['nama'=> $bln]);
+        // $bln = Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
+        // return json_encode(['nama'=> $bln]);
+        $file = 'storage/app/public/pdf/0yTM0PLzFvmLDVm47KiLKzQ6HKiHUveSBT63RN6c.pdf';
+        return Storage::download($file);
+        
+
+
     }
     public function login(Request $request)
     {
