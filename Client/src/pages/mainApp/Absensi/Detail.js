@@ -58,7 +58,8 @@ const Detail = ({route, navigation}) => {
         fotoAbsensi:'-',
         keteranganAbsensin:'-',
         isApprove:"",
-        approveAdmin:null
+        approveAdmin:null,
+        catatanKasum:""
 
     })
     const [modalValue, setModalValue] = useState({
@@ -123,6 +124,7 @@ const Detail = ({route, navigation}) => {
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
+                // console.log(res.data.data, "<<<<<<<< detaillll")
 
                 const arrTgl = res.data.data.realTanggal.split('-');
 
@@ -141,7 +143,8 @@ const Detail = ({route, navigation}) => {
                     keteranganAbsensin:res.data.data.keterangan_hadir,      
                     isApprove:res.data.data.isApprove,
                     approveAdmin: res.data.data.approveAdmin,
-                    tanggal: res.data.data.tanggal           
+                    tanggal: res.data.data.tanggal,
+                    catatanKasum: res.data.data.catatan_kasum           
                 })
             }) 
             
@@ -542,10 +545,14 @@ const Detail = ({route, navigation}) => {
                         </View> 
 
                         <View style={{width:"100%"}}>
-                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {absen.status} :</Text>
+                            <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {absen.status} Kasubag Umum:</Text>
                             <View style={{alignItems:"center", marginBottom:20, }}>
                                 <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                    {absen.catatanKasum?
+                                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5, textTransform:"capitalize"}}>{absen.catatanKasum}</Text>
+                                    :
+                                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5, textTransform:"capitalize"}}>Belum Ada Catatan Dari Kasubag Umum</Text>
+                                    }
                                 </View>
                             </View>
                         </View> 

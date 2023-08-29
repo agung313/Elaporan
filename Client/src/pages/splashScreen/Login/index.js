@@ -160,12 +160,12 @@ const LoginSide = ({route, navigation}) => {
                 <Text style={{color:"#fff", fontWeight:"bold", fontSize:18}}>Login</Text>
             </TouchableOpacity>    
 
-            {/* <View style={{flexDirection:"row", width:WindowWidth*0.8, minHeight:50, marginTop:35, justifyContent:"center"}}>
+            <View style={{flexDirection:"row", width:WindowWidth*0.8, minHeight:50, marginTop:35, justifyContent:"center"}}>
                 <Text style={{color:"black", fontSize:14, fontWeight:"500", textTransform:"capitalize", marginRight:10}}>belum memiliki akun ?</Text>
                 <TouchableOpacity onPress={() => navigation.navigate("RegisterSide", {errorValue:null})}>
                     <Text style={{color:"#0060cb", fontSize:14, fontWeight:"900", textTransform:"capitalize"}}>buat akun</Text>
                 </TouchableOpacity>
-            </View> */}
+            </View>
         </ImageBackground>
     )
 }

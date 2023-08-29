@@ -80,7 +80,7 @@ const MainApp = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
             const target_url =`${base_url}/user/profile`
-
+            console.log(target_url, "<<<<<<< targer url")
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
@@ -391,7 +391,7 @@ const MainApp = ({route, navigation}) => {
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                             <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum membuat agenda</Text>
@@ -405,7 +405,7 @@ const MainApp = ({route, navigation}) => {
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                             <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum belum absen pulang</Text>
@@ -419,7 +419,7 @@ const MainApp = ({route, navigation}) => {
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                             <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Terimakasih, anda telah melakukan absensi</Text>
