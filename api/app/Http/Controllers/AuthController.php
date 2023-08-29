@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\Perangkat;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Auth as AuthResource;
@@ -92,6 +93,11 @@ class AuthController extends Controller{
             $success['longitude'] = '101.540909';
             $success['lantitude'] = '0.517099';
 
+            Perangkat::create([
+                'id_user' => Auth::user()->id,
+                'token_perangkat' => $request->token_fb,
+            ]);            
+
 
             return response()->json([
                 'messages' => 'Loggin successfully',
@@ -165,9 +171,20 @@ class AuthController extends Controller{
         return response(new AuthResource($user));
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Auth::user()->tokens()->delete();
+        $id_user = Auth::user()->id;
+        $token_fb = $request->token_fb;
+        $now = Carbon::now();
+        
+        $signedout = Auth::user()->tokens()->delete();
+
+        if ($signedout) {
+            
+            $perangkat = Perangkat::where('id_user', $id_user)->where('token_perangkat', $token_fb)->first();
+            $perangkat->time_logout  = $now->toDateTimeString();
+            $perangkat->update();
+        }
 
         return response()->json([
             'status' => 'success',

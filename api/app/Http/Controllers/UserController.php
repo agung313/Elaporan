@@ -23,7 +23,6 @@ class UserController extends Controller
     public function profile(Request $request)
     {
 
-        return $request;
         if (Auth::user()->role == 'admin' || Auth::user()->role == 'kasum'){
 
 
