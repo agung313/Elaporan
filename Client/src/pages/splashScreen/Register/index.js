@@ -6,6 +6,7 @@ import ReactNativeModal from 'react-native-modal'
 import { Circle } from 'react-native-animated-spinkit'
 import { Picker } from '@react-native-picker/picker';
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
+import DeviceInfo from 'react-native-device-info';
 
 const RegisterSide = ({route, navigation}) => {
     const {errorValue} = route.params
@@ -48,6 +49,8 @@ const RegisterSide = ({route, navigation}) => {
 
         if (inputs.username && inputs.password && inputs.nama && inputs.jabatan) {
 
+            const deviceId = DeviceInfo.getUniqueId();
+
             try {
                 let dataLogin ={
                     name:inputs.nama,
@@ -55,6 +58,7 @@ const RegisterSide = ({route, navigation}) => {
                     password: inputs.password,
                     password_confirmation: inputs.re_password,
                     jabatan: inputs.jabatan,
+                    device: deviceId._z
 
                 }
 

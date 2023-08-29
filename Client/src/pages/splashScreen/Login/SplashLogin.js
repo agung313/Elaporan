@@ -5,6 +5,7 @@ import { Bounce } from 'react-native-animated-spinkit'
 import axios from 'axios'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import DeviceInfo from 'react-native-device-info';
 import { err } from 'react-native-svg/lib/typescript/xml'
 
 const SplashLogin = ({route, navigation}) => {
@@ -16,39 +17,50 @@ const SplashLogin = ({route, navigation}) => {
 
     const handlerLogin = async data =>{
 
+        const deviceId = DeviceInfo.getUniqueId();
+
         try {
             let dataLogin ={
                 email: username,
-                password: password 
+                password: password ,
+                device: deviceId._z
             }
 
             let response = await axios.post(ApiLink+'/api/auth/login', dataLogin)
 
-            await AsyncStorage.setItem('AccessToken', response.data.data.token)
-            await AsyncStorage.setItem('RoleAcces', response.data.data.role)
-            
-            let myToken = await AsyncStorage.getItem('AccessToken')
+            if (response.data.error) {
+                const tmpArr =[]
+                Object.keys(response.data.error).forEach(key => {
+                    tmpArr.push(response.data.error[key])
+                })
 
+                navigation.replace('LoginSide', {errorValue: tmpArr[0]})
+                
+            }else{
 
-            if (response.data.data.role === 'kasum') {
+                await AsyncStorage.setItem('AccessToken', response.data.data.token)
+                await AsyncStorage.setItem('RoleAcces', response.data.data.role)
+                
+                let myToken = await AsyncStorage.getItem('AccessToken')                
 
-                navigation.replace('KasumScreen'); 
+                if (response.data.data.role === 'kasum') {
+
+                    navigation.replace('KasumScreen'); 
+    
+                }else if (response.data.data.role === 'admin') {
+    
+                    navigation.replace('AdminScreen');
+                }else{
+    
+                    navigation.replace('AppScreen');
+                }
 
             }
-            else if (response.data.data.role === 'admin') {
-                // console.log('as', 'thl ---')
 
-                navigation.replace('AdminScreen');
-            }
-            else{
-
-                navigation.replace('AppScreen');
-            }
         } catch (error) {
 
             navigation.replace('LoginSide', {errorValue:error.response.data.messages})
-            
-            // return Alert.alert("Login", "Username atau Password Anda Salah")
+
         }
 
     }

@@ -156,6 +156,7 @@
                 <td style="text-align: center; vertical-align: text-top;text-transform: uppercase">
                     <p>{{$user->jabatan}}</p>
                     <p>BAPPEDA KOTA PEKANBARU</p>
+                    {{-- <img src="" alt="Gambar kucing" width="100px" height="100px"> --}}
                     <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold;">{{$user->name}}</p>
                 </td>
                 <td style="width: 150px;"></td>

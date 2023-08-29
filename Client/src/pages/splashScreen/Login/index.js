@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View, ImageBackground, Image, Dimensions, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BgMain, EmailIcon, EyeClose, EyeOpen, LgBappeda, PasswordIcon } from '../../../assets/images'
-import axios from 'axios';
 
-import AsyncStorage from '@react-native-async-storage/async-storage'
-import { err } from 'react-native-svg/lib/typescript/xml';
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 
 const LoginSide = ({route, navigation}) => {
+    
     const {errorValue} = route.params
     // console.log(errorValue)
     const base_url = ApiLink+'/api';
@@ -17,7 +18,18 @@ const LoginSide = ({route, navigation}) => {
         password:''
     })
 
+    useEffect(() => {
+      tes()
+    
 
+    }, [navigation])
+    
+    const tes = async ()=>{
+
+        let tokenDeviceFB = await AsyncStorage.getItem('tokenDeviceFB')
+
+        console.log(tokenDeviceFB,"<--- token FB")
+    }
     const handleChangeInput  = (inputName, text)=>{
         setInputs({
             ...inputs,
@@ -25,7 +37,6 @@ const LoginSide = ({route, navigation}) => {
         })
     }
     
-
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
 
@@ -93,7 +104,7 @@ const LoginSide = ({route, navigation}) => {
 
                 <View style={{marginLeft:5}}>
                     <TextInput
-                        placeholder='Username'
+                        placeholder='Email'
                         placeholderTextColor={"#000"}
                         value={inputs.username}
                         keyboardType= "default"
