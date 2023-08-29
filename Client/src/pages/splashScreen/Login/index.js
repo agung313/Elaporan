@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View, ImageBackground, Image, Dimensions, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { BgMain, EmailIcon, EyeClose, EyeOpen, LgBappeda, PasswordIcon } from '../../../assets/images'
 
 import ApiLink from '../../../assets/ApiHelper/ApiLink';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
@@ -17,7 +18,18 @@ const LoginSide = ({route, navigation}) => {
         password:''
     })
 
+    useEffect(() => {
+      tes()
     
+
+    }, [navigation])
+    
+    const tes = async ()=>{
+
+        let tokenDeviceFB = await AsyncStorage.getItem('tokenDeviceFB')
+
+        console.log(tokenDeviceFB,"<--- token FB")
+    }
     const handleChangeInput  = (inputName, text)=>{
         setInputs({
             ...inputs,

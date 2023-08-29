@@ -56,7 +56,7 @@ const Detail = ({route, navigation}) => {
         waktuPulang:'00:00:00',
         tanggal:null,
         fotoAbsensi:'-',
-        keteranganAbsensin:'-',
+        keteranganAbsensi:'-',
         isApprove:"",
         approveAdmin:null
 
@@ -138,7 +138,7 @@ const Detail = ({route, navigation}) => {
                     waktuMasuk: res.data.data.waktu_hadir,
                     waktuPulang:res.data.data.waktu_pulang,
                     fotoAbsensi:res.data.data.foto,
-                    keteranganAbsensin:res.data.data.keterangan_hadir,      
+                    keteranganAbsensi:res.data.data.keterangan_hadir,      
                     isApprove:res.data.data.isApprove,
                     approveAdmin: res.data.data.approveAdmin,
                     tanggal: res.data.data.tanggal           
@@ -451,7 +451,7 @@ const Detail = ({route, navigation}) => {
                                 <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Kegiatan :</Text>
                                 <View style={{alignItems:"center", marginBottom:20}}>
                                     <View style={{width:"90%", minHeight:100, }}>
-                                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                        <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensi}</Text>
                                     </View>
                                 </View>
                             </View>                            
@@ -536,7 +536,7 @@ const Detail = ({route, navigation}) => {
                             <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail {absen.status} :</Text>
                             <View style={{alignItems:"center", marginBottom:20, }}>
                                 <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensi}</Text>
                                 </View>
                             </View>
                         </View> 
@@ -545,7 +545,7 @@ const Detail = ({route, navigation}) => {
                             <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Catatan {absen.status} :</Text>
                             <View style={{alignItems:"center", marginBottom:20, }}>
                                 <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderBottomColor:"black"}}>
-                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensin}</Text>
+                                    <Text style={{color:"#000", fontSize:12, fontWeight:"500", marginLeft:10, marginBottom:5}}>{absen.keteranganAbsensi}</Text>
                                 </View>
                             </View>
                         </View> 
