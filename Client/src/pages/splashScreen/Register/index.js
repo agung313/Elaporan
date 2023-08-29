@@ -290,8 +290,8 @@ const RegisterSide = ({route, navigation}) => {
             {
                 myError.length > 0 &&
                 myError.map((item,index)=>(
-                    <View style={{marginTop:20, display:"flex"}}>
-                    <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize"}}>{item}</Text>
+                    <View style={{marginTop:20, display:"flex", alignItems:"center"}}>
+                        <Text style={{color:"red", fontSize:14, fontWeight:"bold", textTransform:"capitalize", textAlign:"center"}}>{item}</Text>
                     </View>
                 ))
 

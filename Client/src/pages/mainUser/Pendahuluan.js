@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput  } from 'react-native'
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput, BackHandler, Alert  } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { BackIcon, DotAksi,CloseIcont, EmailIcon, LgBappeda, PasswordIcon } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,7 +8,6 @@ import ApiLink from '../../assets/ApiHelper/ApiLink';
 import ReactNativeModal from 'react-native-modal'
 
 const Pendahuluan = ({navigation}) => {
-
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
@@ -31,12 +30,12 @@ const Pendahuluan = ({navigation}) => {
     const [myError, setMyError] = useState([])    
     const base_url =ApiLink+"/api";
 
-    const [profile, setProfile] = useState({
-        latarBelakang:'-',
-        maksudTujuan:'-',
-        ruangLingkup:[],
-        id:0
-    })
+    // const [profile, setProfile] = useState({
+    //     latarBelakang:'-',
+    //     maksudTujuan:'-',
+    //     ruangLingkup:[],
+    //     id:0
+    // })
 
     const [myModal, setMyModal] = useState({
         success:false,
@@ -44,14 +43,54 @@ const Pendahuluan = ({navigation}) => {
     })
 
     const [arrRuangLingkup, setArrRuangLingkup] = useState([])
+    const [latarBelakangUser, setLatarBelakangUser] = useState()
+    const [maksudTujuanUser, setMaksudTujuanUser] = useState()
+
+    const [updatedData, setUpdatedData] = useState(false)
+    const [modalUpdateData, setmodalUpdateData] = useState(false)
+    console.log(updatedData, "<<<<<< update data")
+    // console.log(modalUpdateData, "<<<<<< modal data")
+
     const isFocused = useIsFocused();
+
     useEffect(() => {
+        
 
         if (isFocused) {
-            getMyProfile()
+            getMyProfile(),
+            dataBack()
+            
         }
+        
 
     }, [navigation, isFocused])
+    
+    const dataBack = ()=>{
+        const backAction = () => {
+                // Alert.alert('Peringatan', 'Anda Belum Menyimpan Perubahan', [
+                //     {
+                //         text: 'Update',
+                //         onPress: () => null,
+                //         style: 'cancel',
+                //     },
+                //     // {text: 'Update', onPress: () => navigation.navigate("MainUser")},
+                // ]);
+            
+            // return true;
+            if(updatedData==true){
+                setmodalUpdateData(true)
+            }
+            
+        }
+    
+        const backHandler = BackHandler.addEventListener(
+            "hardwareBackPress",
+            backAction,
+        );
+    
+        return () => backHandler.remove();
+        
+    }
     
 
     const getMyProfile = async data =>{
@@ -67,11 +106,40 @@ const Pendahuluan = ({navigation}) => {
 
             if (response.status === 200) {
 
-                setProfile({
-                    latarBelakang:response.data.latar_belakang,
-                    maksudTujuan:response.data.tujuan,
-                    id:response.data.id
-                })       
+                // setProfile({
+                //     latarBelakang:response.data.latar_belakang,
+                //     maksudTujuan:response.data.tujuan,
+                //     id:response.data.id
+                // })      
+
+                // ------------- latar belakang
+                if(response.data.latar_belakang){
+                    setLatarBelakangUser(response.data.latar_belakang)
+                }
+                var cekLatar = await AsyncStorage.getItem("LatarBelakang")
+                if(!cekLatar){
+                    let tmpLatar = response.data.latar_belakang
+                    await AsyncStorage.setItem("LatarBelakang", tmpLatar)
+                }else{
+                    setLatarBelakangUser(cekLatar)
+                }
+
+                // ----------- maksud tujuan
+
+                if(response.data.tujuan){
+                    setMaksudTujuanUser(response.data.tujuan)
+                }
+                
+                var cekMaksudTujuan = await AsyncStorage.getItem("MaksudTujuan")
+                if(!cekMaksudTujuan){
+                    let tmpMaksudTujuan = response.data.tujuan
+                    await AsyncStorage.setItem("MaksudTujuan", tmpMaksudTujuan)
+                }else{
+                    setMaksudTujuanUser(cekMaksudTujuan)
+                }
+
+
+                // ----------- latar belakang
                 if (response.data.ruang_lingkup) {
                     setArrRuangLingkup(JSON.parse(response.data.ruang_lingkup))
                 }
@@ -97,20 +165,24 @@ const Pendahuluan = ({navigation}) => {
     }    
 
 
-    const handlerChange = (key, value) => {
-        setProfile(prevState => ({
-            ...prevState, 
-            [key]:value
-        }))
-    };
+    // const handlerChange = (key, value) => {
+    //     setProfile(prevState => ({
+    //         ...prevState, 
+    //         [key]:value
+    //     }))
+    // };
 
     const handlerUpdate = async data=>{
         setMyError([])
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
             var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
+            // var checkTmpLatarBelakang = await AsyncStorage.getItem("LatarBelakang")
+            // var checkTmpMaksudTujuan = await AsyncStorage.getItem("MaksudTujuan")
 
             var paramsRL =''
+            // var paramsLatarBelakang =''
+            // var paramsMaksudTujuan =''
 
             if (checkTmpRL) {
 
@@ -119,8 +191,8 @@ const Pendahuluan = ({navigation}) => {
 
 
             const params ={
-                latar_belakang: profile.latarBelakang,
-                tujuan: profile.maksudTujuan,
+                latar_belakang: latarBelakangUser,
+                tujuan: maksudTujuanUser,
                 ruang_lingkup: paramsRL
             }
 
@@ -196,6 +268,8 @@ const Pendahuluan = ({navigation}) => {
     }
 
     const customBackNavigation = async data =>{
+        await AsyncStorage.removeItem('LatarBelakang');
+        await AsyncStorage.removeItem('MaksudTujuan');
         await AsyncStorage.removeItem('tmpRuangLingkup');
         navigation.navigate('MainUser')        
     }
@@ -209,6 +283,17 @@ const Pendahuluan = ({navigation}) => {
         
     }
 
+    const addAsync = async data=> {
+        await AsyncStorage.setItem("LatarBelakang", latarBelakangUser)
+        await AsyncStorage.setItem("MaksudTujuan", maksudTujuanUser)
+        navigation.navigate("TambahLingkup")
+    }
+
+    const backPendahuluan = async data => {
+        await AsyncStorage.removeItem('LatarBelakang')
+        await AsyncStorage.removeItem('MaksudTujuan')
+        navigation.navigate("MainUser")
+    }
     return (
         <ScrollView>
             <View style={styles.header}>
@@ -240,11 +325,11 @@ const Pendahuluan = ({navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:50, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
-                                        placeholder=''
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
-                                        value={profile.latarBelakang}
+                                        value={latarBelakangUser}
                                         keyboardType= "default"
-                                        onChangeText={(text) => handlerChange('latarBelakang', text)}
+                                        onChangeText={(text) => {setLatarBelakangUser(text), setUpdatedData(true)}}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -257,11 +342,11 @@ const Pendahuluan = ({navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:50, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
-                                        placeholder=''
+                                        placeholder='-'
                                         placeholderTextColor={"#000"}
-                                        value={profile.maksudTujuan}
+                                        value={maksudTujuanUser}
                                         keyboardType= "default"
-                                        onChangeText={(text) => handlerChange('maksudTujuan', text)}
+                                        onChangeText={(text) => {setMaksudTujuanUser(text), setUpdatedData(true)}}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -273,7 +358,7 @@ const Pendahuluan = ({navigation}) => {
                         
                         <View style={{flexDirection:"row", marginBottom:10, marginLeft:15, alignItems:"center", marginBottom:15 }}>
                             <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Ruang Lingkup :</Text>
-                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10, marginTop:-5}} onPress={() => navigation.navigate("TambahLingkup")}>
+                            <TouchableOpacity style={{width:70, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10, marginTop:-5}} onPress={addAsync}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>Tambah</Text>
                             </TouchableOpacity>                            
                         </View>
@@ -297,22 +382,45 @@ const Pendahuluan = ({navigation}) => {
                     </View>
                     
                 </View>
-                <ReactNativeModal isVisible={myModal.success} onBackdropPress={() => navigation.goBack()}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+
+
+                <ReactNativeModal isVisible={myModal.success} onBackdropPress={backPendahuluan}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                         <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
 
-                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => navigation.goBack()}>
+                            <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={backPendahuluan}>
                                 <Image source={CloseIcont} style={{width:30, height:30}}/>
                             </TouchableOpacity>
                             <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Selamat ! Data Berhasil Diupdate.</Text>
                             </View>
                             <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
-                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => navigation.goBack()}>
+                                <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={backPendahuluan}>
                                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
                                 </TouchableOpacity>      
                             </View>
                         </View>
-                </ReactNativeModal>            
+                </ReactNativeModal>  
+
+                <ReactNativeModal isVisible={modalUpdateData} onBackdropPress={()=>setmodalUpdateData(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                        <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>setmodalUpdateData(false)}>
+                            <Image source={CloseIcont} style={{width:30, height:30}}/>
+                        </TouchableOpacity>
+                        <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Harap Simpan Perubahan Anda</Text>
+                        </View>
+                        <View style={{flexDirection:"row",justifyContent:"center", marginTop:20}}>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#d9dcdf", borderRadius:10, justifyContent:"center", alignItems:"center", marginRight:15}} onPress={()=> navigation.goBack()}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=>setmodalUpdateData(false)}>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Simpan</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </ReactNativeModal>  
+
                 <View style={{width:WindowWidth,marginBottom:15, padding:10, alignItems:"center" }}>
                     <TouchableOpacity style={{flexDirection:"row", marginBottom:25, width:"95%", minHeight:50, backgroundColor:"#39a339", borderRadius:15, elevation:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdate}>
                         <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16, marginTop:5}}>Update</Text>
