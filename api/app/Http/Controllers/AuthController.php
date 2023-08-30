@@ -14,8 +14,13 @@ use App\Http\Resources\Auth as AuthResource;
 
 use Illuminate\Support\Facades\Storage;
 
+use App\Traits\FireNotif;
+
 
 class AuthController extends Controller{
+
+    use FireNotif;
+
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['except' => ['login','tes','register']]);
@@ -26,9 +31,10 @@ class AuthController extends Controller{
 
         // $bln = Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
         // return json_encode(['nama'=> $bln]);
-        $file = 'storage/app/public/pdf/0yTM0PLzFvmLDVm47KiLKzQ6HKiHUveSBT63RN6c.pdf';
-        return Storage::download($file);
+        // $file = 'storage/app/public/pdf/0yTM0PLzFvmLDVm47KiLKzQ6HKiHUveSBT63RN6c.pdf';
+        // return Storage::download($file);
         
+        $this->actionFire();
 
 
     }

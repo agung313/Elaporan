@@ -18,16 +18,18 @@ const SplashLogin = ({route, navigation}) => {
     const handlerLogin = async data =>{
 
         const deviceId = DeviceInfo.getUniqueId();
+        const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
 
         try {
             let dataLogin ={
                 email: username,
                 password: password ,
-                device: deviceId._z
+                device: deviceId._z,
+                token_fb: token_fb
             }
 
             let response = await axios.post(ApiLink+'/api/auth/login', dataLogin)
-
+            console.log(response.data,"<---- daat")
             if (response.data.error) {
                 const tmpArr =[]
                 Object.keys(response.data.error).forEach(key => {
@@ -58,7 +60,7 @@ const SplashLogin = ({route, navigation}) => {
             }
 
         } catch (error) {
-
+            console.log(error.response.data,"<--- data")
             navigation.replace('LoginSide', {errorValue:error.response.data.messages})
 
         }

@@ -48,7 +48,6 @@ const Pendahuluan = ({navigation}) => {
 
     const [updatedData, setUpdatedData] = useState(false)
     const [modalUpdateData, setmodalUpdateData] = useState(false)
-    console.log(updatedData, "<<<<<< update data")
     // console.log(modalUpdateData, "<<<<<< modal data")
 
     const isFocused = useIsFocused();
@@ -77,7 +76,7 @@ const Pendahuluan = ({navigation}) => {
                 // ]);
             
             // return true;
-            if(updatedData==true){
+            if(updatedData){
                 setmodalUpdateData(true)
             }
             
@@ -329,7 +328,7 @@ const Pendahuluan = ({navigation}) => {
                                         placeholderTextColor={"#000"}
                                         value={latarBelakangUser}
                                         keyboardType= "default"
-                                        onChangeText={(text) => {setLatarBelakangUser(text), setUpdatedData(true)}}
+                                        onChangeText={(text) => {setUpdatedData(true),setLatarBelakangUser(text) }}
                                         style={{ color: "#000" }}
                                         multiline
                                     />
@@ -346,7 +345,7 @@ const Pendahuluan = ({navigation}) => {
                                         placeholderTextColor={"#000"}
                                         value={maksudTujuanUser}
                                         keyboardType= "default"
-                                        onChangeText={(text) => {setMaksudTujuanUser(text), setUpdatedData(true)}}
+                                        onChangeText={(text) => {setUpdatedData(true), setMaksudTujuanUser(text)}}
                                         style={{ color: "#000" }}
                                         multiline
                                     />

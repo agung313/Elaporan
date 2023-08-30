@@ -82,11 +82,11 @@ const MainApp = ({route, navigation}) => {
             const myToken = await AsyncStorage.getItem('AccessToken');    
 
             const target_url =`${base_url}/user/profile`
-            console.log(target_url, "<<<<<<< targer url")
+
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-
+            console.log(response.data);
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
