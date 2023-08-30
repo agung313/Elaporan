@@ -1728,9 +1728,15 @@
   resolved "https://registry.npmjs.org/@react-native-community/geolocation/-/geolocation-3.0.6.tgz"
   integrity sha512-+iidKFgw1HxCJSHVnlywAKu6uerdpDAKTXLRnlsUdhgqtgTiIixb496Z267iPVFmIO1bp4lOU6UiwzmvcyXdbg==
 
+<<<<<<< HEAD
+"@react-native-firebase/app@^18.3.1":
+  version "18.3.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-18.3.1.tgz#f6f53dd64837ba39710032a40c217358dc385963"
+=======
 "@react-native-firebase/app@^18.3.1", "@react-native-firebase/app@18.3.1":
   version "18.3.1"
   resolved "https://registry.npmjs.org/@react-native-firebase/app/-/app-18.3.1.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-6IbAwVfIrRoKMP+lRVGwDByOz0uSPPMlHTbRp9xglm0OOPrbDWH0hjDhHoHQ8KFrMQvUIaV3bMSg5iBRFHrdnA==
   dependencies:
     opencollective-postinstall "^2.0.1"
@@ -1738,10 +1744,17 @@
 
 "@react-native-firebase/messaging@^18.3.1":
   version "18.3.1"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-18.3.1.tgz#874482eec5070eb9b9c0167240063d278aeba874"
+  integrity sha512-83WPEPY7bIpyBsXv9zjlMtnPz9MotBCnx7wGG7frjPV8VSh8XLPxjiPtngy734NrRfEwqCbMoDssnWos1njq6w==
+
+"@react-native-masked-view/masked-view@^0.2.9":
+=======
   resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-18.3.1.tgz"
   integrity sha512-83WPEPY7bIpyBsXv9zjlMtnPz9MotBCnx7wGG7frjPV8VSh8XLPxjiPtngy734NrRfEwqCbMoDssnWos1njq6w==
 
 "@react-native-masked-view/masked-view@^0.2.8", "@react-native-masked-view/masked-view@^0.2.9":
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   version "0.2.9"
   resolved "https://registry.npmjs.org/@react-native-masked-view/masked-view/-/masked-view-0.2.9.tgz"
   integrity sha512-Hs4vKBKj+15VxHZHFtMaFWSBxXoOE5Ea8saoigWhahp8Mepssm0ezU+2pTl7DK9z8Y9s5uOl/aPb4QmBZ3R3Zw==
@@ -2741,7 +2754,11 @@ cliui@^8.0.1:
 
 clone-deep@^2.0.1:
   version "2.0.2"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/clone-deep/-/clone-deep-2.0.2.tgz#00db3a1e173656730d1188c3d6aced6d7ea97713"
+=======
   resolved "https://registry.npmjs.org/clone-deep/-/clone-deep-2.0.2.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-SZegPTKjCgpQH63E+eN6mVEEPdQBOUzjyJm5Pora4lrwWRFS8I0QAxV/KD6vV/i0WuijHZWQC1fMsPEdxfdVCQ==
   dependencies:
     for-own "^1.0.0"
@@ -3798,17 +3815,25 @@ for-each@^0.3.3:
 
 for-in@^0.1.3:
   version "0.1.8"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/for-in/-/for-in-0.1.8.tgz#d8773908e31256109952b1fdb9b3fa867d2775e1"
+=======
   resolved "https://registry.npmjs.org/for-in/-/for-in-0.1.8.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-F0to7vbBSHP8E3l6dCjxNOLuSFAACIxFy3UehTUlG7svlXi37HHsDkyVcHo0Pq8QwrE+pXvWSVX3ZT1T9wAZ9g==
 
 for-in@^1.0.1, for-in@^1.0.2:
   version "1.0.2"
-  resolved "https://registry.npmjs.org/for-in/-/for-in-1.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/for-in/-/for-in-1.0.2.tgz#81068d295a8142ec0ac726c6e2200c30fb6d5e80"
   integrity sha512-7EwmXrOjyL+ChxMhmG5lnW9MPt1aIeZEwKhQzoBUdTV0N3zuwWDZYVJatDvZ2OyzPUvdIAZDsCetk3coyMfcnQ==
 
 for-own@^1.0.0:
   version "1.0.0"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/for-own/-/for-own-1.0.0.tgz#c63332f415cedc4b04dbfe70cf836494c53cb44b"
+=======
   resolved "https://registry.npmjs.org/for-own/-/for-own-1.0.0.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-0OABksIGrxKK8K4kynWkQ7y1zounQxP+CWnyclVwj81KW3vlLlGUx57DKGcP/LH216GzqnstnPocF16Nxs0Ycg==
   dependencies:
     for-in "^1.0.1"
@@ -5773,7 +5798,11 @@ mixin-deep@^1.2.0:
 
 mixin-object@^2.0.1:
   version "2.0.1"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/mixin-object/-/mixin-object-2.0.1.tgz#4fb949441dab182540f1fe035ba60e1947a5e57e"
+=======
   resolved "https://registry.npmjs.org/mixin-object/-/mixin-object-2.0.1.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-ALGF1Jt9ouehcaXaHhn6t1yGWRqGaHkPFndtFVHfZXOvkIZ/yoGaSi0AHVTafb3ZBGg4dr/bDwnaEKqCXzchMA==
   dependencies:
     for-in "^0.1.3"
@@ -6055,7 +6084,11 @@ open@^6.2.0:
 
 opencollective-postinstall@^2.0.1:
   version "2.0.3"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz#7a0fff978f6dbfa4d006238fbac98ed4198c3259"
+=======
   resolved "https://registry.npmjs.org/opencollective-postinstall/-/opencollective-postinstall-2.0.3.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-8AV/sCtuzUeTo8gQK5qDZzARrulB3egtLzFgteqB2tcT4Mw7B8Kt7JcDHmltjz6FOAHsvTevk70gZEbhM4ZS9Q==
 
 optionator@^0.9.3:
@@ -6483,7 +6516,11 @@ react-native-codegen@*, react-native-codegen@^0.0.13:
 
 react-native-device-info@^10.8.0:
   version "10.9.0"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-10.9.0.tgz#5b378eea884a130db1d3ac637610f3a5ae7e8217"
+=======
   resolved "https://registry.npmjs.org/react-native-device-info/-/react-native-device-info-10.9.0.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-HqujZoNSkPGYZVs8ZsAwPkdY5UQt2jW0eg/wtW/kKbcAOp0KjUesgG7e1UISY4Z7Bx6LjZeKs0cqDzQI8AlOmw==
 
 react-native-document-picker@^9.0.1:
@@ -7053,7 +7090,11 @@ setprototypeof@1.2.0:
 
 shallow-clone@^1.0.0:
   version "1.0.0"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/shallow-clone/-/shallow-clone-1.0.0.tgz#4480cd06e882ef68b2ad88a3ea54832e2c48b571"
+=======
   resolved "https://registry.npmjs.org/shallow-clone/-/shallow-clone-1.0.0.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-oeXreoKR/SyNJtRJMAKPDSvd28OqEwG4eR/xc856cRGBII7gX9lvAqDxusPm0846z/w/hWYjI1NpKwJ00NHzRA==
   dependencies:
     is-extendable "^0.1.1"
@@ -7404,7 +7445,11 @@ sudo-prompt@^9.0.0:
 
 superstruct@^0.6.2:
   version "0.6.2"
+<<<<<<< HEAD
+  resolved "https://registry.yarnpkg.com/superstruct/-/superstruct-0.6.2.tgz#c5eb034806a17ff98d036674169ef85e4c7f6a1c"
+=======
   resolved "https://registry.npmjs.org/superstruct/-/superstruct-0.6.2.tgz"
+>>>>>>> f08ed4af82f74ccef0f2c3904663b60007702a1b
   integrity sha512-lvA97MFAJng3rfjcafT/zGTSWm6Tbpk++DP6It4Qg7oNaeM+2tdJMuVgGje21/bIpBEs6iQql1PJH6dKTjl4Ig==
   dependencies:
     clone-deep "^2.0.1"
