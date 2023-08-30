@@ -1,6 +1,6 @@
 import { StyleSheet,Linking, TextInput, Text, View, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native'
 import React, {useState, useEffect} from 'react'
-import { BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda } from '../../assets/images'
+import { AddImg, BackIcon, CloseIcont, ExFoto, ExSakit, LgBappeda, PasFoto } from '../../assets/images'
 import ReactNativeModal from 'react-native-modal';
 import { Circle } from 'react-native-animated-spinkit';
 import { useIsFocused } from "@react-navigation/native";
@@ -170,7 +170,7 @@ const DetailPengajuan = ({route ,navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={dataDetail.fotoProfile =='' ?ExFoto:{uri:dataDetail.fotoProfile}} style={{width:"100%", height:190}}/>
+                            <Image source={dataDetail.fotoProfile =='' ?PasFoto:{uri:dataDetail.fotoProfile}} style={{width:"100%", height:190}}/>
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>

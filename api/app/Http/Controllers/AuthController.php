@@ -76,7 +76,7 @@ class AuthController extends Controller{
 
         } else if (Auth::attempt($credentials)) {
 
-            if (!$cekEmail->device) {
+            if ($cekEmail->device == null) {
 
                 $cekEmail->device = $deviceNow;
                 $cekEmail->update();
@@ -173,18 +173,18 @@ class AuthController extends Controller{
 
     public function logout(Request $request)
     {
-        $id_user = Auth::user()->id;
-        $token_fb = $request->token_fb;
-        $now = Carbon::now();
+        // $id_user = Auth::user()->id;
+        // $token_fb = $request->token_fb;
+        // $now = Carbon::now();
         
-        $signedout = Auth::user()->tokens()->delete();
+        Auth::user()->tokens()->delete();
 
-        if ($signedout) {
+        // if ($signedout) {
             
-            $perangkat = Perangkat::where('id_user', $id_user)->where('token_perangkat', $token_fb)->first();
-            $perangkat->time_logout  = $now->toDateTimeString();
-            $perangkat->update();
-        }
+        //     $perangkat = Perangkat::where('id_user', $id_user)->where('token_perangkat', $token_fb)->first();
+        //     $perangkat->time_logout  = $now->toDateTimeString();
+        //     $perangkat->update();
+        // }
 
         return response()->json([
             'status' => 'success',
