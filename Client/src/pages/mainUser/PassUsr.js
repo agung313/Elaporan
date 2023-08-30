@@ -203,7 +203,9 @@ const PassUsr = ({navigation,  }) => {
                 
                 if (!res1.data.error) {
 
-                    const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+                    const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+
+                    const response = await axios.post(ApiLink+'/api/auth/logout',{token_fb:token_fb},{
                         headers: {
                           Authorization: `Bearer ${myToken}`,
                         },

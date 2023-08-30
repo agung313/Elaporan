@@ -19,16 +19,15 @@ const LoginSide = ({route, navigation}) => {
     })
 
     useEffect(() => {
-      tes()
+        setTokenFB()
     
 
     }, [navigation])
     
-    const tes = async ()=>{
+    const setTokenFB = async ()=>{
 
-        let tokenDeviceFB = await AsyncStorage.getItem('tokenDeviceFB')
-
-        console.log(tokenDeviceFB,"<--- token FB")
+       var token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+        console.log(token_fb);
     }
     const handleChangeInput  = (inputName, text)=>{
         setInputs({
