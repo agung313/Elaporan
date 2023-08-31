@@ -186,6 +186,11 @@ class DocumentController extends Controller
             $document->save();
 
         }    
+        if ($document && strtolower($document->status) == 'diajukan') {
+
+            $this->notifKasum('Pengajuan Laporan Bulanan','Anda Menerima Pengajuan Laporan Bulanan');
+        }
+
         return response()->json([
             'messages' => 'laporan diupload',
             'data' => $document

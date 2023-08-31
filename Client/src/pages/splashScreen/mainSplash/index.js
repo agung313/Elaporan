@@ -6,7 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 const MainSplash = ({navigation}) => {
     useEffect(()=>{
 
-        setTimeout(() => {            
+        setTimeout(() => {     
+            // navigation.replace('AppScreen')       
             checkAccess()
         },3000)
     },[navigation])

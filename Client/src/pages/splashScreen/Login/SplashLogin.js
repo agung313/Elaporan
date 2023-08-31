@@ -29,7 +29,7 @@ const SplashLogin = ({route, navigation}) => {
             }
 
             let response = await axios.post(ApiLink+'/api/auth/login', dataLogin)
-            console.log(response.data,"<---- daat")
+
             if (response.data.error) {
                 const tmpArr =[]
                 Object.keys(response.data.error).forEach(key => {

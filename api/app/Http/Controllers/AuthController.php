@@ -12,15 +12,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Auth as AuthResource;
 
-use Illuminate\Support\Facades\Storage;
-
 use App\Traits\FireNotif;
-
 
 class AuthController extends Controller{
 
     use FireNotif;
-
+    
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['except' => ['login','tes','register']]);
@@ -28,15 +25,14 @@ class AuthController extends Controller{
 
     function tes() {
 
+        // $this->actionFire();
+        $data = $this->notifKasum('Agenda', 'Agenda Dooong');
 
-        // $bln = Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
-        // return json_encode(['nama'=> $bln]);
-        // $file = 'storage/app/public/pdf/0yTM0PLzFvmLDVm47KiLKzQ6HKiHUveSBT63RN6c.pdf';
-        // return Storage::download($file);
-        
-        $this->actionFire();
-
-
+        return response()->json([
+            'messages' => 'Success',
+            'data' =>  $data
+        ]);        
+            
     }
     public function login(Request $request)
     {
@@ -61,7 +57,7 @@ class AuthController extends Controller{
 
         $cekAkun = User::where('email', $credentials['email'])->get();
 
-        if (!$cekAkun->count()){
+        if ($cekAkun->count() == 0){
 
             return response()->json(['messages' => 'Akun Tidak Terdaftar'], 401);
         }
@@ -75,14 +71,17 @@ class AuthController extends Controller{
             return response()->json(['messages' => 'Akun Anda Belum Aktif'], 401);
         }
 
-        if (!$cekEmail) {
-            return response()->json([
-                'messages' => 'maaf email tidak terdaftar'
-            ],401);
+        if (Auth::attempt($credentials)) {
 
-        } else if (Auth::attempt($credentials)) {
+            if (is_null($cekEmail->device)) {
 
-            if (!$cekEmail->device) {
+                $otherDevice = User::where('device', $deviceNow)->get()->count();
+                // return $request->device;
+                if ($otherDevice > 0) {
+                    return response()->json([
+                        'messages' => 'perangkat sudah digunakan akun lain'
+                    ],401);
+                }
 
                 $cekEmail->device = $deviceNow;
                 $cekEmail->update();
@@ -102,7 +101,7 @@ class AuthController extends Controller{
             Perangkat::create([
                 'id_user' => Auth::user()->id,
                 'token_perangkat' => $request->token_fb,
-            ]);            
+            ]);                   
 
 
             return response()->json([
@@ -135,12 +134,12 @@ class AuthController extends Controller{
 
         $userAgent = $request->device;
 
-        $existingUser = User::where('device', $userAgent)->first();
+        $existingUser = User::where('device', $userAgent)->whereNotNull('device')->get()->count();
 
         //cek device 
         
         if ($existingUser) {
-            return response()->json(['error' => 'Device sudah terdaftar'], 422);
+            return response()->json(['error' => 'Perangkat anda telah terdaftar, silakan login menggunakan akun anda'], 422);
         }
 
         $user = User::create([

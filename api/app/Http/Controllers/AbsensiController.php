@@ -14,9 +14,12 @@ use Carbon\CarbonPeriod;
 use App\Http\Resources\Absen as AbsenResource;
 use App\Http\Resources\Libur as LiburResource;
 use App\Http\Resources\AbsenPengajuan as AbsenPengajuanResource;
+use App\Traits\FireNotif;
 
 class AbsensiController extends Controller
 {
+    use FireNotif;
+
     public function __construct()
     {
         $this->middleware('auth:sanctum');
@@ -185,6 +188,11 @@ class AbsensiController extends Controller
                     'approveAdmin' => 0
                 ]);
 
+                if ($absen && strtolower($absen->status) == 'sakit') {
+
+                    $this->notifKasum('Pengajuan Sakit','Anda Menerima Pengajuan Sakit Baru');
+                }
+
                 return response()->json([
                     'messages' => 'absensi hadir berhasil',
                     'data' => $absen
@@ -202,6 +210,12 @@ class AbsensiController extends Controller
                     'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
                     'approveAdmin' => strtolower($request->status) == 'izin' ? 0 :1
                 ]);
+
+                if ($absen && strtolower($absen->status) == 'izin') {
+
+                    $this->notifKasum('Pengajuan Izin','Anda Menerima Pengajuan Izin Baru');
+                }
+
 
                 return response()->json([
                     'messages' => 'absensi hadir berhasil',
