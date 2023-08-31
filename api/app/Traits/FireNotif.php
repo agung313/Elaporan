@@ -7,8 +7,9 @@ use GuzzleHttp\Client;
 
 trait FireNotif
 {
-    function actionFire()  {
-        
+    public function actionFire($params=[])  {
+
+
         $client = new Client();
         $requestUrl = 'https://fcm.googleapis.com/fcm/send';
         $requestHeaders = [
@@ -16,12 +17,12 @@ trait FireNotif
         ];
         
         $json_req = '{
-            "to": "fOjcLHMxRGSKkTLvaWrWeU:APA91bGh6FRr1TiB0nwkPoQTalWQxewIG9g-8m2yvqG23Rs4f0cOTT-9tKN0_Od4I7CzEbXDjHQvvbVtNTX0fOeqgQ0SzQP4WMCc8KWt1LCWidhspPctQOqMAf61LSTjS8BQKv7n6aIS",
+            "to": "'.$params['token_fb'].'",
             "priority":"high",
             "soundName":"default",
             "notification":{
-                "title":"Halo Ondri",
-                "body":"ini dari Firenotif ondri"
+                "title":"'.$params['title'].'",
+                "body":"'.$params['message'].'"
             }
         }';
 
@@ -32,29 +33,61 @@ trait FireNotif
             'json' => $requestBody,
         ]);
         
-        if ($response->getStatusCode() == 200) {
-            echo 'Notification sent successfully!';
-        } else {
-            echo 'Something went wrong.';
+        return $response->getStatusCode();
+        
+
+    }
+    public function notifKasum($title ='', $message='') {
+        
+        $params = array();
+
+        $params['title'] = $title;
+        $params['message']= $message;
+
+
+        $arrUser = $this->getPerangkat('kasum');
+
+        foreach ($arrUser as $us) {
+            $params['token_fb']=  $us->token_perangkat;
+            $this->actionFire($params);
+        }
+    }
+
+    public function notifUser($id_user=0, $title ='', $message=''){
+
+        $params = array();
+
+        $params['title'] = $title;
+        $params['message']= $message;
+
+
+        $arrUser = $this->getPerangkat('user', $id_user);
+
+        foreach ($arrUser as $us) {
+            $params['token_fb']=  $us->token_perangkat;
+            $this->actionFire($params);
         }        
-        
-
-    }
-    function toKasum($params) {
-        
-
-
+    
     }
 
-    function toUser(){
-        
-    }
+    public function getPerangkat($role , $id_user=0){
 
-    function getPerangkat($id_user){
+        $perangkat = Perangkat::select('perangkat_aktif.*','perangkat_aktif.id AS id_perangkat_aktif','users.id', 'users.name')
+                            ->where(function($q) use( $role, $id_user){
 
-        $perangkat = Perangkat::join('users','users.id', 'perangkat.id_user')
-                                ->where('perangkat.id_user', $id_user )
-                                ->get();
+                                if ($role == 'kasum') {
+
+                                    $q->where('role', 'kasum');
+                                 
+                                    }elseif ($role =='admin') {
+                                     $q->where('role', 'admin');
+                         
+                                 }else {
+                                     $q->where('role', $id_user);
+                                 }                                      
+                            })
+                            ->join('users','users.id', 'perangkat_aktif.id_user')
+                            ->get();
 
         return $perangkat;
                                 

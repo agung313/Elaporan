@@ -12,7 +12,12 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\Auth as AuthResource;
 
+use App\Traits\FireNotif;
+
 class AuthController extends Controller{
+
+    use FireNotif;
+    
     public function __construct()
     {
         $this->middleware('auth:sanctum', ['except' => ['login','tes','register']]);
@@ -20,9 +25,14 @@ class AuthController extends Controller{
 
     function tes() {
 
+        // $this->actionFire();
+        $data = $this->notifKasum('Agenda', 'Agenda Dooong');
 
-        $bln = Carbon::create(Carbon::create(null, 7,1), 'Asia/Jakarta')->isoFormat('MMMM');
-        return json_encode(['nama'=> $bln]);
+        return response()->json([
+            'messages' => 'Success',
+            'data' =>  $data
+        ]);        
+            
     }
     public function login(Request $request)
     {
