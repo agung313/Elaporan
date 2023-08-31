@@ -27,7 +27,7 @@ const LoginSide = ({route, navigation}) => {
     const setTokenFB = async ()=>{
 
        var token_fb = await AsyncStorage.getItem('tokenDeviceFB')
-        console.log(token_fb);
+
     }
     const handleChangeInput  = (inputName, text)=>{
         setInputs({
