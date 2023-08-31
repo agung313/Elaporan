@@ -56,40 +56,29 @@ const Pendahuluan = ({navigation}) => {
         
 
         if (isFocused) {
-            getMyProfile(),
-            dataBack()
-            
+            getMyProfile()
+
+            const onBackPress = () => {
+                
+                // if(updatedData==true){
+                //     setmodalUpdateData(true)
+                // }
+                return (updatedData==true?setmodalUpdateData(true):console.log("haiiiii"))
+                
+              };
+          
+              BackHandler.addEventListener(
+                'hardwareBackPress', onBackPress
+              );
+          
+              return () =>
+                BackHandler.removeEventListener(
+                    'hardwareBackPress', onBackPress
+                );
         }
         
 
     }, [navigation, isFocused])
-    
-    const dataBack = ()=>{
-        const backAction = () => {
-                // Alert.alert('Peringatan', 'Anda Belum Menyimpan Perubahan', [
-                //     {
-                //         text: 'Update',
-                //         onPress: () => null,
-                //         style: 'cancel',
-                //     },
-                //     // {text: 'Update', onPress: () => navigation.navigate("MainUser")},
-                // ]);
-            
-            // return true;
-            if(updatedData){
-                setmodalUpdateData(true)
-            }
-            
-        }
-    
-        const backHandler = BackHandler.addEventListener(
-            "hardwareBackPress",
-            backAction,
-        );
-    
-        return () => backHandler.remove();
-        
-    }
     
 
     const getMyProfile = async data =>{
@@ -270,7 +259,12 @@ const Pendahuluan = ({navigation}) => {
         await AsyncStorage.removeItem('LatarBelakang');
         await AsyncStorage.removeItem('MaksudTujuan');
         await AsyncStorage.removeItem('tmpRuangLingkup');
-        navigation.navigate('MainUser')        
+        if(updatedData==true){
+            setmodalUpdateData(true)
+        }else(
+            navigation.navigate('MainUser')
+        )
+                
     }
 
     const deleteItemArr = async (id)=>{
@@ -414,7 +408,7 @@ const Pendahuluan = ({navigation}) => {
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#fff", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Tidak</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={{width:120, height:40, backgroundColor:"#39a339", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=>setmodalUpdateData(false)}>
-                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Simpan</Text>
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ya</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

@@ -146,7 +146,7 @@
                 <tr class="tabell">
                     <td class="tabell" style="text-align: center; width: 30px; padding: 10px;">1.</td>
                     <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[0] ? $arr[0]:'-'}}</td>
-                    <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[1] ?$arr[1]:'-'}}</td>
+                    {{-- <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[1] ?$arr[1]:'-'}}</td> --}}
                 </tr>                                   
                 @endforeach
         </table>
@@ -168,10 +168,10 @@
                     <div>
                         @php
                             if($user->URL_Kasum !== null){
-                                echo '<img src={{$user->URL_Kasum}} alt="Gambar kucing" width="100px" height="100px">';
-                                echo '<p style="text-transform: uppercase; margin-top: 0px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>';
+                                echo '<img src="' . $user->URL_Kasum . '" alt="Gambar kucing" width="100px" height="100px">';
+                                echo '<p style="text-transform: uppercase; margin-top: 0px; font-weight: bold; text-decoration: underline;">' . $user->nama_kasum . '</p>';
                             }else{
-                                echo '<p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>';
+                                echo '<p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">' . $user->nama_kasum . '</p>';
                             }
                         @endphp
                     </div>
@@ -193,6 +193,9 @@
             @else
             <tr class="tabell">
                 <td colspan="2" class="tabell" style="width: 100%; padding: 10px;">Belum Ada Catatan</td>
+                @php
+                    dd($user->nama_kasum);
+                @endphp
             </tr>                                
             @endif
 
