@@ -15,7 +15,7 @@ class Document extends Model
     protected $guarded = ['id'];
 
     protected static $logAttributes = ['*'];
-    protected static $ignoreChangedAttributes = ['created_at'];
+    protected static $ignoreChangedAttributes = ['created_at','updated_at'];
     protected static $recordEvents = ['created', 'updated','deleted'];
     protected static $logOnlyDirty=true;
 
