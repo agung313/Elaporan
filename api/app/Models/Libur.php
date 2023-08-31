@@ -9,4 +9,6 @@ class Libur extends Model
 {
     use HasFactory;
     protected $guarded = ['id'];
+
+    
 }
