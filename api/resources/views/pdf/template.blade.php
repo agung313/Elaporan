@@ -156,14 +156,25 @@
                 <td style="text-align: center; vertical-align: text-top;text-transform: uppercase">
                     <p>{{$user->jabatan}}</p>
                     <p>BAPPEDA KOTA PEKANBARU</p>
-                    {{-- <img src="" alt="Gambar kucing" width="100px" height="100px"> --}}
-                    <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold;">{{$user->name}}</p>
+                    <div>
+                        <img src={{$user->URL}} alt="ttd" width="100px" height="100px">
+                    </div>
+                    <p style="text-transform: uppercase; margin-top: 0px; font-weight: bold;">{{$user->name}}</p>
                 </td>
                 <td style="width: 150px;"></td>
                 <td style="text-align: center; vertical-align: text-top;">
                     <p>DIKETAHUI</p>
                     <p>KASUBAG UMUM</p>
-                    <p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>
+                    <div>
+                        @php
+                            if($user->URL_Kasum !== null){
+                                echo '<img src={{$user->URL_Kasum}} alt="Gambar kucing" width="100px" height="100px">';
+                                echo '<p style="text-transform: uppercase; margin-top: 0px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>';
+                            }else{
+                                echo '<p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">IWAN KURNIAWAN, S.E</p>';
+                            }
+                        @endphp
+                    </div>
                     <p style="margin-top: -10px;">NIP. 19840118 200212 1 004</p>
                 </td>
             </tr>

@@ -105,7 +105,7 @@ class DocumentController extends Controller
             $query->tahun = $tahun;
             $query->kendala = $kendala;
             $query->bulan = $bulan;
-            $query->URL = URL('storage/'.$getFoto->ttd );
+            $query->URL = URL('storage'.$getFoto->ttd );
         }
 
 
@@ -260,6 +260,16 @@ class DocumentController extends Controller
             $tahun= $doc->tahun;
             $catatan = $request->catatan;
 
+            $getFoto = User::select('profiles.ttd')
+                    ->join('profiles','profiles.id_user', '=', 'users.id')
+                    ->where('users.id', Auth::user()->id)
+                    ->first();
+
+            $getFotoUser = User::select('profiles.ttd')
+                    ->join('profiles','profiles.id_user', '=', 'users.id')
+                    ->where('users.id', Auth::user()->id)
+                    ->first();
+
             //user
             $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
                         ->join('profiles','profiles.id_user', '=', 'users.id')
@@ -270,7 +280,14 @@ class DocumentController extends Controller
                 $query->kendala = $kendala;
                 $query->bulan = $bulan;
                 $query->catatan = $catatan;
+                $query->URL = URL('storage'.$getFotoUser->ttd );
+                $query->URL_Kasum = URL('storage'.$getFoto->ttd );
             }
+
+            $getTTD = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
+                        ->join('profiles','profiles.id_user', '=', 'users.id')
+                        ->where('users.id', Auth::user()->id)
+                        ->first();
 
             //absensi
             $query2 = Absensi::select('absensis.*')
