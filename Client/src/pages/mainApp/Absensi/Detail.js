@@ -75,7 +75,7 @@ const Detail = ({route, navigation}) => {
             requestLocationPermission(),
             getProfile(),
             getAbsensi(),
-            getKegiatan()
+            getKegiatan(),
             checkDocument()
             
         }
@@ -85,6 +85,7 @@ const Detail = ({route, navigation}) => {
     const [imgFoto, setImgFoto] = useState()
     
     const [docDiajukan, setDocDiajukan] = useState()
+    console.log(docDiajukan,"<===== dooooooc");
     const [periodDoc, setPeriodDoc] = useState({
         bulan:null,
         tahun:null
@@ -175,7 +176,7 @@ const Detail = ({route, navigation}) => {
             setDocDiajukan(response.data.data)       
         
         } catch (error) {
-            console.log(error, "error check pengajuan ")   
+            console.log(error.response.data, "error check pengajuan ")   
         }
     }
     const getKegiatan = async data =>{
@@ -466,7 +467,7 @@ const Detail = ({route, navigation}) => {
                         <View style={{flexDirection:"row", justifyContent:'space-between', marginBottom:10, marginTop:20 }}>
                             <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan Saya :</Text>
                             {
-                                docDiajukan === 'null' || docDiajukan === 'draft' ? 
+                                docDiajukan == null || docDiajukan == 'draft' ? 
                                 <TouchableOpacity style={{width:120, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:20}} onPress={() => navigation.navigate("Tambah", {idAbsensi:idAbsensi, backNavigation:"Detail"})}>
                                 <Text style={{fontWeight:'700', color:"white", fontSize:12}}>
                                     Tambah Kegiatan

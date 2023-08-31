@@ -8,11 +8,12 @@ import DocumentPicker from 'react-native-document-picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ApiLink from '../../../assets/ApiHelper/ApiLink'
 import { Circle } from 'react-native-animated-spinkit'
+import { useIsFocused } from '@react-navigation/native'
 
 
 const AbsensiPulang = ({route, navigation}) => {
-    const {idAbsensi} = route.params
-    
+    const {idAbsensi, kehadiran, latit, longtit, jarak} = route.params
+    console.log(idAbsensi, "<,,,,id");
     // // const kehadiran=2
     //  const [cekStatus, setCekStatus] = useState(kehadiran)
 
@@ -53,11 +54,31 @@ const AbsensiPulang = ({route, navigation}) => {
     const [namaUser, setNamaUser] = useState('-')
     const [jabatanUser, setJabatanUser] = useState('-')
 
-    useEffect(() => {
-      
-        getMyProfile()
+    const [absen, setAbsen] = useState({
+        id:null,
+        status:'-',
+        waktuMasuk:'00:00:00',
+        waktuPulang:'00:00:00',
+        tanggal:null,
+        fotoAbsensi:'-',
+        keteranganAbsensi:'-',
+        isApprove:"",
+        approveAdmin:null,
+        catatanKasum:""
 
-    }, [navigation])
+    })
+
+    const [imgFoto, setImgFoto] = useState()
+
+    const isFocused = useIsFocused()
+
+    useEffect(() => {
+        if(isFocused){
+            getMyProfile(),
+            getAbsensi()
+        }
+
+    }, [navigation, isFocused])
 
 
     
@@ -69,16 +90,55 @@ const AbsensiPulang = ({route, navigation}) => {
             const response = await axios.get(`${base_url}/user/profile`,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-    
+            // console.log(response.data,"<<<<< ini rressss");
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
+                setImgFoto(res.data.URL)
             }
 
         } catch (error) {
             console.log(error, "error get my profile")   
         }
     }
+    const imgFileFoto = {uri: imgFoto}
+
+    const getAbsensi = async data =>{
+
+        try {
+            const myToken = await AsyncStorage.getItem('AccessToken');    
+
+            const target_url = `${base_url}/absen?detail=true&id=${idAbsensi}`
+
+            await axios.get(target_url,{headers:{
+                Authorization: `Bearer ${myToken}`
+            }}).then((res)=>{     
+                console.log(res.data.data, "<<<<<<<< detaillll")
+
+                const arrTgl = res.data.data.realTanggal.split('-');
+
+
+                setAbsen({  
+                    id: res.data.data.id,
+                    status:res.data.data.status,
+                    waktuMasuk: res.data.data.waktu_hadir,
+                    waktuPulang:res.data.data.waktu_pulang,
+                    fotoAbsensi:res.data.data.foto,
+                    keteranganAbsensi:res.data.data.keterangan_hadir,      
+                    isApprove:res.data.data.isApprove,
+                    approveAdmin: res.data.data.approveAdmin,
+                    tanggal: res.data.data.tanggal,
+                    catatanKasum: res.data.data.catatan_kasum           
+                })
+            }) 
+            
+
+
+        } catch (error) {
+            console.log(error, "error get absensi cuy")   
+        }
+    }
+
     const handlerHadir = async data =>{
         setModalLoad(true)
 
@@ -121,16 +181,20 @@ const AbsensiPulang = ({route, navigation}) => {
     
     const gambarKeterangan = {uri: imgKeterangan}
 
+    // lokasi default user
+    const myLa = Number(latit);
+    const myLo = Number(longtit)
+
     const initialRegion = {
-        latitude: 0.517096,
-        longitude: 101.540887,
+        latitude: myLa,
+        longitude: myLo,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
     };
 
     const markerCoordinate = {
-        latitude: 0.517096,
-        longitude: 101.540887,
+        latitude: myLa,
+        longitude: myLo,
     };
 
 
@@ -164,7 +228,8 @@ const AbsensiPulang = ({route, navigation}) => {
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
-                            <Image source={ExFoto} style={{width:"100%", height:190}}/>
+                            
+                                {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
@@ -177,7 +242,7 @@ const AbsensiPulang = ({route, navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Hadirrrrr</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{absen.status}</Text>
                                 </View>
                                 {/* <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>
@@ -185,11 +250,11 @@ const AbsensiPulang = ({route, navigation}) => {
                                 </View> */}
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{absen.waktuMasuk} wib</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Anda Belum Absen Pulang</Text>
                                 </View>
                             </View>
                         </View>

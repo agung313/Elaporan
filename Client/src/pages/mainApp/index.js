@@ -573,7 +573,7 @@ const MainApp = ({route, navigation}) => {
         if(btAbsensi != null){
             return(
                 <View style={showContent==1? {display:"flex"} : {display:"none"}}>
-                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Terimakasih anda telah mengisi absen</Text>
+                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Terimakasih anda telah mengisi abseni</Text>
                     <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan tambahkan agenda anda hari ini</Text>
                 </View>
             )
@@ -589,7 +589,7 @@ const MainApp = ({route, navigation}) => {
         }
         else{
             return(
-                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang', {idAbsensi:idAbsensi})}>
+                <TouchableOpacity style={showContent==1?{backgroundColor:"#39a339", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() => navigation.navigate('AbsensiPulang', {idAbsensi:idAbsensi, kehadiran:kehadiran, latit:lat2, longtit:lon2, jarak:jarakMeter})}>
                     <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
                     {labelStatus}
                     </Text>
@@ -703,8 +703,8 @@ const MainApp = ({route, navigation}) => {
                                                 </TouchableOpacity>
                                             :
                                                 <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} onPress={() => toggleContent(1)}>
-                                                    <Image source={Agenda} style={{width:70,height:70}}/>
-                                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Absensi Masuk</Text>
+                                                    <Image source={btAbsensi != null?OffAbsensi:Agenda} style={{width:70,height:70}}/>
+                                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{btAbsensi != null?"Absensi Lengkap":"Absensi Masuk"}</Text>
                                                 </TouchableOpacity>
                                             }
                                             
@@ -713,7 +713,7 @@ const MainApp = ({route, navigation}) => {
                                             {pulang? 
                                                 <TouchableOpacity style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}} onPress={() => toggleContent(2)}>
                                                     <Image source={Absensi} style={{width:70,height:70}}/>
-                                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Absensi Pulang</Text>
+                                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Tambah Agenda</Text>
                                                 </TouchableOpacity>
                                             :
                                                 <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center'}}>
