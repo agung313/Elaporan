@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useEffect,useState } from 'react'
-import { AddImg, BackIcon, ExFoto, LgBappeda, CloseIcont } from '../../../assets/images'
+import { AddImg, BackIcon, ExFoto, LgBappeda, CloseIcont, PasFoto } from '../../../assets/images'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
 import ReactNativeModal from 'react-native-modal'
 import axios from 'axios'
@@ -12,19 +12,12 @@ import { useIsFocused } from '@react-navigation/native'
 
 
 const AbsensiPulang = ({route, navigation}) => {
-    const {idAbsensi, kehadiran, latit, longtit, jarak} = route.params
-    console.log(idAbsensi, "<,,,,id");
-    // // const kehadiran=2
-    //  const [cekStatus, setCekStatus] = useState(kehadiran)
 
+    const {idAbsensi, kehadiran, latit, longtit, jarak} = route.params
 
     // width heigh
     const WindowWidth = Dimensions.get('window').width;
     const WindowHeight = Dimensions.get('window').height;
-
-    // // lokasi default user
-    // const myLa = Number(latit);
-    // const myLo = Number(longtit)
 
     // input
     const [detail, setDetail] = useState('')
@@ -94,7 +87,7 @@ const AbsensiPulang = ({route, navigation}) => {
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
-                setImgFoto(res.data.URL)
+                setImgFoto(response.data.URL)
             }
 
         } catch (error) {
@@ -113,10 +106,6 @@ const AbsensiPulang = ({route, navigation}) => {
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{     
-                console.log(res.data.data, "<<<<<<<< detaillll")
-
-                const arrTgl = res.data.data.realTanggal.split('-');
-
 
                 setAbsen({  
                     id: res.data.data.id,
@@ -229,7 +218,7 @@ const AbsensiPulang = ({route, navigation}) => {
                         <View style={{flexDirection:"row", marginBottom:15}}>
                             <View style={{width:"35%", minHeight:25, justifyContent:"center", marginRight:10}}>
                             
-                                {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={AddImg} style={{width:"100%", height:190}}/>}
+                                {imgFoto ? <Image source={imgFileFoto} style={{width:"100%", height:190}}/>:<Image source={PasFoto} style={{width:"100%", height:190}}/>}
                             </View>
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>

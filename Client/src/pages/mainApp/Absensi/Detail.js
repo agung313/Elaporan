@@ -85,7 +85,6 @@ const Detail = ({route, navigation}) => {
     const [imgFoto, setImgFoto] = useState()
     
     const [docDiajukan, setDocDiajukan] = useState()
-    console.log(docDiajukan,"<===== dooooooc");
     const [periodDoc, setPeriodDoc] = useState({
         bulan:null,
         tahun:null

@@ -64,14 +64,7 @@ class AuthController extends Controller{
 
         $cekEmail = User::where('email', $credentials['email'])->first();
 
-        $deviceNow = $request->device;
-
-
-        if ($cekEmail->isActive == false){
-            return response()->json(['messages' => 'Akun Anda Belum Aktif'], 401);
-        }
-
-        if (Auth::attempt($credentials)) {
+        if ($cekEmail->role == 'user') {
 
             if (is_null($cekEmail->device)) {
 
@@ -89,6 +82,15 @@ class AuthController extends Controller{
             }else if ($cekEmail->device !== $deviceNow) {
                 return response()->json(['messages' => 'Perangkat Anda Tidak Sesuai'], 401);
             }
+        }
+        $deviceNow = $request->device;
+
+
+        if ($cekEmail->isActive == false){
+            return response()->json(['messages' => 'Akun Anda Belum Aktif'], 401);
+        }
+
+        if (Auth::attempt($credentials)) {
 
             $authUser = Auth::user();
             $success['token'] =  $authUser->createToken('MyAuthApp')->plainTextToken;

@@ -60,7 +60,7 @@ const SplashLogin = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error.response.data,"<--- data")
+
             navigation.replace('LoginSide', {errorValue:error.response.data.messages})
 
         }

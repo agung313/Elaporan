@@ -308,7 +308,6 @@ const PassUsr = ({navigation,  }) => {
 
         if (response.status===200) {
             setModalLoad(false)
-            console.log("cek berhasilllllll");
             setTtdBerhasil(true)
             getMyProfile()
         }        
@@ -320,7 +319,7 @@ const PassUsr = ({navigation,  }) => {
     }
     const onDragEvent = () => {
          // This callback will be called when the user enters signature
-        console.log("dragged");
+        // console.log("dragged");
     }
 
     const handleClear = () => {

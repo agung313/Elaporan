@@ -193,9 +193,6 @@
             @else
             <tr class="tabell">
                 <td colspan="2" class="tabell" style="width: 100%; padding: 10px;">Belum Ada Catatan</td>
-                @php
-                    dd($user->nama_kasum);
-                @endphp
             </tr>                                
             @endif
 
