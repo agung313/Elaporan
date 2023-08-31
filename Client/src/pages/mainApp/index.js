@@ -87,7 +87,7 @@ const MainApp = ({route, navigation}) => {
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data);
+
             if (response.status == 200) {
                 setNamaUser(response.data.nama)
                 setJabatanUser(response.data.jabatan)
