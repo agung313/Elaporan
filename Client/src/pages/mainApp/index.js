@@ -95,7 +95,7 @@ const MainApp = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get my profile")   
+            console.log(error.response.data, "error get my profile")   
         }
     }   
     const imgFileFoto = {uri: imgFoto} 

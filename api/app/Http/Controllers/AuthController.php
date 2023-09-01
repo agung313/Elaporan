@@ -63,26 +63,6 @@ class AuthController extends Controller{
         }
 
         $cekEmail = User::where('email', $credentials['email'])->first();
-
-        if ($cekEmail->role == 'user') {
-
-            if (is_null($cekEmail->device)) {
-
-                $otherDevice = User::where('device', $deviceNow)->get()->count();
-                // return $request->device;
-                if ($otherDevice > 0) {
-                    return response()->json([
-                        'messages' => 'perangkat sudah digunakan akun lain'
-                    ],401);
-                }
-
-                $cekEmail->device = $deviceNow;
-                $cekEmail->update();
-
-            }else if ($cekEmail->device !== $deviceNow) {
-                return response()->json(['messages' => 'Perangkat Anda Tidak Sesuai'], 401);
-            }
-        }
         $deviceNow = $request->device;
 
 
@@ -91,6 +71,30 @@ class AuthController extends Controller{
         }
 
         if (Auth::attempt($credentials)) {
+
+            if ($cekEmail->role == 'user') {
+
+                if (is_null($cekEmail->device)) {
+
+                    $otherDevice = User::where('role','user')->where('device', $deviceNow)->get()->count();
+
+                    if ($otherDevice > 0) {
+                        return response()->json([
+                            'messages' => 'perangkat sudah digunakan akun lain'
+                        ],401);
+                    }
+    
+                }else if ($cekEmail->device !== $deviceNow) {
+                    return response()->json(['messages' => 'Perangkat Anda Tidak Sesuai'], 401);
+                }
+
+
+            } 
+
+            $cekEmail->device = $deviceNow;
+            $cekEmail->update();
+
+            
 
             $authUser = Auth::user();
             $success['token'] =  $authUser->createToken('MyAuthApp')->plainTextToken;
