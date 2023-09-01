@@ -703,7 +703,7 @@ const PassUsr = ({navigation,  }) => {
 
             {/* modal signature */}
             <ReactNativeModal isVisible={modalSignature} onBackdropPress={() => setModalSignature(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "70%", backgroundColor: "#fff", borderRadius: 10,  padding:10,  }}>
+                <View style={{ width: "90%", height: "70%", backgroundColor: "#d9dcdf", borderRadius: 10,  padding:10,  }}>
                     <TouchableOpacity  style={{alignItems:'flex-end', marginTop:10}} onPress={() => setModalSignature(false)} >
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>

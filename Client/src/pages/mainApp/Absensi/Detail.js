@@ -463,7 +463,7 @@ const Detail = ({route, navigation}) => {
 
 
                     <View style={absen.status == "Izin" || absen.status == "Sakit" ? {display:"none"} : {display:"flex"}}>
-                        <View style={{flexDirection:"row", justifyContent:'space-between', marginBottom:10, marginTop:20 }}>
+                        <View style={{flexDirection:"row", marginBottom:10, marginTop:20 }}>
                             <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Kegiatan Saya :</Text>
                             {
                                 docDiajukan == null || docDiajukan == 'draft' ? 

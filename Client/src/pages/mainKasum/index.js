@@ -157,7 +157,7 @@ const Kasum = ({ navigation}) => {
                 </View>
             </View>
 
-            <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, minHeight:500, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center"}}>
+            <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, height:WindowHeight, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center"}}>
 
                 <View style={{marginVertical:10, width:200, alignItems:"center", marginTop:30}}>
                     <Text style={{color:"#000", fontSize: 15, fontWeight:"bold", textAlign:"center"}}>Silakan Pilih Menu Yang Tersedia Di Bawah Ini</Text>

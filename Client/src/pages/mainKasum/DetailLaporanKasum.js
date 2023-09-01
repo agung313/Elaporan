@@ -117,7 +117,11 @@ const DetailLaporanKasum = ({route, navigation}) => {
     const [myProfile, setMyProfile] = useState({
         nama:null,
         jabatan:null,
-        foto:null,        
+        foto:null,      
+        totalHadir:null,  
+        totalSakit:null,  
+        totalIzin:null,  
+        totalTidakHadir:null  
     })
     const [myDetail, setMyDetail] = useState([]);
 
@@ -152,12 +156,16 @@ const DetailLaporanKasum = ({route, navigation}) => {
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-
+            console.log(response.data, "<<<<< dataaaaaa hadiiiir");
             if (response.status == 200) {
                     setMyProfile({
                         nama:response.data.nama,
                         jabatan: response.data.jabatan,
-                        foto: response.data.URL
+                        foto: response.data.URL,
+                        totalHadir:response.data.totalHadir,  
+                        totalSakit:response.data.totalSakit,  
+                        totalIzin:response.data.totalIzin,  
+                        totalTidakHadir:response.data.totalTidakHadir 
                     })
             }
 
@@ -199,7 +207,6 @@ const DetailLaporanKasum = ({route, navigation}) => {
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-
             if (response.status == 200) {
 
                 setFileDoc(response.data[0].URL)
@@ -209,14 +216,14 @@ const DetailLaporanKasum = ({route, navigation}) => {
                 }))
 
                 if (response.data.catatan) {
-                    setMyCatatan(JSON.parse(response.data.catatan))
+                    setMyCatatan(JSON.parse(response.data[0].catatan))
                 }else{
 
                     var checkCatatan = await AsyncStorage.getItem('tmpCatatan')
 
                     if (!checkCatatan && myCatatan.length == 0) {
     
-                        let tmp = JSON.parse(response.data.catatan).join("%ry%")
+                        let tmp = JSON.parse(response.data[0].catatan).join("%ry%")
                         await AsyncStorage.setItem('tmpCatatan',tmp)  
 
                     } else{
@@ -242,7 +249,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
     const rowCatatan = (item, index) =>{
 
         return(
-            <View style={{width:"90%", borderBottomWidth:0.5, borderBottomColor:"black"}}>
+            
             <View style={{flexDirection:"row", backgroundColor:"#fff", marginTop:10, minHeight:50, marginBottom:15}}>
                 <View style={{width:"10%", minHeight:25,  alignItems:"center"}}>
                     <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{index+1}.</Text>
@@ -270,8 +277,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                                 </TouchableOpacity>
                             </View>
                 </View>
-            </View>
-            </View>            
+            </View>          
         )
     }
 
@@ -419,15 +425,15 @@ const DetailLaporanKasum = ({route, navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Hadir :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>20 Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.totalHadir} Hari</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Sakit & Izin :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>8 Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.totalSakit} Hari Sakit / {myProfile.totalIzin} Hari Izin</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Tidak Hadir :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>2 Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.totalTidakHadir} Hari</Text>
                                 </View>
                             </View>
                         </View>
@@ -461,15 +467,17 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         </TouchableOpacity>
                         
                     </View>
-                    <View style={{width:"100%", marginBottom:5, alignItems:"center", }}>
-                        
-                        {
-                            myCatatan.length > 0 &&
-                            myCatatan.map((item,index)=>(
-                                rowCatatan(item, index)
-                            ))
-                        }
+                    <View style={{width:"100%", marginBottom:15, alignItems:"center"  }}>
+                        <View style={{width:"90%", borderBottomWidth:0.5, borderBottomColor:"black", minHeight:50}}>
+                            {
+                                myCatatan.length > 0 &&
+                                myCatatan.map((item,index)=>(
+                                    rowCatatan(item, index)
+                                ))
+                            }
+                        </View>
                     </View>
+
                     {
                         status.old == 'diapprove' && 
                         <>

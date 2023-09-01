@@ -155,8 +155,8 @@ const Pengajuan = ({navigation}) => {
             </View>
 
             <View style={{alignItems:"center"}}>
-                <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
-                <SearchBar
+                <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center", marginBottom:30}}>
+                    <SearchBar
                         placeholder='Search Data Pengajuan'
                         style={{marginBottom:20, width:"100%"}}
                         onChangeText={(text) => searchFilterFunction(text)}

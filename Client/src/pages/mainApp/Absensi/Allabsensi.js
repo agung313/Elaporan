@@ -10,7 +10,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 
 const Allabsensi = ({navigation}) => {
-
+ 
     const isFocused = useIsFocused();
     const base_url =ApiLink+"/api"
 
@@ -136,7 +136,7 @@ const Allabsensi = ({navigation}) => {
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                             <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum membuat agenda</Text>
@@ -150,7 +150,7 @@ const Allabsensi = ({navigation}) => {
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                             <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Maaf, anda belum belum absen pulang</Text>
@@ -164,7 +164,7 @@ const Allabsensi = ({navigation}) => {
                 return(
                     <TouchableOpacity key={index}  style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("Detail",{idAbsensi:item.id})}>
         
-                        <Image source={Agenda} style={{width:40,height:40, marginLeft:15}}/>
+                        <Image source={AbsensiKurang} style={{width:40,height:40, marginLeft:15}}/>
                         <View style={{marginLeft:10, width:"75%"}}>
                         <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.hari+", "+item.tanggal}</Text>
                             <Text style={{ color:"black",  fontSize:10, textTransform:"capitalize"}}>Terimakasih, anda telah melakukan absensi</Text>
