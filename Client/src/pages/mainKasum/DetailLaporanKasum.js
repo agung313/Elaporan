@@ -87,7 +87,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             })
 
         } catch (error) {
-            console.log(error,"<--- error handler hadir")            
+            console.log(error.response.datar,"<--- error handler hadir")            
         }
     }
     
@@ -185,7 +185,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get kegiatan")   
+            console.log(error.response, "error get kegiatan")   
         }        
     }    
 
@@ -200,13 +200,12 @@ const DetailLaporanKasum = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
-
             if (response.status == 200) {
 
                 setFileDoc(response.data[0].URL)
                 setStatus(prevState => ({
                     ...prevState, 
-                    ['old']: response.data.status
+                    ['old']: response.data[0].status
                 }))
 
                 if (response.data.catatan) {
@@ -228,7 +227,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get kegiatan")   
+            console.log(error, "error get document")   
         }        
     }    
     const deleteItemArr = async (id)=>{
@@ -472,7 +471,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         }
                     </View>
                     {
-                        status.old == 'diapprove' ? 
+                        status.old == 'diapprove' && 
                         <>
                             <View style={{alignItems:"center"}}>
                                 <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:10, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTerima}>
@@ -485,12 +484,14 @@ const DetailLaporanKasum = ({route, navigation}) => {
                                 </TouchableOpacity>
                             </View>                    
                         </>
-                        :
+                    }
+                    {
+                        status.old == 'diajukan' &&
                         <View style={{alignItems:"center"}}>
-                        <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#dbdad5", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{navigation.goBack()}}>
-                            <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kembali</Text>
-                        </TouchableOpacity>
-                    </View>                                            
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#dbdad5", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{navigation.goBack()}}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kembali</Text>
+                            </TouchableOpacity>
+                        </View>                                            
                     }
 
                 </View>
