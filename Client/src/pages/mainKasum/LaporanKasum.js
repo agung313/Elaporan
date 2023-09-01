@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const LaporanKasum = ({navigation}) => {
 
@@ -49,11 +50,12 @@ const LaporanKasum = ({navigation}) => {
     const [rawLaporan, setRawLaporan] = useState([])
     const [filteredLaporan, setFilteredLaporan] = useState([])
     const [search, setSearch] = useState();
-    const [loadLaporan, setLoadLaporan] = useState(false)
+
+    const [loadHistory, setLoadHistory] = useState(false)
 
     const handlerGetLaporan = async ()=>{
 
-        setLoadLaporan(true)
+        setLoadHistory(true)
 
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -66,6 +68,7 @@ const LaporanKasum = ({navigation}) => {
 
             if (response.status == 200) {
                 setRawLaporan(response.data)
+                setLoadHistory(false)
             }
 
 
@@ -122,15 +125,18 @@ const LaporanKasum = ({navigation}) => {
         }
 
         return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:5, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:tmpObj})}>
-                <Image source={ item.fotoProfile == '' ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                <View style={{marginLeft:10}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
-                    <Text style={{ color:"black",  fontSize:10}}>Jabatan : {item.jabatan} Programmer</Text>
+            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:tmpObj})}>
+                <View style={{flexDirection:"row", alignItems:"center"}}>
+                    <Image source={ item.fotoProfile == null ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2, marginVertical:5}}/>
+                    <View style={{marginLeft:10, marginVertical:5}}>
+                        <Text style={{fontWeight:'900', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                        <Text style={{ color:"black",  fontSize:10, fontWeight:"500"}}>Laporan Diajukan : Bulan {namaBulan[item.bulan]+' '+item.tahun}</Text>
+                    </View>
                 </View>
-                <View style={{flexDirection:'row', marginLeft:35, marginTop:-40,}}>
-                    <Text style={{fontSize:11, color:'black', fontWeight:'600', backgroundColor:'#f5c542', borderTopLeftRadius:5, borderBottomLeftRadius:5, padding:5}}>{namaBulan[item.bulan]+' '+item.tahun}</Text>
-                    <Text style={{fontSize:11,color:'white', fontWeight:'600', backgroundColor:'#d742f5', borderTopRightRadius:5, borderBottomRightRadius:5, padding:5}}>{item.status}</Text>
+                
+                <View style={{marginTop:-60, alignItems:"flex-end"}}>
+                    {/* <Text style={{fontSize:11, color:'black', fontWeight:'600', backgroundColor:'#f5c542', borderTopLeftRadius:5, borderBottomLeftRadius:5, padding:5}}>{namaBulan[item.bulan]+' '+item.tahun}</Text> */}
+                    <Text style={{fontSize:11,color:'white', fontWeight:'600', backgroundColor:'#d742f5', borderTopRightRadius:5, borderBottomRightRadius:5, padding:5, textTransform:"capitalize"}}>{item.status}</Text>
                 </View>
             </TouchableOpacity>            
         )
@@ -161,19 +167,43 @@ const LaporanKasum = ({navigation}) => {
             
 
             <View style={{alignItems:"center"}}>
-                <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
+                <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center", marginBottom:30}}>
 
                     <View style={{width:"70%"}}>
                         <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Pengajuan Laporan THL-IT</Text>
                     </View>
 
-                    {
-                        rawLaporan.length > 0 &&
-                        rawLaporan.map((item,index)=>(
-                            rowData(item,index)
-                        ))
+                    {loadHistory?
+                        <View>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                        </View>
+                    :
+                        <View>
+                            {
+                                rawLaporan.length > 0 &&
+                                rawLaporan.map((item,index)=>(
+                                    rowData(item,index)
+                                ))
 
+                            }
+                        </View>
                     }
+
+                    
 
                 </View>
             </View>

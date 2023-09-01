@@ -11,6 +11,7 @@ import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import { Grid  } from 'react-native-animated-spinkit'
 import { FlatList } from 'react-native';
+import { Circle } from 'react-native-animated-spinkit';
 
 const DetailThlIt = ({route, navigation}) => {
 
@@ -65,6 +66,8 @@ const DetailThlIt = ({route, navigation}) => {
 
 
     const [aktifBulan, setAktifBulan] = useState(monthUsed)
+    const getStrAktifMonth = namaBulan[aktifBulan]
+    // console.log(getStrAktifMonth,"<<<<aktif bulan");
 
     const [aktifTahun, setAktifTahun] = useState(getYear)
     const [myProfile, setMyProfile] = useState({
@@ -76,6 +79,8 @@ const DetailThlIt = ({route, navigation}) => {
         alfa:0
     })    
 
+    const [modalLoad, setModalLoad] = useState(false)
+
 
     useEffect(() => {
         handlerGetProfile()
@@ -85,6 +90,7 @@ const DetailThlIt = ({route, navigation}) => {
     }, [navigation, isFocused])
     
     const [fileDoc, setFileDoc] = useState()
+
     const handlerGetDocument = async ()=>{
 
         try {
@@ -95,7 +101,7 @@ const DetailThlIt = ({route, navigation}) => {
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-
+            // console.log(response.data, "<<<<< dataaaa");
 
             if (response.status == 200) {
 
@@ -107,6 +113,7 @@ const DetailThlIt = ({route, navigation}) => {
             console.log(error, "error get document")   
         }        
     }    
+
     const handlerGetProfile = async ()=>{
         // setLoadHistory(true)
         try {
@@ -133,6 +140,7 @@ const DetailThlIt = ({route, navigation}) => {
             console.log(error, "error get my profile")   
         }        
     }        
+
     const handlerGetKegiatan = async ()=>{
         // setLoadHistory(true)
         try {
@@ -319,7 +327,7 @@ const DetailThlIt = ({route, navigation}) => {
 
                     <View style={{justifyContent:"flex-end", marginBottom:10, flexDirection:"row" }}>
                         <TouchableOpacity style={{width:100, height:20, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginRight:10}} onPress={toggleModal}>
-                            <Text style={{color:"#fff", fontSize:12, fontWeight:"600"}}>Bulan : {namaBulan[aktifBulan]}</Text>
+                            <Text style={{color:"#fff", fontSize:12, fontWeight:"600"}}>{namaBulan[aktifBulan]}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={toggleModal2}>
@@ -327,7 +335,7 @@ const DetailThlIt = ({route, navigation}) => {
                         </TouchableOpacity>
                     </View>
 
-                    <Text style={{ color: "#000", fontSize: 18, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Detail Kehadiran Bulan {getStrMonth} {getYear}</Text>
+                    <Text style={{ color: "#000", fontSize: 16, marginTop: -5, fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Detail Kehadiran Bulan {getStrAktifMonth} {aktifTahun}</Text>
 
                     <View style={{alignItems:"center"}}>
                         <View style={{flexDirection:"row", marginBottom:15}}>
@@ -427,9 +435,11 @@ const DetailThlIt = ({route, navigation}) => {
                     <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
                         <TouchableOpacity style={aktifBulan>0 ?  {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={()=>{
                             setModalVisible(false)
+                            setModalLoad(true)
                             handlerGetKegiatan()
                             handlerGetProfile()
                             handlerGetDocument()
+                            setModalLoad(false)
                          }}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Cek Kehadiran</Text>
                         </TouchableOpacity>
@@ -542,7 +552,11 @@ const DetailThlIt = ({route, navigation}) => {
                             </View>
                         </View>
                     </View>
-                </ReactNativeModal>            
+            </ReactNativeModal>   
+
+            <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <Circle size={100} color="white"/>
+            </ReactNativeModal>         
         </ScrollView>
     )
 }

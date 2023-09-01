@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const ThlIt = ({navigation}) => {
     // width heigh
@@ -48,8 +49,10 @@ const ThlIt = ({navigation}) => {
 
     }, [navigation, isFocused])
 
-    const handlerGetAsn = async ()=>{
+    const [loadHistory, setLoadHistory] = useState(false)
 
+    const handlerGetAsn = async ()=>{
+        setLoadHistory(true)
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
             const target_url =`${base_url}/user/profile?getAll=true`
@@ -61,6 +64,9 @@ const ThlIt = ({navigation}) => {
             if (response.status == 200) {
                 // console.log(response.data)
                 setAllUser(response.data)
+                setRawHistory(response.data);
+                // setFilteredHistory(response.data)
+                setLoadHistory(false)
             }
 
         } catch (error) {
@@ -69,17 +75,56 @@ const ThlIt = ({navigation}) => {
     }
 
     const rowUser = (item,index)=>{
-        
-        return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt' ,{idUser:item.id})}>
-                <Image source={item.URL ? {uri:item.URL}:PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
-                <View style={{marginLeft:10}}>
-                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
-                    <Text style={{ color:"black",  fontSize:10}}>Jabatan : {item.jabatan}</Text>
-                </View>
-            </TouchableOpacity>            
-        )
+        if(item.jabatan =="Kasubag Umum" ){
+            return(<View></View>)
+        }
+        else if(item.jabatan == "admin" ){
+            return(<View></View>)
+        }
+        else{
+            return(
+                <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt' ,{idUser:item.id})}>
+                    <Image source={item.URL ? {uri:item.URL}:PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                    <View style={{marginLeft:10}}>
+                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                        <Text style={{ color:"black",  fontSize:10}}>Jabatan : {item.jabatan}</Text>
+                    </View>
+                </TouchableOpacity>            
+            )
+        }
     }
+    const [rawHistory, setRawHistory] = useState([])
+    // const [filtereHistory, setFilteredHistory] = useState([])
+    const [search, setSearch] = useState();
+
+    const searchFilterFunction = (text) => {
+        // Check if searched text is not blank
+            if (text) {
+                // Inserted text is not blank
+                // Filter the masterDataSource and update FilteredDataSource
+                const newData = rawHistory.filter(
+                function (params) {
+                    
+                    
+                    const itemData = params.nama
+                    ?  params.nama.toUpperCase() 
+                    : ''.toUpperCase();
+
+                    const textData = text.toUpperCase();
+                    return itemData.indexOf(textData) > -1;
+                   
+                }
+                );
+                setAllUser(newData);
+                setSearch(text);
+            } else {
+                // Inserted text is blank
+                // Update FilteredDataSource with plan
+                // const masterDataSource = plan
+                setAllUser(rawHistory);
+                setSearch(text);
+            }
+    };
 
     return (
         <ScrollView>
@@ -104,21 +149,45 @@ const ThlIt = ({navigation}) => {
                 </View>
             </View>
 
-            <View style={{alignItems:"center"}}>
+            <View style={{alignItems:"center", marginBottom:30}}>
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
                     <SearchBar
                         placeholder='Search here'
                         style={{marginBottom:20, width:"100%"}}
+                        onChangeText={(text) => searchFilterFunction(text)}
                     />
 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>Berikut Data THL-IT</Text>
 
-                    {
-                        allUser.length > 0 &&
-                        allUser.map((item,index)=>(
-                            rowUser(item,index)
-                        ))
+                    {loadHistory?
+                        <View>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                        </View>
+                    :
+                        <View>
+                            {
+                                allUser.length > 0 &&
+                                allUser.map((item,index)=>(
+                                    rowUser(item,index)
+                                ))
+                            }
+                        </View>
                     }
+                    
                 </View>
             </View>
         </ScrollView>

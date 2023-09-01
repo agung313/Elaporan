@@ -100,13 +100,13 @@ const Agenda = ({route, navigation}) => {
             await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }}).then((res)=>{       
-
+                // console.log(res.data.data.waktu_pulang, "<<<<<< resss");
                 setAbsen({
-                    status:res.data[0].status,
-                    waktuMasuk: res.data[0].waktu_hadir,
-                    waktuPulang:res.data[0].waktu_pulang,
-                    fotoAbsensi:res.data[0].foto,
-                    keteranganAbsensin:res.data[0].keterangan_hadir,                    
+                    status:res.data.data.status,
+                    waktuMasuk: res.data.data.waktu_hadir,
+                    waktuPulang:res.data.data.waktu_pulang,
+                    fotoAbsensi:res.data.data.foto,
+                    keteranganAbsensin:res.data.data.keterangan_hadir,                    
                 })
             }) 
     

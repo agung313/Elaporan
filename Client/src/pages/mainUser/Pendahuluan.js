@@ -6,6 +6,7 @@ import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import ReactNativeModal from 'react-native-modal'
+import { Circle } from 'react-native-animated-spinkit';
 
 const Pendahuluan = ({navigation}) => {
     // width heigh
@@ -159,8 +160,9 @@ const Pendahuluan = ({navigation}) => {
     //         [key]:value
     //     }))
     // };
-
+    const [modalLoad, setModalLoad] = useState(false)
     const handlerUpdate = async data=>{
+        setModalLoad(true)
         setMyError([])
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
@@ -194,12 +196,13 @@ const Pendahuluan = ({navigation}) => {
                 Object.keys(response.data.error).forEach(key => {
                     tmpArr.push(response.data.error[key])
                 })
-                setMyError(tmpArr)
                 setModalLoad(false)
+                setMyError(tmpArr)
 
             }else{
                 await AsyncStorage.removeItem('tmpRuangLingkup');
-                setMyModal({success:true})                
+                setModalLoad(false)              
+                setMyModal({success:true})  
             }
 
         } catch (error) {
@@ -419,6 +422,10 @@ const Pendahuluan = ({navigation}) => {
                         <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16, marginTop:5}}>Update</Text>
                     </TouchableOpacity>
                 </View>
+
+                <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                    <Circle size={100} color="white"/>
+                </ReactNativeModal>
                 
             </View>
         </ScrollView>

@@ -202,10 +202,11 @@ const ProfileKasum = ({navigation}) => {
         if (signatureRef.current) {
         signatureRef.current.saveImage();
         setModalSignature(false)
+        setModalLoad(true)
         }
     };
 
-    
+    const [ttdBerhasil, setTtdBerhasil] = useState(false)
     const onSaveEvent = async(result) => {
         //result.encoded - for the base64 encoded png
         //result.pathName - for the file path name
@@ -225,8 +226,8 @@ const ProfileKasum = ({navigation}) => {
         }})            
 
         if (response.status===200) {
-            
-            setMyModal({myModal:true})
+            setModalLoad(false)
+            setTtdBerhasil(true)
             getMyProfile()
         }        
     } catch (error) {
@@ -644,7 +645,7 @@ const ProfileKasum = ({navigation}) => {
 
             {/* modal signature */}
             <ReactNativeModal isVisible={modalSignature} onBackdropPress={() => setModalSignature(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "70%", backgroundColor: "#fff", borderRadius: 10,  padding:10,  }}>
+                <View style={{ width: "90%", height: "70%", backgroundColor: "#d9dcdf", borderRadius: 10,  padding:10,  }}>
                     <TouchableOpacity  style={{alignItems:'flex-end', marginTop:10}} onPress={() => setModalSignature(false)} >
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
@@ -720,6 +721,24 @@ const ProfileKasum = ({navigation}) => {
                 </View>
             </ReactNativeModal>  
 
+            {/* succes ttd */}
+            <ReactNativeModal isVisible={ttdBerhasil} onBackdropPress={() => setTtdBerhasil(false)} style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+
+                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={() => setTtdBerhasil(false)} >
+                        <Image source={CloseIcont} style={{width:30, height:30}}/>
+                    </TouchableOpacity>
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textAlign:"center"}}>Tanda Tangan Anda Berhasil Diupdate.</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <TouchableOpacity style= {{width:"80%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:10} } onPress={() => setTtdBerhasil(false)} >
+                            <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Ok</Text>                                        
+                        </TouchableOpacity>      
+                    </View>
+                </View>
+            </ReactNativeModal>
+            
         </ScrollView>
     )
 }
