@@ -87,7 +87,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             })
 
         } catch (error) {
-            console.log(error.response.datar,"<--- error handler hadir")            
+            console.log(error.response.data,"<--- error handler hadir")            
         }
     }
     
@@ -156,7 +156,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data, "<<<<< dataaaaaa hadiiiir");
+
             if (response.status == 200) {
                     setMyProfile({
                         nama:response.data.nama,
@@ -222,8 +222,12 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     var checkCatatan = await AsyncStorage.getItem('tmpCatatan')
 
                     if (!checkCatatan && myCatatan.length == 0) {
-    
-                        let tmp = JSON.parse(response.data[0].catatan).join("%ry%")
+
+                        let tmp  ='';
+                        if (response.data[0].catatan !== '' && response.data[0].catatan !== null ) {
+                            let tmp = JSON.parse(response.data[0].catatan).join("%ry%")                            
+                        }
+
                         await AsyncStorage.setItem('tmpCatatan',tmp)  
 
                     } else{
@@ -479,7 +483,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     </View>
 
                     {
-                        status.old == 'diapprove' && 
+                        status.old == 'diajukan' && 
                         <>
                             <View style={{alignItems:"center"}}>
                                 <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:10, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTerima}>
@@ -494,7 +498,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                         </>
                     }
                     {
-                        status.old == 'diajukan' &&
+                        status.old == 'diapprove' &&
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#dbdad5", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{navigation.goBack()}}>
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kembali</Text>

@@ -10,6 +10,7 @@ import ReactNativeModal from 'react-native-modal';
 import Pdf from 'react-native-pdf'
 import { Circle } from 'react-native-animated-spinkit';
 import { Grid  } from 'react-native-animated-spinkit'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Laporan = ({route, navigation}) => {
 
@@ -105,7 +106,7 @@ const Laporan = ({route, navigation}) => {
                     getMyKegiatan()
                 }
                 var checkKendala = await AsyncStorage.getItem('tmpKendala')
-                console.log(checkKendala,"<-- kendala")
+
                 // if (!checkKendala && arrKendala.length == 0) {
                 if (!checkKendala) {
 
@@ -146,7 +147,6 @@ const Laporan = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
-            console.log(response.data)
             if (response.status == 200) {
                 setArrKegiatan(response.data)
             }
@@ -278,7 +278,8 @@ const Laporan = ({route, navigation}) => {
                         <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Uraian</Text>
                     </View>
                 </View>
-                <View style={{maxHeight:WindowHeight*0.3}}>
+                <SafeAreaView style={{maxHeight:WindowHeight*0.3}}>
+                {/* <View style={{maxHeight:WindowHeight*0.3}}> */}
                     <FlatList
                         data={arrKegiatan}
                         renderItem={({ item,index }) => (
@@ -289,7 +290,8 @@ const Laporan = ({route, navigation}) => {
                         // }}
                         nestedScrollEnabled
                     />                            
-                </View>
+                {/* </View> */}
+                </SafeAreaView>
             </View>            
         )
     }
@@ -343,11 +345,12 @@ const Laporan = ({route, navigation}) => {
 
 
         } catch (error) {
-            console.log(error.response.data)
             if (error.response.status == 400) {
 
                 setMessage('Harap Lengkapi Laporan Harian Anda !')
+                setModalLoad(false);
                 setMyModal({...myModal, ['gagal']:true})
+
             }else{
                 console.log(error.response.data,"<--- undefined error store laporan")            
             }
@@ -436,11 +439,13 @@ const Laporan = ({route, navigation}) => {
                             </TouchableOpacity>
                             <View style={{width:5}}></View>    
                             {
-                                adaDokumen !== '' || adaDokumen !== null &&
-
+                                adaDokumen == '' || adaDokumen == null ?
+                                <></>
+                                :
                             <TouchableOpacity style={{width:100, height:30, borderRadius:10, backgroundColor:"red", marginBottom:15, alignItems:"center", justifyContent:"center"}} onPress={()=>{ setMyModal({hapusLaporan:true})}}>
-                                <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus</Text>
-                            </TouchableOpacity>               
+                                <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Hapus </Text>
+                            </TouchableOpacity>    
+           
                             }                     
                         </View>
                     }
@@ -530,7 +535,7 @@ const Laporan = ({route, navigation}) => {
                         <Image source={CloseIcont} style={{width:30, height:30}}/>
                     </TouchableOpacity>
                     <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Hapus Laporan ?</Text>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15, textTransform:"capitalize"}}>Hapus File Laporan ?</Text>
                         <Text>Data Kendala & Solusi akan hilang</Text>
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
@@ -627,7 +632,10 @@ const Laporan = ({route, navigation}) => {
                     </View>
                     <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
                         <View style={{flexDirection:"row"}}>
-                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={ ()=>{ setMyModal({...myModal, ['gagal']:false})}} >
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#0060cb", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={ ()=>{ 
+                                setMyModal({...myModal, ['gagal']:false})
+                                navigation.goBack()
+                                }} >
                                 <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}} >Oke</Text>
                             </TouchableOpacity>
                         </View>     

@@ -19,7 +19,7 @@ class Document extends JsonResource
             'id_user' => $this->id_user,
             'status' => $this->status,
             'bulan' =>  $this->bulan, 'Asia/Jakarta',
-            'URL' => URL('storage/'. $this->path),
+            'URL' =>  $this->path ? URL('storage/'. $this->path):null,
             'tahun' => $this->tahun,
             'fotoProfile' => URL('storage/'. $this->foto),
             'saran' => $this->saran,

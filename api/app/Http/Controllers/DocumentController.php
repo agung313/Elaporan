@@ -16,8 +16,12 @@ use App\Http\Resources\Document as DocumentResource;
 setlocale(LC_TIME, 'id_ID');
 use Illuminate\Support\Facades\URL;
 
+use App\Traits\FireNotif;
+
 class DocumentController extends Controller
 {
+    use FireNotif;
+
     public function __construct()
     {
         $this->middleware('auth:sanctum');
@@ -77,9 +81,7 @@ class DocumentController extends Controller
         $status = $request->status;
         $tahun = $request->tahun;
 
-
         $bulan =  Carbon::create(Carbon::create(null, $request->bulan,1), 'Asia/Jakarta')->isoFormat('MMMM');
-
 
         if ($status == 'diajukan') {
 
@@ -120,6 +122,8 @@ class DocumentController extends Controller
         //absensi
         $query2 = Absensi::select('absensis.*')
                     ->join('users', 'users.id', '=', 'absensis.id_user')
+                    ->whereMonth('absensis.tanggal', $request->bulan)
+                    ->whereYear('absensis.tanggal', $request->tahun)                    
                     ->where('users.id', $idUser)
                     ->get();
 
@@ -133,6 +137,8 @@ class DocumentController extends Controller
         $query3 = Laporan::select('laporans.*')
                     ->join('absensis','absensis.id', 'laporans.id_absensi')
                     ->join('users', 'users.id', '=', 'absensis.id_user')
+                    ->whereMonth('absensis.tanggal', $request->bulan)
+                    ->whereYear('absensis.tanggal', $request->tahun)                    
                     ->where('users.id', $idUser)
                     ->get();
 
@@ -199,9 +205,6 @@ class DocumentController extends Controller
             ],200);        
     }
 
-    function saveFile() {
-        
-    }
 
     // cek apakah ada laporan yg sudah diajukan/ diapprove kasum pada bulan dan tahun tsb dg id user
     function checkLaporanDiajukan(Request $request) {
@@ -230,9 +233,11 @@ class DocumentController extends Controller
         //validasi laporan
         $laporanIds = Laporan::join('absensis','absensis.id','=','laporans.id_absensi')
                     ->join('users','users.id', '=', 'absensis.id_user')
+                    ->whereMonth('absensis.tanggal',$bulan)                    
                     ->where('users.id', $idUser)
                     ->pluck('laporans.id_absensi')
                     ->toArray();
+                    
         $absensiIds = Absensi::where('absensis.status', 'hadir')
                     ->join('users','users.id', '=', 'absensis.id_user')
                     ->whereMonth('absensis.tanggal',$bulan)
@@ -243,11 +248,11 @@ class DocumentController extends Controller
                     ->pluck('absensis.id')
                     ->toArray();
 
-        $missingIds = array_diff($absensiIds, $laporanIds);
+        $missingIds = count(array_diff($absensiIds, $laporanIds));
         
 
         // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
-        if ($missingIds !== null){
+        if ($missingIds !== 0){
             return true;
         }        
 
