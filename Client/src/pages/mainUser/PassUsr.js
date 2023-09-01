@@ -91,7 +91,7 @@ const PassUsr = ({navigation,  }) => {
 
                 setImgFoto(response.data.URL)
                 setImgTtd(response.data.ttd)
-                // console.log(response.data.ttd,'<--- ttd')
+
 
             }
 
@@ -136,38 +136,10 @@ const PassUsr = ({navigation,  }) => {
     const removeTmp = async()=>{
         await AsyncStorage.removeItem('tmpKendala');
         await AsyncStorage.removeItem('tmpRuangLingkup');
+        await AsyncStorage.removeItem('LatarBelakang');
+        await AsyncStorage.removeItem('MaksudTujuan');    
     }
-    const handlerUpdateTtd = async ()=>{
-        setModalLoad(true)
-        try{
 
-            if (!fileTtd) {
-                setModalLoad(false)
-                setMyModal({fotoNoPick:true})
-                return
-            }
-            var formData = new FormData()
-            
-            formData.append('ttd',{ uri: fileTtd.uri, name: fileTtd.name, type: fileTtd.type })
-
-            const myToken = await AsyncStorage.getItem('AccessToken');    
-
-            const response = await axios.post(base_url+"/user/ttd/"+profile.id, formData,{headers:{
-                Authorization: `Bearer ${myToken}`,
-                Accept: 'application/json',
-                'Content-Type': `multipart/form-data`
-            }})            
-
-        
-            if (response.status===200) {
-                setModalLoad(false)
-                setMyModal({success:true})
-            }
-
-        } catch(error){
-            console.log(error, "<= eroro")
-        }
-    }         
 
     const [modalPass, setModalPass] = useState(false)
     const [modalChangePass, setModalChangePass] = useState(false)
@@ -336,7 +308,6 @@ const PassUsr = ({navigation,  }) => {
 
         if (response.status===200) {
             setModalLoad(false)
-            console.log("cek berhasilllllll");
             setTtdBerhasil(true)
             getMyProfile()
         }        
@@ -348,7 +319,7 @@ const PassUsr = ({navigation,  }) => {
     }
     const onDragEvent = () => {
          // This callback will be called when the user enters signature
-        console.log("dragged");
+        // console.log("dragged");
     }
 
     const handleClear = () => {
