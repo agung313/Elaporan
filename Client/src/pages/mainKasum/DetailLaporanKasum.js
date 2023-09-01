@@ -193,7 +193,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get kegiatan")   
+            console.log(error.response, "error get kegiatan")   
         }        
     }    
 
@@ -207,7 +207,6 @@ const DetailLaporanKasum = ({route, navigation}) => {
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-            console.log(response.data[0].catatan,"<<<<<<< data detail laporan");
             if (response.status == 200) {
 
                 setFileDoc(response.data[0].URL)
@@ -235,7 +234,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get kegiatan")   
+            console.log(error, "error get document")   
         }        
     }    
     const deleteItemArr = async (id)=>{
@@ -480,7 +479,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
                     </View>
 
                     {
-                        status.old == 'diajukan' ? 
+                        status.old == 'diapprove' && 
                         <>
                             <View style={{alignItems:"center"}}>
                                 <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:10, borderWidth:0.5, borderColor:"black"}} onPress={handlerModalTerima}>
@@ -493,7 +492,9 @@ const DetailLaporanKasum = ({route, navigation}) => {
                                 </TouchableOpacity>
                             </View>                    
                         </>
-                        :
+                    }
+                    {
+                        status.old == 'diajukan' &&
                         <View style={{alignItems:"center"}}>
                             <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#dbdad5", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>{navigation.goBack()}}>
                                 <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Kembali</Text>
