@@ -135,35 +135,34 @@ const ProfileKasum = ({navigation}) => {
     const HeandleLogout = async () => {
         setModalLoad(true)
         try {
-          const dataToken = await AsyncStorage.getItem('AccessToken');
+            const dataToken = await AsyncStorage.getItem('AccessToken');
       
-          if (!dataToken) {
-            // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
-            navigation.replace('MainSplash');
-            setModalLoad(false)
-            return;
-          }
-      
-          // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
-          const response = await axios.post(ApiLink+'/api/auth/logout',{},{
-              headers: {
-                Authorization: `Bearer ${dataToken}`,
-              },
+            if (!dataToken) {
+              // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
+              navigation.replace('MainSplash');
+              return;
             }
-          );
-      
-          if (response.status === 200) {
-            // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
-            await AsyncStorage.removeItem('AccessToken');
-            navigation.replace('MainSplash');
-            setModalLoad(false)
-          } else {
-            // Tangani respons yang tidak diharapkan jika diperlukan
-            console.log('Logout tidak berhasil.');
-          }
+            const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+  
+            // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
+            const response = await axios.post(ApiLink+'/api/auth/logout',{token_fb:token_fb},{
+                headers: {
+                  Authorization: `Bearer ${dataToken}`,
+                },
+              }
+            );
+        
+            if (response.status === 200) {
+              // Berhasil logout, hapus token dari AsyncStorage dan arahkan ke halaman login atau splash screen
+              await AsyncStorage.removeItem('AccessToken');
+              navigation.replace('MainSplash');
+            } else {
+              // Tangani respons yang tidak diharapkan jika diperlukan
+              console.log('Logout tidak berhasil.');
+            }
         } catch (error) {
           // Tangani error yang terjadi saat melakukan permintaan logout
-          console.log(error, '<= error logout');
+          console.log(error.response, '<= error logout');
         }
     };
 

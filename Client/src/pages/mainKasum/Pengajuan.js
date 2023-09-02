@@ -43,9 +43,7 @@ const Pengajuan = ({navigation}) => {
 
     }, [navigation, isFocused])
 
-    const [rawHistory, setRawHistory] = useState([])
     const [filtereHistory, setFilteredHistory] = useState([])
-    const [search, setSearch] = useState();
     const [loadHistory, setLoadHistory] = useState(false)
 
     const handlerGetPengajuan = async ()=>{
@@ -62,7 +60,6 @@ const Pengajuan = ({navigation}) => {
             console.log(response.data)
             if (response.status == 200) {
 
-                setRawHistory(response.data);
                 setFilteredHistory(response.data)                
                 setLoadHistory(false)
             }
@@ -71,43 +68,6 @@ const Pengajuan = ({navigation}) => {
             console.log(error, "error get my profile")   
         }        
     }
-
-    const searchFilterFunction = (text) => {
-        // Check if searched text is not blank
-            if (text) {
-
-                const newData = rawHistory.filter(
-                    
-                    function (params) {
-
-                        const arrObject = Object.values(params) 
-                        arrObject.splice(-1,1)
-                        const tmpStr =arrObject.join(' ') 
-
-                        //ambil objek yang dijadikan objek tempat pencarian
-                        const itemData = tmpStr
-                        ?  tmpStr.toUpperCase() 
-                        : ''.toUpperCase();
-
-                        // ambil nilai yg dicari
-                        const textData = text.toUpperCase();
-
-                        // ambil/ cek index dari data yg ditemukan. Jika data tidak ditemukan maka akan bernilai -1. Jika nilai tidak -1 maka true.
-
-                        // jika hasil true maka item array dari rawHistory akan dimasukkan ke array baru 'newData'
-                        return itemData.indexOf(textData) > -1;
-                    
-                    }
-                );
-
-                setFilteredHistory(newData);
-                setSearch(text);
-            } else {
-
-                setFilteredHistory(rawHistory);
-                setSearch(text);
-            }
-    };
 
     const rowData = (item, index)=>{
 
@@ -120,14 +80,6 @@ const Pengajuan = ({navigation}) => {
                             <Text style={{ color:"black",  fontSize:10}}>Pengajuan : {item.hari+", "+item.tanggal}</Text>
                         </View>
                     </TouchableOpacity>
-
-                    {/* <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate("DetailPengajuan")}>
-                        <Image source={SakitIzin} style={{width:40,height:40, marginLeft:15}}/>
-                        <View style={{marginLeft:10}}>
-                            <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
-                            <Text style={{ color:"black",  fontSize:10}}>Pengajuan : Rabu, 22 Juni 2023</Text>
-                        </View>
-                    </TouchableOpacity>             */}
                 </>            
         )
     }
@@ -156,42 +108,37 @@ const Pengajuan = ({navigation}) => {
 
             <View style={{alignItems:"center"}}>
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center", marginBottom:30}}>
-                    <SearchBar
-                        placeholder='Search Data Pengajuan'
-                        style={{marginBottom:20, width:"100%"}}
-                        onChangeText={(text) => searchFilterFunction(text)}
-                    />
 
                     <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:10, marginBottom:25, textAlign:"center"}}>{filtereHistory.length?"Berikut Data Pengajuan Kehadiran THL-IT":"Tidak Ada Data Pengajuan"}</Text>
 
                     {loadHistory?
-                            <View>
-                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
-                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
-                                </SkeletonPlaceholder>
-                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
-                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
-                                </SkeletonPlaceholder>
-                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
-                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
-                                </SkeletonPlaceholder>
-                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
-                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
-                                </SkeletonPlaceholder>
-                                <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
-                                    <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
-                                </SkeletonPlaceholder>
-                            </View>
-                        :
-                            <View>
-                                {
-                                    filtereHistory.length >0 &&
-                                    filtereHistory.map((item,index)=>(
-                                        rowData(item,index)
-                                    ))
-                                }
-                            </View>
-                        }
+                        <View>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                            <SkeletonPlaceholder backgroundColor='#D9DCDF' highlightColor='#fff'>
+                                <View style={{width:WindowWidth*0.85, height:70, borderRadius:15, elevation:5, marginBottom:20,}}></View>
+                            </SkeletonPlaceholder>
+                        </View>
+                    :
+                        <View>
+                            {
+                                filtereHistory.length >0 &&
+                                filtereHistory.map((item,index)=>(
+                                    rowData(item,index)
+                                ))
+                            }
+                        </View>
+                    }
                 </View>
             </View>
         </ScrollView>

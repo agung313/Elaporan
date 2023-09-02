@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataKehadiran, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailKehadiran, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, HariLibur, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, SplashLogin, Tambah, TambahCatatan, TambahHariLibur, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataKehadiran, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailKehadiran, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, HariLibur, Kasum, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, Rekap, SplashLogin, Tambah, TambahCatatan, TambahHariLibur, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
@@ -65,6 +65,7 @@ const HomeKasum = () => {
             <Stack.Screen name='AllPengajuan' component={AllPengajuan} options={{headerShown:false}}/>
             <Stack.Screen name='TambahCatatan' component={TambahCatatan} options={{headerShown:false}}/>
             <Stack.Screen name='EditCatatan' component={EditCatatan} options={{headerShown:false}}/>
+            <Stack.Screen name='Rekap' component={Rekap} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }

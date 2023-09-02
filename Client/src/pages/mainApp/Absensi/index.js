@@ -33,6 +33,14 @@ const Absensi = ({route, navigation}) => {
     // date time tanggal
     const cekTgl = new Date
     const localeTime = cekTgl.toLocaleTimeString()
+
+    const splitTime = localeTime.split(":")
+    const waktuTelat1 = splitTime[0].split("0")+splitTime[1]
+    const waktuTelat2 = waktuTelat1.split(',')
+    const waktuTelat3 = waktuTelat2[1]
+    const waktuTelat = Number(waktuTelat3)
+    // console.log(typeof(waktuTelat));
+    
     
     const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
     const getStrDay = namaHari[cekTgl.getDay()]
@@ -93,7 +101,6 @@ const Absensi = ({route, navigation}) => {
 
     const handlerHadir = async data =>{
 
-        
         // setModalLoad(true)
         setModalStore(false)
         setModalStoreSakit(false)
@@ -243,12 +250,42 @@ const Absensi = ({route, navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>
-                                        {kehadiran==1 ? "Hadir" : ""}
-                                        {kehadiran==2 ? "Hadir Kegiatan" : ""}
-                                        {kehadiran==3 ? "Sakit" : ""}
-                                        {kehadiran==4 ? "Izin" : ""}
-                                    </Text>
+                                    {kehadiran==1?
+                                        <View style={{flexDirection:"row", alignItems:"center"}}>
+                                            <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Hadir </Text>
+                                            {waktuTelat>815?
+                                                <Text style={{color:"red", fontSize:10, fontWeight:"500"}}>(Anda Terlambat Absen)</Text>
+                                            :
+                                                null
+                                            }
+                                            
+                                        </View>
+                                    : 
+                                        <View style={{display:"none"}}></View>
+                                    }
+                                    {kehadiran==2?
+                                        <View style={{flexDirection:"row", alignItems:"center"}}>
+                                            <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Hadir Kegiatan </Text>
+                                            {waktuTelat>815?
+                                                <Text style={{color:"red", fontSize:10, fontWeight:"500"}}>(Anda Terlambat Absen)</Text>
+                                            :
+                                                null
+                                            }
+                                            
+                                        </View>
+                                    : 
+                                        <View style={{display:"none"}}></View>
+                                    }
+                                    {kehadiran==3?
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Sakit</Text>
+                                    : 
+                                        <View style={{display:"none"}}></View>
+                                    }
+                                    {kehadiran==4?
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Izin</Text>
+                                    : 
+                                        <View style={{display:"none"}}></View>
+                                    }
                                 </View>
                                 {/* <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Lokasi Kehadiran :</Text>

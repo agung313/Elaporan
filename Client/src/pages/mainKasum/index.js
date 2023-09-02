@@ -1,6 +1,6 @@
 import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { Absensi, AbsensiKurang, Agenda, BgApp, CekLaporan, CloseIcont, DataThl, EmailIcon, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, Pengajuan, ProfileKasum, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
+import { Absensi, AbsensiKurang, Agenda, BgApp, CekLaporan, CloseIcont, DataThl, EmailIcon, ExFoto, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, Pengajuan, ProfileKasum, Rekap, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda } from '../../assets/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import axios from 'axios';
@@ -172,11 +172,12 @@ const Kasum = ({ navigation}) => {
                         </View>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
+
                     <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("LaporanKasum")}>
                         <Image source={CekLaporan} style={styles.menuImage}/>
                         <Text style={styles.labelMenu}>Laporan</Text>
-                        <View style={{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}}>
-                            <Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>{countLaporanNew}</Text>
+                        <View style={countLaporanNew?{width:30, height:30, alignItems:"center", justifyContent:"center", backgroundColor:"red", borderRadius:50, marginTop:-110, marginLeft:70}:{width:30, height:30, marginTop:-110,}}>
+                            {countLaporanNew>0?<Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}>{countLaporanNew}</Text>:<Text style={{color:"#fff", fontWeight:"bold", fontSize:14, textAlign:"center"}}></Text>}
                         </View>
                     </TouchableOpacity>
                     
@@ -189,9 +190,9 @@ const Kasum = ({ navigation}) => {
                         <Text style={styles.labelMenu}>Data ASN</Text>
                     </TouchableOpacity>
                     <View style={{width:20}}></View>
-                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("AcountScreen")}>
-                        <Image source={ProfileKasum} style={styles.menuImage}/>
-                        <Text style={styles.labelMenu}>Profile</Text>
+                    <TouchableOpacity style={styles.menuBar} onPress={() => navigation.navigate("Rekap")}>
+                        <Image source={Rekap} style={styles.menuImage}/>
+                        <Text style={styles.labelMenu}>Rekap</Text>
                     </TouchableOpacity>
                     
                 </View>

@@ -77,42 +77,6 @@ const LaporanKasum = ({navigation}) => {
         }        
     }
 
-    const searchFilterFunction = (text) => {
-        // Check if searched text is not blank
-            if (text) {
-
-                const newData = rawHistory.filter(
-                    
-                    function (params) {
-
-                        const arrObject = Object.values(params) 
-                        arrObject.splice(-1,1)
-                        const tmpStr =arrObject.join(' ') 
-
-                        //ambil objek yang dijadikan objek tempat pencarian
-                        const itemData = tmpStr
-                        ?  tmpStr.toUpperCase() 
-                        : ''.toUpperCase();
-
-                        // ambil nilai yg dicari
-                        const textData = text.toUpperCase();
-
-                        // ambil/ cek index dari data yg ditemukan. Jika data tidak ditemukan maka akan bernilai -1. Jika nilai tidak -1 maka true.
-
-                        // jika hasil true maka item array dari rawHistory akan dimasukkan ke array baru 'newData'
-                        return itemData.indexOf(textData) > -1;
-                    
-                    }
-                );
-
-                setFilteredHistory(newData);
-                setSearch(text);
-            } else {
-
-                setFilteredHistory(rawHistory);
-                setSearch(text);
-            }
-    };    
 
 
     const rowData = (item,index) =>{
@@ -124,22 +88,24 @@ const LaporanKasum = ({navigation}) => {
             id_dokumen:item.id
         }
 
-        return(
-            <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:tmpObj})}>
-                <View style={{flexDirection:"row", alignItems:"center"}}>
-                    <Image source={ item.fotoProfile == null ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2, marginVertical:5}}/>
-                    <View style={{marginLeft:10, marginVertical:5}}>
-                        <Text style={{fontWeight:'900', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
-                        <Text style={{ color:"black",  fontSize:10, fontWeight:"500"}}>Laporan Diajukan : Bulan {namaBulan[item.bulan]+' '+item.tahun}</Text>
+        if(item.status=="diajukan"){
+            return(
+                <TouchableOpacity key={index} style={{width:WindowWidth*0.90, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20}} onPress={() => navigation.navigate('DetailLaporanKasum',{ params:tmpObj})}>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <Image source={ item.fotoProfile == null ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2, marginVertical:5}}/>
+                        <View style={{marginLeft:10, marginVertical:5}}>
+                            <Text style={{fontWeight:'900', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                            <Text style={{ color:"black",  fontSize:10, fontWeight:"500"}}>Laporan Diajukan : Bulan {namaBulan[item.bulan]+' '+item.tahun}</Text>
+                        </View>
                     </View>
-                </View>
-                
-                <View style={{marginTop:-60, alignItems:"flex-end"}}>
-                    {/* <Text style={{fontSize:11, color:'black', fontWeight:'600', backgroundColor:'#f5c542', borderTopLeftRadius:5, borderBottomLeftRadius:5, padding:5}}>{namaBulan[item.bulan]+' '+item.tahun}</Text> */}
-                    <Text style={{fontSize:11,color:'white', fontWeight:'600', backgroundColor:'#d742f5', borderTopRightRadius:5, borderBottomRightRadius:5, padding:5, textTransform:"capitalize"}}>{item.status}</Text>
-                </View>
-            </TouchableOpacity>            
-        )
+                    
+                    <View style={{marginTop:-60, alignItems:"flex-end"}}>
+                        {/* <Text style={{fontSize:11, color:'black', fontWeight:'600', backgroundColor:'#f5c542', borderTopLeftRadius:5, borderBottomLeftRadius:5, padding:5}}>{namaBulan[item.bulan]+' '+item.tahun}</Text> */}
+                        <Text style={{fontSize:11,color:'white', fontWeight:'600', backgroundColor:'#d742f5', borderTopRightRadius:5, borderBottomRightRadius:5, padding:5, textTransform:"capitalize"}}>{item.status}</Text>
+                    </View>
+                </TouchableOpacity>            
+            )
+        }
     }
 
     return (
