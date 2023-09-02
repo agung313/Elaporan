@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
+import { StyleSheet,BackHandler, Text, View, ScrollView, TouchableOpacity, Dimensions, Image, TextInput } from 'react-native'
 import React, { useEffect,useState } from 'react'
 import { AddImg, BackIcon, ExFoto, LgBappeda, CloseIcont } from '../../../assets/images'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps'
@@ -61,15 +61,40 @@ const Absensi = ({route, navigation}) => {
     const [namaUser, setNamaUser] = useState('-')
     const [jabatanUser, setJabatanUser] = useState('-')
 
+    const [invalidTime, setInvalidTime] = useState(false)
+
     useEffect(() => {
         if(isFocused){
-            getMyProfile()
+            getMyProfile(),
+            checkTime()
+
         }
 
     }, [navigation, isFocused])
 
+    const checkTime = async() =>{
+
+        try {
+
+            const target_url =`${base_url}/user/checkTime`
+
+            const response = await axios.get(target_url,{});        
+            const firstDate = new Date(cekTgl);
+            const secondDate = new Date(response.data);
+
+            const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
+
+            if (differenceInMilliseconds > 3) {
+                setInvalidTime(true)
+            }
+
+        } catch (error) {
+            console.log(error, "error check time")   
+        }
+    }
 
     const [imgFoto, setImgFoto] = useState()
+    
     const getMyProfile = async data =>{
 
         try {
@@ -541,7 +566,28 @@ const Absensi = ({route, navigation}) => {
                     <ReactNativeModal isVisible={modalLoad} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
                         <Circle size={100} color="white"/>
                     </ReactNativeModal>
+                    {/* modal invalid time */}
+                    <ReactNativeModal isVisible={invalidTime}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                        <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
 
+                            <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                                <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:13, textTransform:"capitalize", textAlign:'center'}}>Peringatan !  Jam/Tanggal Perangkat Anda Invalid </Text>
+                                <Text style={{marginVertical:5, fontSize:11, color:'red'}}>Silahkan Atur Kembali Jam/Tanggl Perangkat</Text>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                                <View style={{flexDirection:"row"}}>
+
+                                    <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=>{
+                                        setInvalidTime(false)
+                                        BackHandler.exitApp()
+
+                                    }} >
+                                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ok !</Text>
+                                    </TouchableOpacity>
+                                </View>     
+                            </View>
+                        </View>
+                    </ReactNativeModal>
                 </View>
             </View>
         </ScrollView>

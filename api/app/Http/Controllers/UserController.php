@@ -12,12 +12,23 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use File;
+use Carbon\Carbon;
+
 
 class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum',['except' => ['setComplete']]);
+        $this->middleware('auth:sanctum',['except' => ['setComplete','checkTime']]);
+    }
+
+    function checkTime()  {
+        
+        $currentTime = Carbon::now();
+
+        // $formattedTime = $currentTime->format('Y-m-d H:m:s');
+
+        return $currentTime;        
     }
 
     public function profile(Request $request)
