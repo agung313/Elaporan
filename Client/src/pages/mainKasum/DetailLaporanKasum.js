@@ -150,7 +150,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
         // setLoadHistory(true)
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
-            const target_url =`${base_url}/user/profile?id=${params.id_user}`
+            const target_url =`${base_url}/user/profile?id=${params.id_user}&bulan=${params.bulan}&tahun=${params.tahun}`
 
 
             const response = await axios.get(target_url,{headers:{
@@ -170,7 +170,7 @@ const DetailLaporanKasum = ({route, navigation}) => {
             }
 
         } catch (error) {
-            console.log(error, "error get my profile")   
+            console.log(error.response.data, "error get my profile")   
         }        
     }        
     const handlerGetKegiatan = async ()=>{

@@ -143,9 +143,10 @@ const ProfileKasum = ({navigation}) => {
             setModalLoad(false)
             return;
           }
-      
+          const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+
           // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
-          const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+          const response = await axios.post(ApiLink+'/api/auth/logout',{token_fb:token_fb},{
               headers: {
                 Authorization: `Bearer ${dataToken}`,
               },
@@ -163,7 +164,7 @@ const ProfileKasum = ({navigation}) => {
           }
         } catch (error) {
           // Tangani error yang terjadi saat melakukan permintaan logout
-          console.log(error, '<= error logout');
+          console.log(error.response.data, '<= error logout');
         }
     };
 

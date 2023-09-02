@@ -316,8 +316,19 @@ class DocumentController extends Controller
                         ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $doc->id_user)
                         ->get();
+            $arrLaporan = array();
 
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala, 'catatan' => $catatan]);
+
+            foreach ($query3 as $lp) {
+    
+                if (!array_key_exists($lp->id_absensi,$arrLaporan)) {
+                    $arrLaporan[$lp->id_absensi]=[];            
+                }
+                array_push($arrLaporan[$lp->id_absensi], $lp);
+                
+            }
+
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $arrLaporan, 'kendala' => $kendala, 'catatan' => $catatan]);
 
             $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -344,7 +355,7 @@ class DocumentController extends Controller
             $dokument = Document::findorNew($id);
             $dokument->path = $pathGas;
             $dokument->catatan = $catatan;
-            $dokument->status = "diapprove";
+            $dokument->status = $request->status;
             $dokument->save();
 
             return response()->json([
