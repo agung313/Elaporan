@@ -147,7 +147,6 @@ const ProfileKasum = ({navigation}) => {
         try {
             const dataToken = await AsyncStorage.getItem('AccessToken');
       
-<<<<<<< HEAD
             if (!dataToken) {
               // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
               navigation.replace('MainSplash');
@@ -170,29 +169,10 @@ const ProfileKasum = ({navigation}) => {
             } else {
               // Tangani respons yang tidak diharapkan jika diperlukan
               console.log('Logout tidak berhasil.');
-=======
-          if (!dataToken) {
-            // Token tidak ditemukan, mungkin pengguna belum login atau sudah logout sebelumnya
-            navigation.replace('MainSplash');
-            setModalLoad(false)
-            return;
-          }
-          const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
-
-          // Kirim permintaan logout dengan header otorisasi, {} bertujuan untuk mengecek logout sudah berhasil atau belum, jika sudah hapus token
-          const response = await axios.post(ApiLink+'/api/auth/logout',{token_fb:token_fb},{
-              headers: {
-                Authorization: `Bearer ${dataToken}`,
-              },
->>>>>>> 04eb7909cd1f9ae94e0147feb3030a94dbe8a36e
             }
         } catch (error) {
           // Tangani error yang terjadi saat melakukan permintaan logout
-<<<<<<< HEAD
           console.log(error.response, '<= error logout');
-=======
-          console.log(error.response.data, '<= error logout');
->>>>>>> 04eb7909cd1f9ae94e0147feb3030a94dbe8a36e
         }
     };
 
