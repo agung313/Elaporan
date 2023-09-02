@@ -185,7 +185,7 @@ class AbsensiController extends Controller
                     'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
                     'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
-                    'approveAdmin' => 0
+                    'approveAdmin' => strtolower($request->status) == 'sakit' ?  0:1
                 ]);
 
                 if ($absen && strtolower($absen->status) == 'sakit') {
@@ -208,7 +208,7 @@ class AbsensiController extends Controller
                     'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
                     'isApprove' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? 'diterima' : 'diajukan',
-                    'approveAdmin' => strtolower($request->status) == 'izin' ? 0 :1
+                    'approveAdmin' => strtolower($request->status) == 'izin' ?  0:1
                 ]);
 
                 if ($absen && strtolower($absen->status) == 'izin') {
