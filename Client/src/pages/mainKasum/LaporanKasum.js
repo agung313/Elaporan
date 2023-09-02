@@ -80,7 +80,7 @@ const LaporanKasum = ({navigation}) => {
 
 
     const rowData = (item,index) =>{
-        console.log(item)
+
         const tmpObj = {
             id_user: item.id_user,        
             bulan: item.bulan,

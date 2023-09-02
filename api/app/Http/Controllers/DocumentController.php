@@ -15,9 +15,14 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Resources\Document as DocumentResource;
 setlocale(LC_TIME, 'id_ID');
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\DB;
+
+use App\Traits\FireNotif;
 
 class DocumentController extends Controller
 {
+    use FireNotif;
+
     public function __construct()
     {
         $this->middleware('auth:sanctum');
@@ -77,13 +82,11 @@ class DocumentController extends Controller
         $status = $request->status;
         $tahun = $request->tahun;
 
-
         $bulan =  Carbon::create(Carbon::create(null, $request->bulan,1), 'Asia/Jakarta')->isoFormat('MMMM');
-
 
         if ($status == 'diajukan') {
 
-            if ($this->checkLaporan($idUser, $bulan)) {
+            if ($this->checkLaporan($idUser, $bulan, $tahun)) {
                 return response()->json([
                     'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
                 ],400);
@@ -118,9 +121,9 @@ class DocumentController extends Controller
         }
 
         //absensi
-        $query2 = Absensi::select('absensis.*')
-                    ->join('users', 'users.id', '=', 'absensis.id_user')
-                    ->where('users.id', $idUser)
+        $query2 = Absensi::whereMonth('tanggal', $request->bulan)
+                    ->whereYear('tanggal', $request->tahun)                    
+                    ->where('id_user', $idUser)
                     ->get();
 
         $query2->transform(function ($item) {
@@ -132,11 +135,24 @@ class DocumentController extends Controller
         //laporan
         $query3 = Laporan::select('laporans.*')
                     ->join('absensis','absensis.id', 'laporans.id_absensi')
-                    ->join('users', 'users.id', '=', 'absensis.id_user')
-                    ->where('users.id', $idUser)
+                    ->whereMonth('absensis.tanggal', $request->bulan)
+                    ->whereYear('absensis.tanggal', $request->tahun)                    
+                    ->where('id_user', $idUser)
                     ->get();
 
-        $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala]);
+        $arrLaporan = array();
+
+
+        foreach ($query3 as $lp) {
+
+            if (!array_key_exists($lp->id_absensi,$arrLaporan)) {
+                $arrLaporan[$lp->id_absensi]=[];            
+            }
+            array_push($arrLaporan[$lp->id_absensi], $lp);
+            
+        }
+        
+        $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $arrLaporan, 'kendala' => $kendala]);
 
         $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -157,7 +173,7 @@ class DocumentController extends Controller
 
             if ($status == 'diajukan') {
 
-                if ($this->checkLaporan($idUser, $bulan)) {
+                if ($this->checkLaporan($idUser, $bulan,$tahun)) {
                     return response()->json([
                         'messages' => 'silahkan lengkapi laporan kerja terlebih dahulu'
                     ],400);
@@ -199,9 +215,6 @@ class DocumentController extends Controller
             ],200);        
     }
 
-    function saveFile() {
-        
-    }
 
     // cek apakah ada laporan yg sudah diajukan/ diapprove kasum pada bulan dan tahun tsb dg id user
     function checkLaporanDiajukan(Request $request) {
@@ -226,30 +239,19 @@ class DocumentController extends Controller
 
     }
 
-    public function checkLaporan($idUser, $bulan){
-        //validasi laporan
-        $laporanIds = Laporan::join('absensis','absensis.id','=','laporans.id_absensi')
-                    ->join('users','users.id', '=', 'absensis.id_user')
-                    ->where('users.id', $idUser)
-                    ->pluck('laporans.id_absensi')
-                    ->toArray();
-        $absensiIds = Absensi::where('absensis.status', 'hadir')
-                    ->join('users','users.id', '=', 'absensis.id_user')
-                    ->whereMonth('absensis.tanggal',$bulan)
-                    ->where('users.id', $idUser)
-                    ->where(function($q){
-                        $q->where('absensis.status','hadir kegiatan')->orWhere('absensis.status','hadir');
-                    })
-                    ->pluck('absensis.id')
-                    ->toArray();
+    public function checkLaporan($idUser, $bulan, $tahun){
 
-        $missingIds = array_diff($absensiIds, $laporanIds);
+        $idAbsensi = Absensi::select('id')
+                            ->whereMonth('absensis.tanggal', $bulan)
+                            ->whereYear('absensis.tanggal', $tahun)                    
+                            ->where('id_user', $idUser)
+                            ->get();
         
+        $check = Laporan::select('id_absensi')->whereIn('id_absensi', $idAbsensi)->groupBy('id_absensi')->get();
 
-        // check apakah ada selsisih antara 2 variable.Jika tidak null / jika ada selisih kembalikan tru 
-        if ($missingIds !== null){
+        if (count($idAbsensi) !== count($check)) {
             return true;
-        }        
+        }
 
         return false;
     }
@@ -314,8 +316,19 @@ class DocumentController extends Controller
                         ->join('users', 'users.id', '=', 'absensis.id_user')
                         ->where('users.id', $doc->id_user)
                         ->get();
+            $arrLaporan = array();
 
-            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $query3, 'kendala' => $kendala, 'catatan' => $catatan]);
+
+            foreach ($query3 as $lp) {
+    
+                if (!array_key_exists($lp->id_absensi,$arrLaporan)) {
+                    $arrLaporan[$lp->id_absensi]=[];            
+                }
+                array_push($arrLaporan[$lp->id_absensi], $lp);
+                
+            }
+
+            $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $arrLaporan, 'kendala' => $kendala, 'catatan' => $catatan]);
 
             $filePath = storage_path('app/public/pdf/hasil.pdf');
 
@@ -342,7 +355,7 @@ class DocumentController extends Controller
             $dokument = Document::findorNew($id);
             $dokument->path = $pathGas;
             $dokument->catatan = $catatan;
-            $dokument->status = "diapprove";
+            $dokument->status = $request->status;
             $dokument->save();
 
             return response()->json([

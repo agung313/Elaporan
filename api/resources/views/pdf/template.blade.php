@@ -81,52 +81,68 @@
                 <tr class="tabell">
                     <td class="tabell" style="text-align: center; width: 20px; padding: 10px;">{{$key+1 ."."}}</td>
                     <td class="tabell" style="text-align: center; padding: 10px;">{{$item->tanggal}}</td>
-                    <td class="tabell" style="padding: 10px;">
-                        <table>
-                            <tr>
-                                <td>1. </td>
-                                <td>{{$item->status}}</td>
-                            </tr>
-                            @if ($item->status == "hadir")
-                                @php $tes = 2; @endphp
-                                @foreach ($laporan as $lapor)
-                                    @if ($lapor->id_absensi == $item->id)
-                                        <tr>
-                                            <td>{{$tes ."."}}</td>
-                                            <td>{{$lapor->judul_kegiatan}}</td>
-                                        </tr>
-                                        @php $tes++; @endphp
-                                    @endif
-                                @endforeach
-                            @endif
-                        </table>
-                    </td>
-                    <td class="tabell" style=" padding: 10px;">
-                        <table>
-                            <tr>
-                                <td>1. </td>
-                                @if ($item->status == "hadir")
-                                    <td>waktu hadir : {{$item->waktu_hadir}}<br>
-                                        waktu pulang : {{$item->waktu_pulang}}
-                                    </td>
-                                @else
+                    @if ($item->status == 'hadir' || $item->status == 'hadir kegiatan')
+                        <td class="tabell" style="padding: 10px;">
+                            <table>
+                                <tr>
+                                    <td>1. </td>
                                     <td>{{$item->status}}</td>
-                                @endif
-                            </tr>
-                            @if ($item->status == "hadir")
+                                </tr>
+                                @php $tes = 2; 
+                                @endphp
+                                @isset($laporan[$item->id])                                
+                                    @foreach ($laporan[$item->id] as $lapor)
+                                            <tr>
+                                                <td>{{$tes ."."}}</td>
+                                                <td>{{$lapor->judul_kegiatan}}</td>
+                                            </tr>
+                                            @php $tes++; @endphp
+                                    @endforeach
+                                @endisset                                    
+
+                            </table>
+                        </td>
+                        <td class="tabell" style=" padding: 10px;">
+                            <table>
+                                <tr>
+                                    <td>1. </td>
+                                        <td>waktu hadir : {{$item->waktu_hadir}}<br>
+                                            waktu pulang : {{$item->waktu_pulang}}
+                                        </td>
+
+                                </tr>
                                 @php $tes2 = 2; @endphp
-                                @foreach ($laporan as $key => $lapor)
-                                    @if ($lapor->id_absensi == $item->id)
-                                        <tr>
-                                            <td>{{$tes2 . "."}}</td>
-                                            <td>{{$lapor->uraian_kegiatan}}</td>
-                                        </tr>
-                                        @php $tes2++; @endphp
-                                    @endif
-                                @endforeach
-                            @endif 
-                        </table>
-                    </td>
+                                @isset($laporan[$item->id])
+                                    @foreach ($laporan[$item->id] as $key => $lapor)
+                                            <tr>
+                                                <td>{{$tes2 . "."}}</td>
+                                                <td>{{$lapor->uraian_kegiatan}}</td>
+                                            </tr>
+                                            @php $tes2++; @endphp
+                                    @endforeach                                    
+                                @endisset                                
+
+                                
+                            </table>
+                        </td>
+                    @else
+                        <td class="tabell" style="padding: 10px;">
+                            <table>
+                                <tr>
+                                    <td>1. </td>
+                                    <td>{{$item->status}}</td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td class="tabell" style=" padding: 10px;">
+                            <table>
+                                <tr>
+                                    <td>1. </td>
+                                    <td>{{$item->status}}</td>
+                                </tr>
+                            </table>
+                        </td>                        
+                    @endif
                 </tr>
             @endforeach
         </table>

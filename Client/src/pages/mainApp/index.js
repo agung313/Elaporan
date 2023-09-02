@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
+import { ScrollView,BackHandler, StyleSheet, Text, View, Dimensions, ImageBackground, Image, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Absensi, AbsensiKurang, Agenda, BgApp, CloseIcont, AddImg, JmlNotif, LgBappeda, NotifIcont, OffAbsensi, SakitIcont, SakitIzin, SettIcont, TidakHadir, WarningIcont, offAgenda, DangerIcont, SakitDanger, SakitIzinDanger, PasFoto } from '../../assets/images';
 import ReactNativeModal from 'react-native-modal'
@@ -11,6 +11,7 @@ import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import moment from 'moment';
 
 
 const MainApp = ({route, navigation}) => {
@@ -69,12 +70,38 @@ const MainApp = ({route, navigation}) => {
             getToday(),
             getMyProfile(),
             getMyHistory(),
-            getMyPengajuan()          
+            getMyPengajuan()       
+            checkTime()   
         }
         
     },[navigation, isFocused])
     
+
+    const [invalidTime, setInvalidTime] = useState(false)
+
     const [imgFoto, setImgFoto] = useState()
+
+    const checkTime = async() =>{
+
+        try {
+
+            const target_url =`${base_url}/user/checkTime`
+
+            const response = await axios.get(target_url,{});        
+            const firstDate = new Date(cekTgl);
+            const secondDate = new Date(response.data);
+
+            const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
+
+            if (differenceInMilliseconds > 3) {
+                setInvalidTime(true)
+            }
+
+        } catch (error) {
+            console.log(error, "error check time")   
+        }
+    }
+
     const getMyProfile = async data =>{
 
         try {
@@ -833,6 +860,29 @@ const MainApp = ({route, navigation}) => {
                 </View>
                                
             </ImageBackground>
+            {/* modal invalid time */}
+            <ReactNativeModal isVisible={invalidTime}   style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                <View style={{ width: "90%", height: "25%", backgroundColor: "#fff", borderRadius: 10,  padding:10, justifyContent:"center" }}>
+
+                    <View style={{width:"100%", marginTop:10, alignItems:"center"}}>
+                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:13, textTransform:"capitalize", textAlign:'center'}}>Peringatan !  Jam/Tanggal Perangkat Anda Invalid </Text>
+                        <Text style={{marginVertical:5, fontSize:11, color:'red'}}>Silahkan Atur Kembali Jam/Tanggl Perangkat</Text>
+                    </View>
+                    <View style={{width:"100%", alignItems:"center",  marginTop:25,}}>
+                        <View style={{flexDirection:"row"}}>
+
+                            <TouchableOpacity style={{width:120, height:40, backgroundColor:"#e82a39", borderRadius:10, justifyContent:"center", alignItems:"center"}} onPress={()=>{
+                                setInvalidTime(false)
+                                BackHandler.exitApp()
+
+                            }} >
+                                <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>Ok !</Text>
+                            </TouchableOpacity>
+                        </View>     
+                    </View>
+                </View>
+            </ReactNativeModal>
+
         </ScrollView>
     )
 }

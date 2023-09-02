@@ -20,18 +20,23 @@ class User extends JsonResource
     public function toArray($request)
     {
         $cekAbsen = Absensi::where('id_user', $this->id)
-                    ->whereYear('tanggal', $request->year)
-                    ->whereMonth('tanggal', $request->month)
+                    ->whereYear('tanggal', $request->tahun)
+                    ->whereMonth('tanggal', $request->bulan)
                     ->where('isApprove', 'diterima')
                     ->where('approveAdmin', true)
                     ->get();
 
 
-        $totalHadir = $cekAbsen->where('status', 'hadir')->count();
+
+        $hadir = $cekAbsen->where('status', 'hadir')->count();
+        $kegiatan = $cekAbsen->where('status', 'hadir kegiatan')->count();
+
+        $totalHadir = $hadir+$kegiatan;
         $totalIzin = $cekAbsen->where('status', 'izin')->count();
         $totalSakit = $cekAbsen->where('status', 'sakit')->count();
         $totalTidakHadir = $cekAbsen->where('status', 'tidak hadir')->count();
-        $totalTidakHadir = $cekAbsen->where('status', 'hadir kegiatan')->count();
+
+
 
 
         return [
@@ -47,7 +52,7 @@ class User extends JsonResource
             'totalHadir' => $totalHadir,
             'totalIzin' => $totalIzin,
             'totalSakit' => $totalSakit,
-            'totalTidakHadir' => $totalTidakHadir
+            'totalTidakHadir' => $totalTidakHadir,
         ];
     }
 }
