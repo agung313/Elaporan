@@ -336,7 +336,12 @@ class AbsensiController extends Controller
             }
             
         }else{
-            $status = 'belum absen datang';
+            if (Carbon::now()->gte($absenPulang)) {
+                $status = 'waktu absen harian sudah lewat';
+            }else{
+                $status = 'belum absen datang';
+            }
+
         }
         
 
