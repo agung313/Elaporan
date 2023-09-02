@@ -11,7 +11,6 @@ import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import moment from 'moment';
 
 
 const MainApp = ({route, navigation}) => {
@@ -92,9 +91,12 @@ const MainApp = ({route, navigation}) => {
             const secondDate = new Date(response.data);
 
             const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
+            const minutes = differenceInMilliseconds / 60000
 
-            if (differenceInMilliseconds > 3) {
+            if (minutes > 3) {
                 setInvalidTime(true)
+            }else{
+                setInvalidTime(false)                
             }
 
         } catch (error) {

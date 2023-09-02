@@ -167,12 +167,12 @@ const Pendahuluan = ({navigation}) => {
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
             var checkTmpRL = await AsyncStorage.getItem('tmpRuangLingkup')
-            // var checkTmpLatarBelakang = await AsyncStorage.getItem("LatarBelakang")
-            // var checkTmpMaksudTujuan = await AsyncStorage.getItem("MaksudTujuan")
+            var checkTmpLatarBelakang = await AsyncStorage.getItem("LatarBelakang")
+            var checkTmpMaksudTujuan = await AsyncStorage.getItem("MaksudTujuan")
 
             var paramsRL =''
-            // var paramsLatarBelakang =''
-            // var paramsMaksudTujuan =''
+            var paramsLatarBelakang =''
+            var paramsMaksudTujuan =''
 
             if (checkTmpRL) {
 
