@@ -35,11 +35,9 @@ const Absensi = ({route, navigation}) => {
     const localeTime = cekTgl.toLocaleTimeString()
 
     const splitTime = localeTime.split(":")
-    const waktuTelat1 = splitTime[0].split("0")+splitTime[1]
-    const waktuTelat2 = waktuTelat1.split(',')
-    const waktuTelat3 = waktuTelat2[1]
-    const waktuTelat = Number(waktuTelat3)
-    // console.log(typeof(waktuTelat));
+    const waktuTelat1 = splitTime[0]+splitTime[1]
+    const waktuTelat = Number(waktuTelat1)
+    console.log(waktuTelat);
     
     
     const namaHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"]
@@ -83,7 +81,8 @@ const Absensi = ({route, navigation}) => {
     const checkTime = async() =>{
 
         try {
-
+            const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+            console.log(token_fb)
             const target_url =`${base_url}/user/checkTime`
 
             const response = await axios.get(target_url,{});        
@@ -91,15 +90,18 @@ const Absensi = ({route, navigation}) => {
             const secondDate = new Date(response.data);
 
             const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
+            const minutes = differenceInMilliseconds / 60000
 
-            if (differenceInMilliseconds > 3) {
+            if (minutes > 3) {
                 setInvalidTime(true)
+            }else{
+                setInvalidTime(false)                
             }
 
         } catch (error) {
             console.log(error, "error check time")   
-        }
-    }
+        }
+    }
 
     const [imgFoto, setImgFoto] = useState()
     

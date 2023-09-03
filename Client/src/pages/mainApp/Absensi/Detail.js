@@ -62,6 +62,12 @@ const Detail = ({route, navigation}) => {
         catatanKasum:""
 
     })
+    // timeterlambat
+    const splitTime = absen.waktuMasuk.split(":")
+    const waktuTelat1 = splitTime[0]+splitTime[1]
+    const waktuTelat = Number(waktuTelat1)
+    console.log(waktuTelat, "<<<<<< waktu telat");
+
     const [modalValue, setModalValue] = useState({
         id:0,
         judulKegiatan:'-',
@@ -407,7 +413,7 @@ const Detail = ({route, navigation}) => {
                             <View style={{width:"55%", minHeight:25,}}>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Nama :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{ profile.nama }</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{ profile.nama }</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Jabatan :</Text>
@@ -419,7 +425,14 @@ const Detail = ({route, navigation}) => {
                                 </View>                                
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Status Kehadiran :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.status}</Text>
+                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                        <Text style={{color:"#000", fontSize:10, fontWeight:"500", textTransform:"capitalize"}}>{absen.status} </Text>
+                                        {waktuTelat>815?
+                                            <Text style={{color:"red", fontSize:10, fontWeight:"500"}}>(Anda Terlambat Absen)</Text>
+                                        :
+                                            null
+                                        }
+                                    </View>
                                 </View>
 
                                 <View style={absen.status == "Izin" || absen.status == "Sakit" ?{marginBottom:10}:{display:"none"}}>

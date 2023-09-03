@@ -76,6 +76,8 @@ const DetailThlIt = ({route, navigation}) => {
         foto:null,
         hadir:0,
         izinSakit:0,
+        izin:0,
+        sakit:0,
         alfa:0
     })    
 
@@ -131,7 +133,9 @@ const DetailThlIt = ({route, navigation}) => {
                         jabatan: response.data.jabatan,
                         foto: response.data.URL,
                         hadir: response.data.totalHadir,
-                        izinSakit:response.data.totalIzin + response.data.totalSakit,
+                        izinSakit: response.data.totalIzin+response.data.totalSakit,
+                        izin:response.data.totalIzin,
+                        sakit: response.data.totalSakit,
                         alfa: response.data.totalTidakHadir
                     })
             }
@@ -357,7 +361,7 @@ const DetailThlIt = ({route, navigation}) => {
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Sakit & Izin :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.izinSakit} Hari</Text>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{myProfile.sakit} Hari Sakit / {myProfile.izin} Hari Izin</Text>
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Tidak Hadir :</Text>

@@ -84,7 +84,8 @@ const MainApp = ({route, navigation}) => {
     const checkTime = async() =>{
 
         try {
-
+            const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+            console.log(token_fb)
             const target_url =`${base_url}/user/checkTime`
 
             const response = await axios.get(target_url,{});        
@@ -92,15 +93,18 @@ const MainApp = ({route, navigation}) => {
             const secondDate = new Date(response.data);
 
             const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
+            const minutes = differenceInMilliseconds / 60000
 
-            if (differenceInMilliseconds > 3) {
+            if (minutes > 3) {
                 setInvalidTime(true)
+            }else{
+                setInvalidTime(false)                
             }
 
         } catch (error) {
             console.log(error, "error check time")   
-        }
-    }
+        }
+    }
 
     const getMyProfile = async data =>{
 
@@ -652,6 +656,8 @@ const MainApp = ({route, navigation}) => {
         }
         
     }
+
+    
     return (
         <ScrollView>
             <ImageBackground source={BgApp} style={{flex:1}}>
