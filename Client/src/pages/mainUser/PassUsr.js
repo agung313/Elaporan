@@ -252,25 +252,6 @@ const PassUsr = ({navigation,  }) => {
     const [fileTtd, setFileTtd] = useState()
     const [imgTtd, setImgTtd] = useState()
 
-    const selectImageTtd = async () => {
-        try{
-
-            const doc =  await DocumentPicker.pickSingle({
-                type: [DocumentPicker.types.images],
-            })
-
-            setFileTtd(doc)
-            setImgTtd(doc.uri)
-
-        }catch(err){
-            if(DocumentPicker.isCancel(e)){
-                console.log(e, "<---- user canceled file")
-            }else{
-                console.log(err)
-            }
-        }
-    } 
-
     const imgFileTtd = {uri: imgTtd}
 
     // siganture ttd

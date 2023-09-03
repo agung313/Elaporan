@@ -67,7 +67,6 @@ const DetailThlIt = ({route, navigation}) => {
 
     const [aktifBulan, setAktifBulan] = useState(monthUsed)
     const getStrAktifMonth = namaBulan[aktifBulan]
-    // console.log(getStrAktifMonth,"<<<<aktif bulan");
 
     const [aktifTahun, setAktifTahun] = useState(getYear)
     const [myProfile, setMyProfile] = useState({
@@ -106,9 +105,9 @@ const DetailThlIt = ({route, navigation}) => {
             // console.log(response.data, "<<<<< dataaaa");
 
             if (response.status == 200) {
-
-                setFileDoc(response.data[0].URL)
-
+                if (response.data.length >0) {
+                    setFileDoc(response.data[0].URL)                    
+                }
             }
 
         } catch (error) {
@@ -120,12 +119,12 @@ const DetailThlIt = ({route, navigation}) => {
         // setLoadHistory(true)
         try {
             const myToken = await AsyncStorage.getItem('AccessToken');    
-            const target_url =`${base_url}/user/profile?id=${idUser}&month=${aktifBulan}&year=${aktifTahun}`
+            const target_url =`${base_url}/user/profile?id=${idUser}&bulan=${aktifBulan}&tahun=${aktifTahun}`
 
             const response = await axios.get(target_url,{headers:{
                 Authorization: `Bearer ${myToken}`
             }});        
-
+            console.log(target_url);
             if (response.status == 200) {
 
                     setMyProfile({
@@ -460,12 +459,17 @@ const DetailThlIt = ({route, navigation}) => {
                         <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Laporan Bulan {namaBulan[aktifBulan]} {aktifTahun}</Text>
                     </View>
                     <View>
-                        <Pdf
-                            trustAllCerts={false}
-                            source={{uri:fileDoc}}
-                            style={{width:"100%", height:450}}
-                            // renderActivityIndicator={loadSpinner}
-                        />
+                        {
+                            fileDoc ?
+                                <Pdf
+                                trustAllCerts={false}
+                                source={{uri:fileDoc}}
+                                style={{width:"100%", height:450}}
+                                // renderActivityIndicator={loadSpinner}
+                                />
+                                :
+                                <Text style={{textAlign:'center', color:'red'}}>Laporan Belum Diupload</Text>
+                        }
                     </View>
                 </View>
             </ReactNativeModal>

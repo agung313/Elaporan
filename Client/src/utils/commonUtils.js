@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
+import notifee from '@notifee/react-native';
 
 
 export async function requestUserPermission() {
@@ -13,18 +14,22 @@ export async function requestUserPermission() {
     }
 }
 
+function onMessageReceived(message) {
+    notifee.displayNotification(JSON.parse(message.data.notifee));
+  }
+  
 
 export const notificationListener = () => {
 
     // Assume a message-notification contains a "type" property in the data payload of the screen to open
 
-    messaging().onNotificationOpenedApp(remoteMessage => {
-        console.log(
-            'Notification caused app to open from background state:',
-            remoteMessage.notification,
-        );
+    // messaging().onNotificationOpenedApp(remoteMessage => {
+        // console.log(
+        //     'Notification caused app to open from background state:',
+        //     remoteMessage.notification,
+        // );
         // navigation.navigate(remoteMessage.data.type);
-    });
+    // });
 
     // Check whether an initial notification is available
     messaging()

@@ -11,7 +11,6 @@ import axios from 'axios';
 import { useIsFocused } from "@react-navigation/native";
 import ApiLink from '../../assets/ApiHelper/ApiLink';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import moment from 'moment';
 
 
 const MainApp = ({route, navigation}) => {
@@ -60,7 +59,8 @@ const MainApp = ({route, navigation}) => {
     const [menunggu, SetMenunggu] = useState()
     const [menunggu2, SetMenunggu2] = useState()
     const [btAbsensi, SetBtAbsensi] = useState(null)
-    
+    const [alfa, setAlfa] = useState()
+
     useEffect(()=>{
 
 
@@ -197,12 +197,14 @@ const MainApp = ({route, navigation}) => {
                 Authorization: `Bearer ${myToken}`
             }});        
 
-          
+
             var status = response.data.status
             var data = response.data.data
-            var waktuPulang = data.waktu_pulang
-            setStatusApprove(data.isApprove)
-            var approve = data.isApprove
+
+
+            var waktuPulang = data ? data.waktu_pulang :null
+            
+            setStatusApprove(data ? data.isApprove:null)
         
             if (data) {
                 setIdAbsensi(data.id)
@@ -239,7 +241,12 @@ const MainApp = ({route, navigation}) => {
                 setLabelStatus("Absensi Pulang")     
                 SetPulang(1)
                 SetBtAbsensi(waktuPulang)
-                // setCekWaktuPulang(waktuPulang)
+
+            }else if (status == 'waktu absen harian sudah lewat') {
+
+                setAlfa(1)
+
+                
             }
             else{
                 setStatusAbsensi(false)
@@ -690,11 +697,25 @@ const MainApp = ({route, navigation}) => {
                 </View>
 
                 {/* card absensi */}
-                <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, height:WindowHeight, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center" }}>                
+                <View style={{backgroundColor:"#f3f3f3", width:WindowWidth, height:WindowHeight, borderTopRightRadius:40, borderTopLeftRadius:40, alignItems:"center" }}>       
+
+                    {/* card btn absen & agenda  */}
                     <View style={{width:WindowWidth*0.7, height:200, backgroundColor:"white", borderRadius:15, marginTop:20, elevation:10, alignItems:"center"}}>
                         <Text style={{ color:"black", fontSize:14, marginTop:10, fontWeight:'600'}}>{getStrDay}, {getDay} {getStrMonth} {getYear}</Text>
-                        
-                        {izinSakit? 
+                        {
+                            getStrDay !=="Sabtu" && getStrDay !=="Minggu" && alfa ?
+                            <View style={{alignItems:"center"}}>
+                                <View style={{flexDirection:'row', marginTop:15, marginBottom:5}}>
+
+                                <TouchableOpacity style={{ width:200, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} >
+                                    <Image source={OffAbsensi} style={{width:70,height:70}}/>
+                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', marginVertical:7, textTransform:"capitalize"}}>Tidak Bisa Absen</Text>
+                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Jam Absensi Harian Sudah Lewat</Text>
+                                </TouchableOpacity>                                    
+                                </View>
+                            </View>
+                            :
+                            izinSakit? 
                             <View style={{alignItems:"center"}}>
                                 <View style={{flexDirection:'row', marginTop:15}}>
                                     <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} >
@@ -714,7 +735,7 @@ const MainApp = ({route, navigation}) => {
                         :
                             <View style={{alignItems:"center"}}>
                                 
-                                {getStrDay=="Sabtu" && getStrDay=="Minggu"?
+                                {getStrDay=="Sabtu" || getStrDay=="Minggu"?
                                     <View style={{alignItems:"center"}}>
                                         <View style={{ width:100, height:100, alignItems:'center', justifyContent:'center', marginTop:15}} >
                                             <Image source={OffAbsensi} style={{width:70,height:70}}/>
@@ -767,7 +788,6 @@ const MainApp = ({route, navigation}) => {
                                         <BtnAbsen/>
                                         }
                                         
-
                                         <TouchableOpacity style={showContent==2?{backgroundColor:"#0060cb", width:200, height:30, borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"} : {display:"none"}} onPress={() =>  navigation.navigate('Agenda',{idAbsensi:idAbsensi})}>
                                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:15}}>
                                                 Buat Agenda
@@ -779,47 +799,10 @@ const MainApp = ({route, navigation}) => {
 
                             </View>
                         }
-                            
-                        
 
-                        
-                        <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                            <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
-                                <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
-                                    <Image source={CloseIcont} style={{width:30, height:30}}/>
-                                </TouchableOpacity>
-                                <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
-                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Absensi Anda</Text>
-                                </View>
-                                <View style={{alignItems:"center", width:"100%"}}>
-                                    
-                                    <Picker
-                                        selectedValue={kehadiran}
-                                        onValueChange={(itemValue, itemIndex) => 
-                                            setKehadiran(itemValue)
-                                        }
-                                        style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
-                                        selectionColor={"#000"}
-                                        // dropdownIconRippleColor={"transparent"}
-                                        // dropdownIconColor={"transparent"}
-                                    >
-                                        <Picker.Item label="-" value="0"/>
-                                        <Picker.Item label="Hadir" value="1"/>
-                                        <Picker.Item label="Hadir Kegiatan" value="2"/>
-                                        <Picker.Item label="Sakit" value="3"/>
-                                        <Picker.Item label="Izin" value="4"/>
-                                    </Picker>
-                                    
-
-                                </View>
-                                <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
-                                    <TouchableOpacity style={kehadiran>0 ? {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={buatAbsensi}>
-                                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </ReactNativeModal>
+                    
                     </View>
+                    {/* end card btn absen & agenda  */}
 
                     {cekApprove?
                         <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:30, alignItems:"center"}}>
@@ -828,6 +811,7 @@ const MainApp = ({route, navigation}) => {
                     :
                         <View></View>
                     }
+
 
                     <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:30, alignItems:"center"}}>
                         <View style={{width:WindowWidth*0.9, marginBottom:10}}><Text style={{fontWeight:'700', color:"black",  fontSize:14}}>
@@ -887,6 +871,43 @@ const MainApp = ({route, navigation}) => {
                         </View>     
                     </View>
                 </View>
+            </ReactNativeModal>
+
+            <ReactNativeModal isVisible={isModalVisible} onBackdropPress={() => setModalVisible(false)}  style={{ alignItems: 'center',  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
+                            <View style={{ width: "90%", height: "35%", backgroundColor: "#fff", borderRadius: 10,  padding:10 }}>
+                                <TouchableOpacity style={{alignItems:'flex-end'}} onPress={toggleModal}>
+                                    <Image source={CloseIcont} style={{width:30, height:30}}/>
+                                </TouchableOpacity>
+                                <View style={{width:"100%", marginTop:15, alignItems:"center", marginBottom:20}}>
+                                    <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:15}}>Silahkan Pilih Absensi Anda</Text>
+                                </View>
+                                <View style={{alignItems:"center", width:"100%"}}>
+                                    
+                                    <Picker
+                                        selectedValue={kehadiran}
+                                        onValueChange={(itemValue, itemIndex) => 
+                                            setKehadiran(itemValue)
+                                        }
+                                        style={{ width:"90%", height:20, borderRadius: 50,  fontWeight: "bold", color:"#000", backgroundColor: "#f3f3f3"}}
+                                        selectionColor={"#000"}
+                                        // dropdownIconRippleColor={"transparent"}
+                                        // dropdownIconColor={"transparent"}
+                                    >
+                                        <Picker.Item label="-" value="0"/>
+                                        <Picker.Item label="Hadir" value="1"/>
+                                        <Picker.Item label="Hadir Kegiatan" value="2"/>
+                                        <Picker.Item label="Sakit" value="3"/>
+                                        <Picker.Item label="Izin" value="4"/>
+                                    </Picker>
+                                    
+
+                                </View>
+                                <View style={{width:"100%", alignItems:"center",  marginTop:55,}}>
+                                    <TouchableOpacity style={kehadiran>0 ? {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15} : {display:"none"}} onPress={buatAbsensi}>
+                                        <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Buat Absensi</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
             </ReactNativeModal>
 
         </ScrollView>

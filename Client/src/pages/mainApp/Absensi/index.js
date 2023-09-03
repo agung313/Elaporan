@@ -78,6 +78,7 @@ const Absensi = ({route, navigation}) => {
 
     }, [navigation, isFocused])
 
+    
     const checkTime = async() =>{
 
         try {
@@ -92,10 +93,23 @@ const Absensi = ({route, navigation}) => {
             const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
             const minutes = differenceInMilliseconds / 60000
 
+<<<<<<< HEAD
             if (minutes > 3) {
                 setInvalidTime(true)
             }else{
                 setInvalidTime(false)                
+=======
+            const minutes = differenceInMilliseconds / 60000
+
+            if (minutes > 3) {
+                setInvalidTime(true)
+            }else{
+                setInvalidTime(false)    
+
+                const tglMasuk = new Date('2023-01-01T01:15:00')                        
+                const jamMasuk = parseTime(tglMasuk.getHours()+':'+tglMasuk.getMinutes())
+                console.log(jamMasuk);
+>>>>>>> 8d0ff73900b0ec15ebae643641c4574a9cb092fc
             }
 
         } catch (error) {
@@ -320,7 +334,11 @@ const Absensi = ({route, navigation}) => {
                                 </View> */}
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} wib</Text>
+                                    <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} WIB  </Text>                                     
+                                    <Text style={{marginTop:-5, backgroundColor:'red', paddingHorizontal:10, color:'white', fontWeight:'600', borderRadius:10}}>Terlambat</Text>                                        
+                                    </View>
+
                                 </View>
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Pulang :</Text>

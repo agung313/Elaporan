@@ -70,6 +70,14 @@ const ProfileKasum = ({navigation}) => {
     const [emailUser, setEmailUser] = useState()
     const [imgTtd, setImgTtd] = useState()
 
+        // modal
+        const [myModal, setMyModal] = useState({
+            contohTtd :false,
+            fotoNoPick : false,
+            success:false,
+            loading:false
+        });
+
     const getMyProfile = async data =>{
 
         try {
@@ -88,12 +96,14 @@ const ProfileKasum = ({navigation}) => {
                     email:response.data.email,
                     ttd:response.data.ttd
                 })
+                setImgFoto(response.data.URL)
+                setImgTtd(response.data.ttd)
+
             }
         } catch (error) {
             console.log(error, "error get my profile")   
         }
     }
-    const imgFileFoto = {uri: imgFoto}
 
     // select image foto profile
     const handlerUpdateFoto = async ()=>{
@@ -131,7 +141,7 @@ const ProfileKasum = ({navigation}) => {
     // logout
     const [modalLogout, setModalLogout] = useState()
     const [modalLoad, setModalLoad] = useState()
-
+    const [errMaxSize, setErrMaxSize] = useState(false)
     const HeandleLogout = async () => {
         setModalLoad(true)
         try {
@@ -171,14 +181,16 @@ const ProfileKasum = ({navigation}) => {
     const toggleContent = (e)=>{
         setShowContent(e);
     }
-
-    // selectimage
     const selectImageFoto = async () => {
         try{
 
             const doc =  await DocumentPicker.pickSingle({
                 type: [DocumentPicker.types.images],
             })
+
+            if (doc.size > 1000000) {
+                setErrMaxSize(true)
+            }
 
             setFileFoto(doc)
             setImgFoto(doc.uri)
@@ -191,8 +203,10 @@ const ProfileKasum = ({navigation}) => {
 
             }
         }
-    }
+    } 
 
+    const imgFileFoto = {uri: imgFoto}
+    const imgFileTtd = {uri: imgTtd}
         // siganture ttd
     const [modalSignature, setModalSignature] = useState(false)
     const signatureRef = useRef();
@@ -206,10 +220,8 @@ const ProfileKasum = ({navigation}) => {
     };
 
     const [ttdBerhasil, setTtdBerhasil] = useState(false)
-    const onSaveEvent = async(result) => {
-        //result.encoded - for the base64 encoded png
-        //result.pathName - for the file path name
 
+    const onSaveEvent = async(result) => {
         try {
             
             const params ={
@@ -230,11 +242,12 @@ const ProfileKasum = ({navigation}) => {
             getMyProfile()
         }        
     } catch (error) {
-        console.log(error.result)       
+        console.log(error.response.data,"errrrrro ttd")       
     }
         
 
     }
+
     const onDragEvent = () => {
          // This callback will be called when the user enters signature
         console.log("dragged");
@@ -291,8 +304,8 @@ const ProfileKasum = ({navigation}) => {
                 setModalLoad(false)
                 
                 if (!res1.data.error) {
-
-                    const response = await axios.post(ApiLink+'/api/auth/logout',{},{
+                    const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+                    const response = await axios.post(ApiLink+'/api/auth/logout',{token_fb:token_fb},{
                         headers: {
                           Authorization: `Bearer ${myToken}`,
                         },
@@ -317,7 +330,7 @@ const ProfileKasum = ({navigation}) => {
             } catch (error) {
                 setModalLoad(false)
                 setErrPass(true)
-                console.log(error,"<--- error handler update")            
+                console.log(error.response.data,"<--- error handler update")            
             }
         }
         
@@ -353,7 +366,7 @@ const ProfileKasum = ({navigation}) => {
                 </View>
                 <View style={{alignItems:"center", width:WindowWidth, height:200, }}>
                     <View style={{alignItems:"center", marginTop:20}}>
-                        {myProfile.foto == null ? <Image source={ imgFileFoto } style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={{uri:myProfile.foto}} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
+                        {imgFoto ? <Image source={ imgFileFoto } style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={{uri:myProfile.foto}} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                         
                         <View style={{ alignItems:"center", marginTop:15}}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:16}}>{myProfile.nama}</Text>
@@ -383,7 +396,7 @@ const ProfileKasum = ({navigation}) => {
 
                             <View style={{width:"100%", alignItems:"center"}}>
                                 <View style={{marginTop:10, alignItems:"center"}}>
-                                    {myProfile.foto ? <Image source={{uri:myProfile.foto}} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
+                                    {imgFoto ? <Image source={imgFileFoto} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>:<Image source={AddImg} style={{width:100, height:100, borderRadius:50,}} resizeMode='cover'/>}
                                     
                                     <TouchableOpacity style={{alignItems:"center", justifyContent:"center", height:30, width:110, marginTop:5, flexDirection:"row"}} onPress={selectImageFoto}>
                                         <Image source={AddImgUser} style={{width:25, height:25, marginTop:-3}}/>
@@ -394,9 +407,15 @@ const ProfileKasum = ({navigation}) => {
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateFoto}>
+                                {
+                                    errMaxSize ? 
+                                    <Text style={{color:'red', fontSize:12, fontWeight:'500'}}>Max Size File 1 MB</Text>
+                                    :
+                                    <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateFoto}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Foto</Text>
-                                </TouchableOpacity>
+                                </TouchableOpacity>                                    
+                                }
+
 
                             </View>
                         </View>
@@ -405,11 +424,10 @@ const ProfileKasum = ({navigation}) => {
                             <Text style={{ color: "#000", fontSize: 13, fontFamily: "Spartan", fontWeight: "900", marginTop:5, marginBottom:5, marginLeft:5}}>File Tanda Tangan</Text>
 
                             <View style={{width:"100%", alignItems:"center", marginTop:20}}>{imgTtd ? <Image source={imgFileTtd} style={{width:100, height:100 }} resizeMode='cover'/>:
-                                <Image source={myProfile.ttd ? {uri:myProfile.ttd}: ExTtd} style={{width:100, height:100}}/>}
+                                <Image source={ExTtd} style={{width:100, height:100}}/>}
                             </View>
 
                             <View style={{width:"100%", alignItems:"center", marginBottom:10}}>
-                                {/* <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={handlerUpdateTtd}> */}
                                 <TouchableOpacity style={{width:"50%", height:30, backgroundColor:"#39a339", borderRadius:15, marginTop:10, alignItems:"center", justifyContent:"center"}} onPress={()=> setModalSignature(true)}>
                                     <Text style={{ fontWeight:'900', color:"white", textShadowColor:"#000", textShadowOffset: {width: -1, height: 1}, textShadowRadius: 5, fontSize:14}}>Update Tanda Tangan</Text>
                                 </TouchableOpacity>
@@ -664,8 +682,7 @@ const ProfileKasum = ({navigation}) => {
                         minStrokeWidth={13}
                         maxStrokeWidth={13}
                     />
-                        
-                    
+
                     <View style={{width:"100%", flexDirection:"row",  justifyContent:"center", marginTop:20 }}>
                         <TouchableOpacity style={{width:"40%", height:40, alignItems:"center", justifyContent:"center", backgroundColor:"#0060cb", borderRadius:10, marginRight:15}} onPress={handleClear}>
                             <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>Clear</Text> 
