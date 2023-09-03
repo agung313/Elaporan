@@ -14,6 +14,10 @@ export async function requestUserPermission() {
     }
 }
 
+function onMessageReceived(message) {
+    notifee.displayNotification(JSON.parse(message.data.notifee));
+  }
+  
 
 export const notificationListener = () => {
 
