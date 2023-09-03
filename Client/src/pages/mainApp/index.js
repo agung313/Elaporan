@@ -84,7 +84,8 @@ const MainApp = ({route, navigation}) => {
     const checkTime = async() =>{
 
         try {
-
+            const token_fb = await AsyncStorage.getItem('tokenDeviceFB')
+            console.log(token_fb)
             const target_url =`${base_url}/user/checkTime`
 
             const response = await axios.get(target_url,{});        

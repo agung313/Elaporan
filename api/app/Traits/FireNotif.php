@@ -7,6 +7,36 @@ use GuzzleHttp\Client;
 
 trait FireNotif
 {
+    public function tesNotif()  {
+
+
+        $client = new Client();
+        $requestUrl = 'https://fcm.googleapis.com/fcm/send';
+        $requestHeaders = [
+            'Authorization' => 'key=AAAAr7YVf38:APA91bHagnM2wvo3VLvp7AzG4-POF9Sdg9zSU9Xj8DoY562ZyUOli-aL4NQeE_5GX7uOBooQho_iY7lQ1OOmF2ZyUSraPORnpw1NldBQOaipBec_WVXN4PcTi9gklGrjnINVI4dPDuvo',
+        ];
+        
+        $json_req = '{
+            "to": "cZ_9MygDQgW_g-sXhA-D7g:APA91bGmB2Z7bEHAb2POIvxBkxrvrFM-Lq16TWFzeQXluDi6hDZvk97RMCX1ELGz_qbXrAQ0Y1jJNZed7s0aHEBDrKIRQAhFMuPSayWVOtufJ2V_oRxymbwQAlbSGnQEa8U-Di5cypw1",
+            "priority":"high",
+            "soundName":"default",
+            "notification":{
+                "title":"Judul Notif",
+                "body":"isi notif"
+            }
+        }';
+
+        $requestBody = json_decode($json_req);
+
+        $response = $client->request('POST', $requestUrl, [
+            'headers' => $requestHeaders,
+            'json' => $requestBody,
+        ]);
+        
+        return $response->getStatusCode();
+        
+
+    }    
     public function actionFire($params=[])  {
 
 

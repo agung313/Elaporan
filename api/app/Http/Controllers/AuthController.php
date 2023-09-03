@@ -25,13 +25,13 @@ class AuthController extends Controller{
 
     function tes() {
 
-        // $this->actionFire();
-        $data = $this->notifKasum('Agenda', 'Agenda Dooong');
+        $this->tesNotif();
+        // $data = $this->notifKasum('Agenda', 'Agenda Dooong');
 
-        return response()->json([
-            'messages' => 'Success',
-            'data' =>  $data
-        ]);        
+        // return response()->json([
+        //     'messages' => 'Success',
+        //     'data' =>  $data
+        // ]);        
             
     }
     public function login(Request $request)

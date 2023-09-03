@@ -9,15 +9,15 @@ import { getToken, notificationListener, requestUserPermission } from './src/uti
 
 const App = () => {
 
-  useEffect(() => {
+  // useEffect(() => {
 
 
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
-    });
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     Alert.alert('A new FCM message arrived!', JSON.stringify(remoteMessage));
+  //   });
 
-    return unsubscribe;
-  }, []);
+  //   return unsubscribe;
+  // }, []);
 
   useEffect(() => {
     requestUserPermission()
