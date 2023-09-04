@@ -93,13 +93,6 @@ const Absensi = ({route, navigation}) => {
             const differenceInMilliseconds = secondDate.getTime() - firstDate.getTime();
             const minutes = differenceInMilliseconds / 60000
 
-<<<<<<< HEAD
-            if (minutes > 3) {
-                setInvalidTime(true)
-            }else{
-                setInvalidTime(false)                
-=======
-            const minutes = differenceInMilliseconds / 60000
 
             if (minutes > 3) {
                 setInvalidTime(true)
@@ -109,7 +102,6 @@ const Absensi = ({route, navigation}) => {
                 const tglMasuk = new Date('2023-01-01T01:15:00')                        
                 const jamMasuk = parseTime(tglMasuk.getHours()+':'+tglMasuk.getMinutes())
                 console.log(jamMasuk);
->>>>>>> 8d0ff73900b0ec15ebae643641c4574a9cb092fc
             }
 
         } catch (error) {

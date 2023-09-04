@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
-import notifee from '@notifee/react-native';
 
 
 export async function requestUserPermission() {
