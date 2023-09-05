@@ -705,13 +705,14 @@ const MainApp = ({route, navigation}) => {
                         {
                             getStrDay !=="Sabtu" && getStrDay !=="Minggu" && alfa ?
                             <View style={{alignItems:"center"}}>
-                                <View style={{flexDirection:'row', marginTop:15, marginBottom:5}}>
+                                <View style={{ marginTop:25, marginBottom:0}}>
 
-                                <TouchableOpacity style={{ width:200, height:100, alignItems:'center', justifyContent:'center', marginRight:15 }} >
-                                    <Image source={OffAbsensi} style={{width:70,height:70}}/>
-                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', marginVertical:7, textTransform:"capitalize"}}>Tidak Bisa Absen</Text>
-                                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Jam Absensi Harian Sudah Lewat</Text>
-                                </TouchableOpacity>                                    
+                                    <TouchableOpacity style={{  height:100, alignItems:'center', justifyContent:'center'}} >
+                                        <Image source={OffAbsensi} style={{width:70,height:70}}/>
+                                        <Text style={{ color:"black", fontSize:11, fontWeight:'600', marginVertical:7, textTransform:"capitalize"}}>Maaf Anda Tidak Bisa Absen</Text>
+                                        <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize", marginBottom:7}}>Waktu Telah Melewati Pukul 12.00</Text>
+                                        <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Harap Hubungi Admin Untuk Absensi</Text>
+                                    </TouchableOpacity>                                    
                                 </View>
                             </View>
                             :

@@ -327,8 +327,7 @@ const Absensi = ({route, navigation}) => {
                                 <View style={{marginBottom:10}}>
                                     <Text style={{color:"#000", fontSize:12, fontWeight:"900"}}>Waktu Masuk :</Text>
                                     <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} WIB  </Text>                                     
-                                    <Text style={{marginTop:-5, backgroundColor:'red', paddingHorizontal:10, color:'white', fontWeight:'600', borderRadius:10}}>Terlambat</Text>                                        
+                                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{localeTime} WIB  </Text>                                                                            
                                     </View>
 
                                 </View>
