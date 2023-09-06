@@ -306,7 +306,6 @@ class UserController extends Controller
         ],201);
     }
 
-
     function setComplete($id){
         
         $sql = Profile::where('id_user',$id)
@@ -324,5 +323,20 @@ class UserController extends Controller
             $profile->update(['isComplete' => true]);
         }
 
+    }
+
+    function history(){
+        if(Auth::user()->role == 'kasum' || Auth::user()->role == 'admin'){
+            $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+            ->join('users', 'users.id', '=', 'profiles.id_user')
+            ->where('users.role', 'user')
+            ->get();
+            
+            return response(UserResource::collection($user));
+        }else{
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses untuk melakukan aksi'
+            ],401);
+        }
     }
 }
