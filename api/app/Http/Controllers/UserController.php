@@ -348,6 +348,7 @@ class UserController extends Controller
                     DB::raw('SUM(CASE WHEN absensis.status = "hadir" THEN 1 ELSE 0 END) as totalHadir'),
                     DB::raw('SUM(CASE WHEN absensis.status = "izin" THEN 1 ELSE 0 END) as totalIzin'),
                     DB::raw('SUM(CASE WHEN absensis.status = "sakit" THEN 1 ELSE 0 END) as totalSakit'),
+                    DB::raw('SUM(CASE WHEN absensis.status = "hadir kegiatan" THEN 1 ELSE 0 END) as totalHadirKegiatan'),
                     DB::raw('SUM(CASE WHEN absensis.status = "tidak hadir" THEN 1 ELSE 0 END) as totalTidakHadir')
                 )
                 ->leftJoin('absensis', function ($join) use ($bulan, $tahun) {

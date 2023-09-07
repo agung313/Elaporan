@@ -32,9 +32,13 @@
 
             <table style="margin-left: auto; margin-right: auto; margin-top:40px">
                 <tr>
-                    <th style="width: 30px;">No</th>
-                    <th style="width: 350px;">Nama</th>
+                    <th style="width: 30px;" rowspan="2">No</th>
+                    <th style="width: 300px;" rowspan="2">Nama</th>
+                    <th style="width: 50px;" colspan="5">Keterangan</th>
+                </tr>
+                <tr>
                     <th style="width: 50px;">Hadir</th>
+                    <th style="width: 50px;">Hadir Kegiatan</th>
                     <th style="width: 50px;">Izin</th>
                     <th style="width: 50px;">Sakit</th>
                     <th style="width: 100px;">Tidak Hadir</th>
@@ -42,11 +46,12 @@
                 @foreach ($user as $key => $usr)
                     <tr>
                         <td style="text-align: center;">{{$key+1}}</td>
-                        <td style="text-align: left;">{{$usr->name}}</td>
-                        <td>{{$usr->totalHadir}}</td>
-                        <td>{{$usr->totalIzin}}</td>
-                        <td>{{$usr->totalSakit}}</td>
-                        <td>{{$usr->totalTidakHadir}}</td>
+                        <td style="text-align: left;text-transform: capitalize">{{$usr->name}}</td>
+                        <td style="text-align: center;">{{$usr->totalHadir}}</td>
+                        <td style="text-align: center;">{{$usr->totalHadirKegiatan}}</td>
+                        <td style="text-align: center;">{{$usr->totalIzin}}</td>
+                        <td style="text-align: center;">{{$usr->totalSakit}}</td>
+                        <td style="text-align: center;">{{$usr->totalTidakHadir}}</td>
                     </tr>
                 @endforeach
                 
