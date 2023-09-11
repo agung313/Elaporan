@@ -10,9 +10,12 @@ use App\Http\Resources\User as UserResource;
 use App\Http\Resources\AllUser as AllUserResource;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use File;
 use Carbon\Carbon;
+use PDF;
+setlocale(LC_TIME, 'id_ID');
 
 
 class UserController extends Controller
@@ -306,7 +309,6 @@ class UserController extends Controller
         ],201);
     }
 
-
     function setComplete($id){
         
         $sql = Profile::where('id_user',$id)
@@ -324,5 +326,69 @@ class UserController extends Controller
             $profile->update(['isComplete' => true]);
         }
 
+    }
+
+    function history(Request $request){
+        $role = Auth::user()->role;
+        // dd($role);
+
+        if($role != 'kasum'){
+            return response()->json([
+                'messages' => 'anda tidak memiliki akses untuk melakukan aksi'
+            ],401);
+        }
+
+        if($request->pdf == true){
+            $bulan = $request->bulan;
+            $tahun = $request->tahun;
+            $namaBulan = Carbon::create()->month($bulan)->isoFormat('MMMM');
+            $tanggal = Carbon::now()->format('d F Y');
+            $user = DB::table('users')
+                ->select('users.name',
+                    DB::raw('SUM(CASE WHEN absensis.status = "hadir" THEN 1 ELSE 0 END) as totalHadir'),
+                    DB::raw('SUM(CASE WHEN absensis.status = "izin" THEN 1 ELSE 0 END) as totalIzin'),
+                    DB::raw('SUM(CASE WHEN absensis.status = "sakit" THEN 1 ELSE 0 END) as totalSakit'),
+                    DB::raw('SUM(CASE WHEN absensis.status = "hadir kegiatan" THEN 1 ELSE 0 END) as totalHadirKegiatan'),
+                    DB::raw('SUM(CASE WHEN absensis.status = "tidak hadir" THEN 1 ELSE 0 END) as totalTidakHadir')
+                )
+                ->leftJoin('absensis', function ($join) use ($bulan, $tahun) {
+                    $join->on('users.id', '=', 'absensis.id_user')
+                        ->whereRaw('MONTH(absensis.tanggal) = ? AND YEAR(absensis.tanggal) = ?', [$bulan, $tahun]);
+                })
+                ->where('users.role', 'user')
+                ->groupBy('users.name')
+                ->get();
+
+            $getFoto = Profile::select('profiles.ttd')
+                ->join('users','users.id','=','profiles.id_user')
+                ->where('users.role', 'kasum')
+                ->first();
+
+            $query = User::where('role', 'kasum')->first();
+
+            if ($query) {
+                $query->tahun = $tahun;
+                $query->bulan = $namaBulan;
+                $query->URL = URL('storage'.$getFoto->ttd );
+                $query->tanggal = $tanggal;
+            }
+
+            $pdf = PDF::loadView('pdf.history', ['user' => $user , 'ttd' => $query]);
+
+            // Nama file PDF yang akan diunduh
+            $filename = 'Rekap_Kehadiran_' . $namaBulan . '.pdf';
+
+            // Menggunakan response() untuk mengirim PDF sebagai respons unduhan
+            return response($pdf->output())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        }else{
+            $user = Profile::select('users.*','profiles.id AS id_profile','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.ttd')
+                ->join('users', 'users.id', '=', 'profiles.id_user')
+                ->where('users.role', 'user')
+                ->get();
+    
+            return response(UserResource::collection($user));
+        }
     }
 }
