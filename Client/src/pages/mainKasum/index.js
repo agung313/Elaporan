@@ -196,6 +196,7 @@ const Kasum = ({ navigation}) => {
                     </TouchableOpacity>
                     
                 </View>
+
             </View>
                             
         </ImageBackground>
