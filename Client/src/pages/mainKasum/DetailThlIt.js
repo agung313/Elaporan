@@ -201,8 +201,8 @@ const DetailThlIt = ({route, navigation}) => {
             <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
 
                 <View style={{width:"27%", minHeight:25, justifyContent:'center', borderWidth:0.5, borderColor:"#000", alignItems:'center'}}>
-                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.hari}</Text>
-                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.tanggal}</Text>                    
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"center"}}>{item.hari}</Text>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"center"}}>{item.tanggal}</Text>                    
                 </View>
                 <View style={{width:"40%", minHeight:25, borderWidth:0.5, borderColor:"#000", padding:8 }}>
                     {

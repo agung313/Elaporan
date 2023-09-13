@@ -178,6 +178,12 @@ const Absensi = ({route, navigation}) => {
                 formData.append('status','Sakit')
                 formData.append('keterangan_hadir',detail) 
             }
+            else if(kehadiran == 5){
+                formData.append('foto',{ uri: fileKeterangan.uri, name: fileKeterangan.name, type: fileKeterangan.type })
+                formData.append('status','terlambat hadir')
+                formData.append('keterangan_hadir',detail) 
+                formData.append('isApprove',"diajukan") 
+            }
             else {
                 formData.append('status','Izin')
                 formData.append('keterangan_hadir',detail) 
@@ -299,7 +305,7 @@ const Absensi = ({route, navigation}) => {
                                     {kehadiran==2?
                                         <View style={{flexDirection:"row", alignItems:"center"}}>
                                             <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>Hadir Kegiatan </Text>
-                                            {waktuTelat>815?
+                                            {waktuTelat>830?
                                                 <Text style={{color:"red", fontSize:10, fontWeight:"500"}}>(Anda Terlambat Absen)</Text>
                                             :
                                                 null
@@ -355,8 +361,8 @@ const Absensi = ({route, navigation}) => {
                     
 
                     <View style={kehadiran==1 ? {alignItems:"center"} : {display:"none"}}>
-                        {jarak > 200 ? 
-                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#fcc419", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={()=>navigation.navigate('MainApp')}>
+                        {jarak > 100 ? 
+                            <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#fcc419", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={handlerHadir}>
                                 <Text style={{fontWeight:'700', color:"black",  fontSize:15, }}>Harap Absensi Di Ruangan Kerja</Text>
                             </TouchableOpacity>
                         :
@@ -380,8 +386,8 @@ const Absensi = ({route, navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
-                                        placeholder='-'
-                                        placeholderTextColor={"#000"}
+                                        placeholder='Input Detail Kegiatan'
+                                        placeholderTextColor={"grey"}
                                         value={detail}
                                         keyboardType= "default"
                                         onChangeText={(text) => setDetail(text)}
@@ -405,6 +411,44 @@ const Absensi = ({route, navigation}) => {
                         </View>
                     </View>
 
+                    <View style={kehadiran==5 ? {display:"flex"} : {display:"none"}}>
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Keterlambatan :</Text>
+                        <View style={{alignItems:"center", marginBottom:20}}>
+                            <TouchableOpacity style={{width:"90%", height:200, borderWidth:0.5, borderColor:"black", alignItems:"center", justifyContent:"center", borderRadius:15}} onPress={selectImage}>
+                                {imgKeterangan ? <Image source={gambarKeterangan} style={{width:"100%", height:"100%", borderRadius:15}}/> : <Image source={AddImg} style={{width:100, height:100}}/>}
+                                
+                            </TouchableOpacity>
+                        </View>
+
+                        <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Detail Keterlambatan :</Text>
+                        <View style={{alignItems:"center"}}>
+                            <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
+                                <TextInput
+                                        placeholder='Input Detail Keterlambatan'
+                                        placeholderTextColor={"grey"}
+                                        value={detail}
+                                        keyboardType= "default"
+                                        onChangeText={(text) => setDetail(text)}
+                                        style={{ color: "#000" }}
+                                        multiline
+                                    />
+                            </View>
+                        </View>
+
+                        <View style={{alignItems:"center"}}>
+                            {
+                                errMaxSize ? 
+                                <Text style={{color:'red',alignSelf:'center', marginVertical:10}}>Foto Keterlambatan Terlalu Besar ! Maks 1 MB</Text>
+                                :
+                                <TouchableOpacity style={ {width:"90%", height:40, backgroundColor:"#39a339", alignItems:"center", justifyContent:"center", borderRadius:15, marginTop:15, marginBottom:20, borderWidth:0.5, borderColor:"black"}} onPress={() => { setModalStore(true)}}>
+                                   <Text style={{fontWeight:'700', color:"white", textShadowColor:"#000", fontSize:15}}>{idAbsensi ? 'Update':'Buat' }  Absensi</Text>
+                                </TouchableOpacity>
+                            }
+                            
+
+                        </View>
+                    </View>
+
                     <View style={kehadiran==3 ? {display:"flex"} : {display:"none"}}>
                         <Text style={{color:"#000", fontSize:12, fontWeight:"900", marginBottom:10, marginLeft:15}}>Foto Surat Keterangan Sakit :</Text>
                         <View style={{alignItems:"center", marginBottom:20}}>
@@ -417,8 +461,8 @@ const Absensi = ({route, navigation}) => {
                         <View style={{alignItems:"center", marginBottom:10}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
-                                        placeholder='-'
-                                        placeholderTextColor={"#000"}
+                                        placeholder='Input Detail Sakit'
+                                        placeholderTextColor={"grey"}
                                         value={detail}
                                         keyboardType= "default"
                                         onChangeText={(text) => setDetail(text)}
@@ -448,8 +492,8 @@ const Absensi = ({route, navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", height:100, borderBottomWidth:0.5, borderColor:"black",}}>
                                 <TextInput
-                                        placeholder='-'
-                                        placeholderTextColor={"#000"}
+                                        placeholder='Input Detail Izin'
+                                        placeholderTextColor={"grey"}
                                         value={detail}
                                         keyboardType= "default"
                                         onChangeText={(text) => setDetail(text)}

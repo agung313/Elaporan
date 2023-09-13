@@ -95,8 +95,8 @@ const Tambah = ({route, navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:30, borderColor:"black", borderBottomWidth:0.5, }}>
                                 <TextInput
-                                    placeholder=''
-                                    placeholderTextColor={"#000"}
+                                    placeholder='Input Kegiatan'
+                                    placeholderTextColor={"grey"}
                                     value={detail}
                                     keyboardType= "default"
                                     onChangeText={(text) => setDetail(text)}
@@ -111,8 +111,8 @@ const Tambah = ({route, navigation}) => {
                         <View style={{alignItems:"center"}}>
                             <View style={{width:"90%", minHeight:100, borderBottomWidth:0.5, borderColor:"black", }}>
                                 <TextInput
-                                    placeholder=''
-                                    placeholderTextColor={"#000"}
+                                    placeholder='Input Uraian'
+                                    placeholderTextColor={"grey"}
                                     value={uraian}
                                     keyboardType= "default"
                                     onChangeText={(text) => setUraian(text)}
