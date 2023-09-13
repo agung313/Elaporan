@@ -663,8 +663,8 @@ const MainApp = ({route, navigation}) => {
         if(btAbsensi != null){
             return(
                 <View style={showContent==1? {display:"flex"} : {display:"none"}}>
-                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Terimakasih anda telah mengisi abseni</Text>
-                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silakan tambahkan kegiatan anda hari ini</Text>
+                    <Text style={{ color:"black", fontSize:11, marginTop:10, fontWeight:'600', textTransform:"capitalize"}}>Terimakasih anda telah mengisi absensi</Text>
+                    <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>Silahkan tambahkan kegiatan anda hari ini</Text>
                 </View>
             )
         }
@@ -836,7 +836,7 @@ const MainApp = ({route, navigation}) => {
                                         {menunggu||hadirTerlambat==1?
                                             <View style={showContent==1 ? {alignItems:"center"} : {display:"none"}}>
                                                 <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{hadirTerlambat==1?"pengajuan keterlambatan sedang diproses":"Harap Menunggu Waktu absensi pulang"}</Text>
-                                                <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{hadirTerlambat?"sedang menunggu persetujuan kasubag umum":"Silakan tambahkan kegiatan anda hari ini"}</Text>
+                                                <Text style={{ color:"black", fontSize:11, fontWeight:'600', textTransform:"capitalize"}}>{hadirTerlambat?"sedang menunggu persetujuan kasubag umum":"Silahkan tambahkan kegiatan anda hari ini"}</Text>
                                             </View>
                                         :
                                             <View>

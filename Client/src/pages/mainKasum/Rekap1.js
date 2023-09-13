@@ -55,46 +55,19 @@ const Rekap = ({navigation}) => {
     const [aktifBulan, setAktifBulan] = useState(monthUsed)
     const [aktifTahun, setAktifTahun] = useState(getYear)
 
-    // progress bar laporan bulanan
+    // progress bar
     const [allValue, setAllValue] = useState(38)
     const [progressValue, setProgressValue] = useState(10)
     const [nilaiPersen, setNilaiPersen] = useState()
     console.log(nilaiPersen, "<<<< nilai persen");
 
-    // progress bar kehadiran harian
-    const [progressHadir, setProgressHadir] = useState(20)
-    const [progressKegiatan, setProgressKegiatan] = useState(3)
-    const [progressSakit, setProgressSakit] = useState(2)
-    const [progressIzin, setProgressIzin] = useState(3)
-    const [progressBelumAbsen, setProgressBelumAbsen] = useState(10)
-
-    // persen 
-    const [nilaiPersenHadir, setNilaiPersenHadir] = useState()
-    const [nilaiPersenHadirKegiatan, setNilaiPersenHadirKegiatan] = useState()
-    const [nilaiPersenSakit, setNilaiPersenSakit] = useState()
-    const [nilaiPersenIzin, setNilaiPersenIzin] = useState()
-    const [nilaiPersenBelumAbsen, setNilaiPersenBelumAbsen] = useState()
 
     const hitungPersen = () =>{
-        const pembulatanLaporan = ((progressValue/allValue)*100).toFixed(0)
-        setNilaiPersen(`${pembulatanLaporan}%`)
-
-        const pembulatanHadir = ((progressHadir/allValue)*100).toFixed(0)
-        setNilaiPersenHadir(`${pembulatanHadir}%`)
-
-        const pembulatanKegiatan = ((progressKegiatan/allValue)*100).toFixed(0)
-        setNilaiPersenHadirKegiatan(`${pembulatanKegiatan}%`)
-
-        const pembulatanSakit = ((progressSakit/allValue)*100).toFixed(0)
-        setNilaiPersenSakit(`${pembulatanSakit}%`)
-
-        const pembulatanIzin = ((progressIzin/allValue)*100).toFixed(0)
-        setNilaiPersenIzin(`${pembulatanIzin}%`)
-
-        const pembulatanBelumAbsen = ((progressBelumAbsen/allValue)*100).toFixed(0)
-        setNilaiPersenBelumAbsen(`${pembulatanBelumAbsen}%`)
+        const hasilBagi = progressValue/allValue
+        const hasilKali = hasilBagi*100
+        const pembulatan = hasilKali.toFixed(0)
+        setNilaiPersen(`${pembulatan}%`)
     }
-    
 
     // filter 
     const [modalFilter, setModalFilter] = useState(false)
@@ -138,7 +111,42 @@ const Rekap = ({navigation}) => {
     const [startCal, setStartCal] = useState()
     const [endCal, setEndCal] = useState()
 
-    
+    // piechart
+    const dataaa = [
+        {
+            name: "Hadir",
+            population: 20,
+            color: "#39a339",
+            legendFontColor: "#000",
+            legendFontSize: 10,
+            
+        },
+        {
+            name: "Sakit & Izin",
+            population: 10,
+            color: "rgb(0, 0, 255)",
+            legendFontColor: "#000",
+            legendFontSize: 10
+        },
+        {
+            name: "Belum Absen",
+            population:  10,
+            color: "#F00",
+            legendFontColor: "#000",
+            legendFontSize: 10
+        },
+    ];
+
+    const chartConfigg = {
+        backgroundGradientFrom: "#1E2923",
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: "#08130D",
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2, // optional, default 3
+        barPercentage: 0.5,
+        useShadowColorFromDataset: false // optional
+    };
 
     return (
         <ScrollView>
@@ -168,7 +176,7 @@ const Rekap = ({navigation}) => {
  
                     {/* <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:15, textAlign:"center"}}>Berikut Rekap Kehadiran dan Laporan</Text> */}
 
-                    <View style={{flexDirection:"row", marginBottom:0}}>
+                    <View style={{flexDirection:"row", marginBottom:10}}>
                         <TouchableOpacity style={showContent===1? {backgroundColor:"#39a339", width:150, height:40, borderRadius:15, elevation:5, margin:10, alignItems:"center", justifyContent:"center"} : {backgroundColor:"#d9dcdf", width:150, height:40, borderRadius:15, elevation:5, margin:10, alignItems:"center", justifyContent:"center", }} onPress={() => toggleContent(1)}>
                                 
                             <Text style={showContent==1?{ color: "#fff", fontSize: 15, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"700"}:{ color: "#000", fontSize: 15, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, fontWeight:"500"}}>Harian</Text>
@@ -182,9 +190,9 @@ const Rekap = ({navigation}) => {
                     </View>
 
                     <View style={showContent==1?{display:"flex", width:"100%", alignItems:"center", marginBottom:50}:{display:"none"}}>
-                        <View style={{flexDirection:"row", width:"100%", justifyContent:"center", alignItems:"center", marginTop:20}}>
+                        <View style={{flexDirection:"row", width:"100%", justifyContent:"center", alignItems:"center"}}>
                             <View style={{ justifyContent:"center"}}>
-                                <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Rekap Kehadiran :</Text>
+                                <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Rekap Kehadiran :</Text>
                             </View>
                             <View style={{justifyContent:"center", alignItems:"center", marginLeft:10}}>
                                 <TouchableOpacity style={{minWidth:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:0}} onPress={()=>setModaCalendar(true)}>
@@ -193,96 +201,238 @@ const Rekap = ({navigation}) => {
                             </View>
                         </View>
 
-                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10, marginBottom:0}}>Jumlah ASN Telah Melakukan Absensi {progressHadir+progressKegiatan+progressSakit+progressIzin} dari {allValue} Orang</Text>
-
-                        <View style={{width:"100%", alignItems:"center", marginTop:20}}>
-                        {/* {getStrDay}, {getDay} {getStrMonth} {getYear} */}
-                            <TouchableOpacity style={{width:"95%", height:70, alignItems:"center", justifyContent:"center", backgroundColor:"#fff", borderRadius:15, elevation:5, padding:10, flexDirection:"row", marginBottom:15}} onPress={()=>navigation.navigate('DetailKehadiranKasum',{strDay:getStrDay, numDay:getDay, strMonth:getStrMonth, numYear:getYear, strStatus:"Hadir"})}>
-                                <View style={{width:"80%", height:"100%", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 11,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:10}}>Status Kehadiran : Hadir</Text>
-
-                                    <View style={{width:"100%", height:15, borderRadius:15, backgroundColor:"#d9dcdf"}}>
-                                        <View style={{height:"100%", width:nilaiPersenHadir, backgroundColor:"#39a339", borderRadius:15}}>
-
-                                        </View>
-                                    </View>
-
-                                    <Text style={{ color: "grey", fontSize: 10,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>Status Hadir {progressHadir} dari {allValue} orang</Text>
-                                </View>
-                                <View style={{width:"20%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 25,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>{nilaiPersenHadir}</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{width:"95%", height:70, alignItems:"center", justifyContent:"center", backgroundColor:"#fff", borderRadius:15, elevation:5, padding:10, flexDirection:"row", marginBottom:15}}>
-                                <View style={{width:"80%", height:"100%", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 11,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:10}}>Status Kehadiran : Hadir Kegiatan</Text>
-
-                                    <View style={{width:"100%", height:15, borderRadius:15, backgroundColor:"#d9dcdf"}}>
-                                        <View style={{height:"100%", width:nilaiPersenHadirKegiatan, backgroundColor:"#39a339", borderRadius:15}}>
-
-                                        </View>
-                                    </View>
-
-                                    <Text style={{ color: "grey", fontSize: 10,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>Status Hadir Kegiatan {progressKegiatan} Dari {allValue} Orang</Text>
-                                </View>
-                                <View style={{width:"20%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 25,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>{nilaiPersenHadirKegiatan}</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{width:"95%", height:70, alignItems:"center", justifyContent:"center", backgroundColor:"#fff", borderRadius:15, elevation:5, padding:10, flexDirection:"row", marginBottom:15}}>
-                                <View style={{width:"80%", height:"100%", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 11,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:10}}>Status Kehadiran : Sakit</Text>
-
-                                    <View style={{width:"100%", height:15, borderRadius:15, backgroundColor:"#d9dcdf"}}>
-                                        <View style={{height:"100%", width:nilaiPersenSakit, backgroundColor:"#0060cb", borderRadius:15}}>
-
-                                        </View>
-                                    </View>
-
-                                    <Text style={{ color: "grey", fontSize: 10,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>Status Sakit {progressSakit} Dari {allValue} Orang</Text>
-                                </View>
-                                <View style={{width:"20%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 25,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>{nilaiPersenSakit}</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{width:"95%", height:70, alignItems:"center", justifyContent:"center", backgroundColor:"#fff", borderRadius:15, elevation:5, padding:10, flexDirection:"row", marginBottom:15}}>
-                                <View style={{width:"80%", height:"100%", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 11,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:10}}>Status Kehadiran : Izin</Text>
-
-                                    <View style={{width:"100%", height:15, borderRadius:15, backgroundColor:"#d9dcdf"}}>
-                                        <View style={{height:"100%", width:nilaiPersenIzin, backgroundColor:"#0060cb", borderRadius:15}}>
-
-                                        </View>
-                                    </View>
-
-                                    <Text style={{ color: "grey", fontSize: 10,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>Status Izin {progressIzin} Dari {allValue} Orang</Text>
-                                </View>
-                                <View style={{width:"20%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 25,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>{nilaiPersenIzin}</Text>
-                                </View>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{width:"95%", height:70, alignItems:"center", justifyContent:"center", backgroundColor:"#fff", borderRadius:15, elevation:5, padding:10, flexDirection:"row", marginBottom:15}}>
-                                <View style={{width:"80%", height:"100%", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 11,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:10}}>Status Kehadiran : Belum Absen</Text>
-
-                                    <View style={{width:"100%", height:15, borderRadius:15, backgroundColor:"#d9dcdf"}}>
-                                        <View style={{height:"100%", width:nilaiPersenBelumAbsen, backgroundColor:"#CE2029", borderRadius:15}}>
-
-                                        </View>
-                                    </View>
-
-                                    <Text style={{ color: "grey", fontSize: 10,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>Status Belum Absen {progressBelumAbsen} Dari {allValue} Orang</Text>
-                                </View>
-                                <View style={{width:"20%", height:"100%", alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ color: "#000", fontSize: 25,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>{nilaiPersenBelumAbsen}</Text>
-                                </View>
+                        <View style={{width:"100%", flexDirection:"row", alignItems:"center", justifyContent:"center", marginVertical:20}}>
+                            <SearchBar
+                                placeholder={'Search '+valueJabatan}
+                                style={{width:"80%", }}
+                            />
+                            <TouchableOpacity style={{width:"15%", height:40, backgroundColor:"#d9dedb", borderRadius:15, marginLeft:10, alignItems:"center", justifyContent:"center"}} onPress={()=> setModalFilter(true)}>
+                                <Image source={FilterIcont} style={{width:35, height:35}}/>
                             </TouchableOpacity>
                         </View>
+                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0}}>Jumlah ASN Telah Melakukan Absensi {progressValue} dari {allValue} Orang</Text>
+
+                        <View style={{width:"100%", alignItems:"center", marginTop:20}}>
+                            <PieChart
+                                data={dataaa}
+                                width={WindowWidth*0.8}
+                                height={150}
+                                chartConfig={chartConfigg}
+                                accessor={"population"}
+                                backgroundColor={"transparent"}
+                                paddingLeft={"5"}
+                                center={[10, 0]}
+                                key={showContent}
+                                // absolute
+                            />
+
+                            <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                                <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                                <View style={{marginLeft:10}}>
+                                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    
+                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                        <Text style={{ color:"black",  fontSize:10}}>Status Kehadiran :</Text>
+                                        <View style={{minWidth:30, height:15, justifyContent:"center", alignItems:"center", borderRadius:10, marginLeft:5, backgroundColor:"#39a339"}}>
+                                            <Text style={{ color:"#fff",  fontSize:10, marginHorizontal:10, fontWeight:"600"}}>Hadir</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity> 
+
+                            <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                                <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                                <View style={{marginLeft:10}}>
+                                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    
+                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                        <Text style={{ color:"black",  fontSize:10}}>Status Kehadiran :</Text>
+                                        <View style={{minWidth:30, height:15, justifyContent:"center", alignItems:"center", borderRadius:10, marginLeft:5, backgroundColor:"#FF7F00"}}>
+                                            <Text style={{ color:"#fff",  fontSize:10, marginHorizontal:10, fontWeight:"600"}}>Hadir Terlambat</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity> 
+
+                            <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                                <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                                <View style={{marginLeft:10}}>
+                                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    
+                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                        <Text style={{ color:"black",  fontSize:10}}>Status Kehadiran :</Text>
+                                        <View style={{minWidth:30, height:15, justifyContent:"center", alignItems:"center", borderRadius:10, marginLeft:5, backgroundColor:"#0060cb"}}>
+                                            <Text style={{ color:"#fff",  fontSize:10, marginHorizontal:10, fontWeight:"600"}}>Sakit</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity> 
+
+                            <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                                <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                                <View style={{marginLeft:10}}>
+                                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    
+                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                        <Text style={{ color:"black",  fontSize:10}}>Status Kehadiran :</Text>
+                                        <View style={{minWidth:30, height:15, justifyContent:"center", alignItems:"center", borderRadius:10, marginLeft:5, backgroundColor:"#0060cb"}}>
+                                            <Text style={{ color:"#fff",  fontSize:10, marginHorizontal:10, fontWeight:"600"}}>Izin</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity> 
+
+                            <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                                <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
+                                <View style={{marginLeft:10}}>
+                                    <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                    
+                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                        <Text style={{ color:"black",  fontSize:10}}>Status Kehadiran :</Text>
+                                        <View style={{minWidth:30, height:15, justifyContent:"center", alignItems:"center", borderRadius:10, marginLeft:5, backgroundColor:"#CE2029"}}>
+                                            <Text style={{ color:"#fff",  fontSize:10, marginHorizontal:10, fontWeight:"600"}}>Belum Absen</Text>
+                                        </View>
+                                    </View>
+                                </View>
+                            </TouchableOpacity> 
+                        </View>
                         
+
+                        {/* <View style={{width:"100%", marginTop:20, marginBottom:10, minHeight:WindowHeight*0.45}}>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Ondri Nurdiansyah, S.T</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>M. Azhwan, S.T</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Elisa Wahyuli</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Aulia Thamrin</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                            <View style={{width:"100%", alignItems:"center"}}>
+                                <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Fadia Herman</Text>
+                                </View>
+                                <View style={{width:"90%", flexDirection:"row"}}>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Hadir : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Izin : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Sakit : 50</Text>
+                                    </View>
+                                    <View style={{width:"25%", borderWidth:0.5, borderColor:"#000", alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0, textAlign:"center"}}>Alfa : 50</Text>
+                                    </View>
+                                </View>
+                            </View>
+                        </View> */}
 
                     </View>
 
