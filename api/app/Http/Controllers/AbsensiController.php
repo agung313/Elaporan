@@ -15,6 +15,7 @@ use App\Http\Resources\Absen as AbsenResource;
 use App\Http\Resources\Libur as LiburResource;
 use App\Http\Resources\AbsenPengajuan as AbsenPengajuanResource;
 use App\Traits\FireNotif;
+use Illuminate\Support\Facades\DB;
 
 class AbsensiController extends Controller
 {
@@ -140,7 +141,7 @@ class AbsensiController extends Controller
                 $absen->status = $request->status;
                 $absen->foto = $request->foto ? $path : null;
                 $absen->keterangan_hadir = $request->keterangan_hadir;
-                $absen->waktu_hadir = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null;
+                $absen->waktu_hadir = $waktu;
                 $absen->tanggal = $tanggal;
                 $absen->longitude = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null;
                 $absen->latitude = $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null;
@@ -180,7 +181,7 @@ class AbsensiController extends Controller
                     'status' => $request->status,
                     'foto' => $path,
                     'keterangan_hadir' => $request->keterangan_hadir,
-                    'waktu_hadir' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null,
+                    'waktu_hadir' => $waktu,
                     'tanggal' => $tanggal,
                     'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
@@ -203,7 +204,7 @@ class AbsensiController extends Controller
                     'id_user' => $id,
                     'status' => $request->status,
                     'keterangan_hadir' => $request->keterangan_hadir,
-                    'waktu_hadir' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $waktu : null,
+                    'waktu_hadir' => $waktu,
                     'tanggal' => $tanggal,
                     'longitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->longitude : null,
                     'latitude' => $request->status == 'hadir' || $request->status == 'hadir kegiatan' ? $request->latitude : null,
@@ -429,4 +430,80 @@ class AbsensiController extends Controller
         }
     }
 
+    function historyAbsen(Request $request) {
+        if (Auth::user()->role == 'kasum' || Auth::user()->role == 'admin') {
+            $excludedRoles = ['admin', 'kasum']; //cari user kecuali ...
+            $date = $request->date;
+            $jabatan = $request->jabatan;
+            if($request->count == true){
+                $absenStats = DB::table('users')
+                    ->select(DB::raw('COUNT(*) as total_user'))
+                    ->selectRaw('SUM(CASE WHEN status = "hadir" THEN 1 ELSE 0 END) as hadir')
+                    ->selectRaw('SUM(CASE WHEN status = "hadir kegiatan" THEN 1 ELSE 0 END) as hadir_kegiatan')
+                    ->selectRaw('SUM(CASE WHEN status = "tidak hadir" THEN 1 ELSE 0 END) as tidak_hadir')
+                    ->selectRaw('SUM(CASE WHEN status = "izin" THEN 1 ELSE 0 END) as izin')
+                    ->selectRaw('SUM(CASE WHEN status = "sakit" THEN 1 ELSE 0 END) as sakit')
+                    ->selectRaw('COUNT(CASE WHEN status IS NULL THEN 1 ELSE NULL END) as belum_absen')
+                    ->leftJoin('absensis', function ($join) use ($date) {
+                        $join->on('users.id', '=', 'absensis.id_user')
+                            ->whereDate('absensis.tanggal', '=', $date);
+                    })
+                    ->whereNotIn('users.role', $excludedRoles)
+                    ->get()
+                    ->first();
+
+                    return response()->json([
+                        'data' => $absenStats
+                    ]);
+            }elseif($request->status){
+                $status = $request->status;
+                $userStatus = DB::table('users')
+                    ->select('users.id', 'users.name', 'users.jabatan', 'profiles.foto','absensis.status','absensis.status',
+                            'absensis.tanggal','absensis.waktu_hadir','absensis.waktu_pulang','absensis.keterangan_hadir','absensis.keterangan_pulang')
+                    ->Join('absensis', function ($join) use ($date,$status) {
+                        $join->on('users.id', '=', 'absensis.id_user')
+                            ->whereDate('absensis.tanggal', '=', $date);
+                    })
+                    ->join('profiles', 'profiles.id_user', '=', 'users.id')
+                    ->whereNotIn('users.role', $excludedRoles);
+
+                if ($status == 'belum absen') {
+                    $userStatus = DB::table('users')
+                        ->select('users.id', 'users.name', 'users.jabatan', 'profiles.foto','absensis.status','absensis.status',
+                            'absensis.tanggal','absensis.waktu_hadir','absensis.waktu_pulang','absensis.keterangan_hadir','absensis.keterangan_pulang', 
+                            DB::raw('"belum absen" as status'))
+                        ->leftJoin('absensis', function ($join) use ($date) {
+                            $join->on('users.id', '=', 'absensis.id_user')
+                                ->whereDate('absensis.tanggal', '=', $date);
+                        })
+                        ->join('profiles', 'profiles.id_user', '=', 'users.id')
+                        ->whereNotIn('users.role', $excludedRoles)
+                        ->whereNull('absensis.id_user');
+                        
+                        if ($jabatan) {
+                            $userStatus->where('users.jabatan', $jabatan);
+                        }
+
+                        $userStatus = $userStatus->get();
+                } else {
+                    if ($jabatan) {
+                        $userStatus->where('users.jabatan', $jabatan);
+                    }
+                
+                    if ($status == 'hadir' || $status == 'hadir kegiatan' || $status == 'sakit' || $status == 'izin' || $status == 'tidak hadir' || $status == 'hadir terlambat') {
+                        $userStatus->where('absensis.status', $status);
+                    }
+                
+                    $userStatus = $userStatus->get();
+                }
+                return response()->json([
+                    'data' => $userStatus
+                ]);
+            }   
+        }else{
+            return response()->json([
+                'messages' => 'access denied'
+            ],402);
+        }
+    }
 }
