@@ -490,7 +490,7 @@ class AbsensiController extends Controller
                         $userStatus->where('users.jabatan', $jabatan);
                     }
                 
-                    if ($status == 'hadir' || $status == 'hadir kegiatan' || $status == 'sakit' || $status == 'izin' || $status == 'tidak hadir' || $status == 'hadir terlambat') {
+                    if ($status == 'hadir' || $status == 'hadir kegiatan' || $status == 'sakit' || $status == 'izin' || $status == 'tidak hadir' || $status == 'terlambat hadir') {
                         $userStatus->where('absensis.status', $status);
                     }
                 
