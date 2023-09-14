@@ -16,6 +16,8 @@ use App\Http\Resources\Document as DocumentResource;
 setlocale(LC_TIME, 'id_ID');
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\DB;
+// use Spatie\PdfToImage\Pdf;
+use TCPDF;
 
 use App\Traits\FireNotif;
 
@@ -56,7 +58,7 @@ class DocumentController extends Controller
                     // ->whereMonth('documents.bulan', $request->bulan)
                     ->where('documents.status','not like','draft')
                     ->orderBy('documents.id','DESC')
-                    ->orderBy('documents.status','ASC')
+                    // ->orderBy('documents.status','ASC')
                     ->get();
             }
 
@@ -93,14 +95,15 @@ class DocumentController extends Controller
             }        
         }
         
-        $getFoto = User::select('profiles.ttd')
-                    ->join('profiles','profiles.id_user', '=', 'users.id')
-                    ->where('users.id', $idUser)
-                    ->first();
+        // $getFoto = User::select('profiles.ttd')
+        //             ->join('profiles','profiles.id_user', '=', 'users.id')
+        //             ->where('users.id', $idUser)
+        //             ->first();
+
         $getNama = User::select('name')->where('role','kasum')->first();
 
         //user
-        $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
+        $query = User::select('users.*','profiles.ttd','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup','profiles.isComplete')
                     ->join('profiles','profiles.id_user', '=', 'users.id')
                     ->where('users.id', $idUser)
                     ->first();
@@ -109,7 +112,7 @@ class DocumentController extends Controller
             $query->tahun = $tahun;
             $query->kendala = $kendala;
             $query->bulan = $bulan;
-            $query->URL = URL('storage'.$getFoto->ttd );
+            // $query->URL = URL('storage'.$getFoto->ttd );
             $query->nama_kasum = $getNama->name;
         }
 
@@ -154,6 +157,8 @@ class DocumentController extends Controller
         
         $pdf = PDF::loadView('pdf.template', ['user' => $query, 'absensi' => $query2, 'laporan' => $arrLaporan, 'kendala' => $kendala]);
 
+        // $testPDF = $this->generatePDF($query, $query2, $query3);
+
         $filePath = storage_path('app/public/pdf/hasil.pdf');
 
         $directory = dirname($filePath);
@@ -165,6 +170,13 @@ class DocumentController extends Controller
         $pdf->save($filePath); 
 
         $path = Storage::disk('public')->putFile('pdf', $filePath);
+        $stream = $pdf->stream();
+        
+        // $filePath = storage_path('app/public/pdf/hasil.pdf');
+        
+        File::put($filePath, $stream);
+
+        // dd('stoppp');
 
         $checkData = Document::where('id_user',$idUser)->where('bulan',$request->bulan)->where('tahun',$tahun)->first();
                 
@@ -214,6 +226,35 @@ class DocumentController extends Controller
             'data' => $document
             ],200);        
     }
+
+    public function generatePDF($query, $query2, $query3)
+{
+    $pdf = new TCPDF();
+    $pdf->SetPrintHeader(true);
+    $pdf->SetPrintFooter(true);
+    $pdf->AddPage();
+
+    // Buat konten PDF sesuai dengan template Anda
+    $pdf->SetFont('helvetica', '', 12);
+    $pdf->SetTextColor(0, 0, 0);
+
+    // Tambahkan konten ke PDF, misalnya:
+    // $pdf->Cell(0, 10, 'Hello, TCPDF!', 0, 1);
+
+    // Menggunakan template HTML
+    $template = view('pdf.template1', [
+        'user' => $query, 
+        'absensi' => $query2,
+        'laporan' => $query3,
+    ])->render();
+    
+    $pdf->writeHTML($template, true, false, true, false, '');
+
+    // Simpan PDF atau kirim sebagai respons
+    // $pdf->Output('example.pdf', 'I'); // I: Tampilkan dalam browser, D: Simpan ke file
+    $pdf->Output(storage_path('app/public/pdf/hasil.pdf'), 'F');
+}
+
 
 
     // cek apakah ada laporan yg sudah diajukan/ diapprove kasum pada bulan dan tahun tsb dg id user
@@ -269,18 +310,12 @@ class DocumentController extends Controller
             $tahun= $doc->tahun;
             $catatan = $request->catatan;
 
-            $getFoto = User::select('profiles.ttd')
+            $getFoto = User::select('profiles.ttd','users.name')
                     ->join('profiles','profiles.id_user', '=', 'users.id')
                     ->where('users.id', Auth::user()->id)
                     ->first();
-
-            $getFotoUser = User::select('profiles.ttd')
-                    ->join('profiles','profiles.id_user', '=', 'users.id')
-                    ->where('users.id', Auth::user()->id)
-                    ->first();
-
             //user
-            $query = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
+            $query = User::select('users.*','profiles.ttd','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
                         ->join('profiles','profiles.id_user', '=', 'users.id')
                         ->where('users.id', $doc->id_user)
                         ->first();
@@ -289,14 +324,9 @@ class DocumentController extends Controller
                 $query->kendala = $kendala;
                 $query->bulan = $bulan;
                 $query->catatan = $catatan;
-                $query->URL = URL('storage'.$getFotoUser->ttd );
-                $query->URL_Kasum = URL('storage'.$getFoto->ttd );
+                $query->nama_kasum = $getFoto->name;
+                $query->URL_Kasum = $getFoto->ttd;
             }
-
-            $getTTD = User::select('users.*','profiles.foto','profiles.latar_belakang','profiles.tujuan','profiles.ruang_lingkup')
-                        ->join('profiles','profiles.id_user', '=', 'users.id')
-                        ->where('users.id', Auth::user()->id)
-                        ->first();
 
             //absensi
             $query2 = Absensi::select('absensis.*')

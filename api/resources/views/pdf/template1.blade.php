@@ -88,18 +88,18 @@
                                     <td>1. </td>
                                     <td>{{$item->status}}</td>
                                 </tr>
-                                @php $tes = 2; 
+                                @php $tes = 2;
+                                // dd($laporan[0]->judul_kegiatan); 
                                 @endphp
-                                @isset($laporan[$item->id])                                
-                                    @foreach ($laporan[$item->id] as $lapor)
+                                {{-- @isset($laporan[$item->id])                                 --}}
+                                    @foreach ($laporan as $lapor)
                                             <tr>
                                                 <td>{{$tes ."."}}</td>
                                                 <td>{{$lapor->judul_kegiatan}}</td>
                                             </tr>
                                             @php $tes++; @endphp
                                     @endforeach
-                                @endisset                                    
-
+                                {{-- @endisset                                     --}}
                             </table>
                         </td>
                         <td class="tabell" style=" padding: 10px;">
@@ -112,15 +112,15 @@
 
                                 </tr>
                                 @php $tes2 = 2; @endphp
-                                @isset($laporan[$item->id])
-                                    @foreach ($laporan[$item->id] as $key => $lapor)
+                                {{-- @isset($laporan[$item->id]) --}}
+                                    @foreach ($laporan as $key => $lapor)
                                             <tr>
                                                 <td>{{$tes2 . "."}}</td>
                                                 <td>{{$lapor->uraian_kegiatan}}</td>
                                             </tr>
                                             @php $tes2++; @endphp
                                     @endforeach                                    
-                                @endisset                                
+                                {{-- @endisset                                 --}}
 
                                 
                             </table>
@@ -155,7 +155,7 @@
                 <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Jenis Kendala</th>
                 <th class="tabell" style="text-align: center; height: 50px; width: 330px;">Solusi</th>
             </tr>
-                @foreach (json_decode($kendala) as $item)
+                {{-- @foreach (json_decode($kendala) as $item)
                 @php
                     $arr = explode('(^*^)', $item);
                 @endphp                
@@ -164,16 +164,20 @@
                     <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[0] ? $arr[0]:'-'}}</td>
                     <td class="tabell" style="width: 250px; padding: 10px;">{{$arr[1] ?$arr[1]:'-'}}</td>
                 </tr>                                   
-                @endforeach
+                @endforeach --}}
         </table>
         <div style="height: 50px;"></div>
         <table style="margin: auto;">
             <tr >
-                <td style="text-align: center; vertical-align: text-top;text-transform: uppercase">
+                <td style="text-align: center; vertical-align: text-top;">
                     <p>{{$user->jabatan}}</p>
                     <p>BAPPEDA KOTA PEKANBARU</p>
                     <div>
-                        <img src="C:\laragon\www\Elaporan\api\storage\app\public{{$user->ttd}}" alt="ttd" width="100px" height="100px">
+                        {{-- @php
+                            $ttdUrl = asset('storage' . $user->ttd);
+                            dd($ttdUrl);
+                        @endphp --}}
+                        <img src="" alt="ttd" width="100px" height="100px">
                     </div>
                     <p style="text-transform: uppercase; margin-top: 0px; font-weight: bold;">{{$user->name}}</p>
                 </td>
@@ -184,7 +188,7 @@
                     <div>
                         @php
                             if($user->URL_Kasum !== null){
-                                echo '<img src="C:\laragon\www\Elaporan\api\storage\app\public' . $user->URL_Kasum . '" alt="Gambar kucing" width="100px" height="100px">';
+                                echo '<img src="' . $user->URL_Kasum . '" alt="Gambar kucing" width="100px" height="100px">';
                                 echo '<p style="text-transform: uppercase; margin-top: 0px; font-weight: bold; text-decoration: underline;">' . $user->nama_kasum . '</p>';
                             }else{
                                 echo '<p style="text-transform: uppercase; margin-top: 100px; font-weight: bold; text-decoration: underline;">' . $user->nama_kasum . '</p>';
@@ -195,24 +199,27 @@
                 </td>
             </tr>
         </table>
-        <table style="margin: auto;" class="tabell">
+        {{-- <table style="margin: auto;" class="tabell">
             <tr class="tabell" >
                 <th colspan="2" class="tabell" style="text-align: center; height: 50px; width: 330px;">Catatan dari KEPALA SUB BAGIAN UMUM</th>
             </tr>
             @if ($user->catatan !== null && $user->catatan !== '')
             @foreach (json_decode($user->catatan) as $k => $v)
                 <tr class="tabell">
-                    <td width="5%"  class="tabell">{{ $k+1 }}</td>                                           
+                    <td width="5%"  class="tabell">{{ $k+1 }}</td>                                            
                     <td class="tabell" style="padding: 10px;">{{$v}}</td>
                 </tr>                
-            @endforeach             
+            @endforeach                
             @else
             <tr class="tabell">
                 <td colspan="2" class="tabell" style="width: 100%; padding: 10px;">Belum Ada Catatan</td>
             </tr>                                
             @endif
 
-        </table>
+        </table> --}}
+        {{-- @php
+                        dd('tessssssss')
+        @endphp --}}
     </div>
 </body>
 </html>

@@ -13,7 +13,8 @@
         "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.5",
         "nesbot/carbon": "^2.68",
-        "spatie/laravel-activitylog": "^4.7"
+        "spatie/laravel-activitylog": "^4.7",
+        "tecnickcom/tcpdf": "^6.6"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
