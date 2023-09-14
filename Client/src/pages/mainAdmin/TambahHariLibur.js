@@ -26,7 +26,7 @@ const TambahHariLibur = ({navigation}) => {
     const getStrDay = namaHari[cekTgl.getDay()]
 
     const [monthUsed, setMonthUsed] = useState(cekTgl.getMonth()+1)
-    const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "November", "Desember"]
+    const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September","Oktober", "November", "Desember"]
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()

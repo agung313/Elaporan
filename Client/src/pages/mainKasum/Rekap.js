@@ -32,7 +32,7 @@ const Rekap = ({navigation}) => {
     const getDay = cekTgl.getDate()
 
     const [monthUsed, setMonthUsed] = useState(cekTgl.getMonth()+1)
-    const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "November", "Desember"]
+    const namaBulan = ["", "Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September","Oktober", "November", "Desember"]
     const getStrMonth = namaBulan[monthUsed]
 
     const getYear = cekTgl.getFullYear()
@@ -126,7 +126,7 @@ const Rekap = ({navigation}) => {
         'Juli',
         'Agustus',
         'September',
-        'October',
+        'Oktober',
         'November',
         'Desember',
         ],
@@ -138,7 +138,64 @@ const Rekap = ({navigation}) => {
     const [startCal, setStartCal] = useState()
     const [endCal, setEndCal] = useState()
 
-    
+    const dataKehadiran=[
+        {
+            name: "Hadir",
+            population: 700,
+            color: "#39a339",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+        {
+            name: "Sakit",
+            population: 50,
+            color: "rgb(0, 0, 255)",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+        {
+            name: "Izin",
+            population: 20,
+            color: "#0060cb",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+        {
+            name: "Tidak Hadir",
+            population:  10,
+            color: "#F00",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+    ]
+
+    const dataLaporan=[
+        {
+            name: "Telah Dilaporkan",
+            population: 30,
+            color: "#39a339",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+        {
+            name: "Belum Dilaporkan",
+            population:  8,
+            color: "#F00",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+    ]
+
+    const chartConfigg = {
+        backgroundGradientFrom: "#1E2923",
+        backgroundGradientFromOpacity: 0,
+        backgroundGradientTo: "#08130D",
+        backgroundGradientToOpacity: 0.5,
+        color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+        strokeWidth: 2, // optional, default 3
+        barPercentage: 0.5,
+        useShadowColorFromDataset: false // optional
+    };
 
     return (
         <ScrollView>
@@ -165,8 +222,6 @@ const Rekap = ({navigation}) => {
 
             <View style={{alignItems:"center"}}>
                 <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
- 
-                    {/* <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:15, textAlign:"center"}}>Berikut Rekap Kehadiran dan Laporan</Text> */}
 
                     <View style={{flexDirection:"row", marginBottom:0}}>
                         <TouchableOpacity style={showContent===1? {backgroundColor:"#39a339", width:150, height:40, borderRadius:15, elevation:5, margin:10, alignItems:"center", justifyContent:"center"} : {backgroundColor:"#d9dcdf", width:150, height:40, borderRadius:15, elevation:5, margin:10, alignItems:"center", justifyContent:"center", }} onPress={() => toggleContent(1)}>
@@ -286,61 +341,52 @@ const Rekap = ({navigation}) => {
 
                     </View>
 
-                    <View style={showContent==2?{display:"flex", width:"100%"}:{display:"none"}}>
+                    <View style={showContent==2?{display:"flex", width:"100%", marginBottom:50}:{display:"none"}}>
                         <View style={{width:"100%", alignItems:"center"}}>
-                            <View style={{width:"90%", marginBottom:10, flexDirection:"row", marginTop:10, justifyContent:"center", alignItems:"center"}}>
-                                <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:0, marginBottom:0}}>Pengumpulan Laporan Bulan </Text>
+                            <View style={{width:"95%", marginBottom:10, flexDirection:"row", marginTop:20, justifyContent:"center", alignItems:"center"}}>
+                                <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Rekap Bulan :</Text>
                                 <View style={{justifyContent:"center"}}>
-                                <TouchableOpacity style={{width:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={toggleModal}>
-                                    <Text style={{color:"#fff", fontSize:12, fontWeight:"600"}}>{namaBulan[aktifBulan]}</Text>
-                                </TouchableOpacity>
-                            </View>
-                            </View>
-                            <View style={{width:"90%", height:25, borderRadius:20, backgroundColor:"#d9dcdf"}}>
-                                <View style={{width:nilaiPersen, height:"100%", borderRadius:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{ color: "#fff", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0}}>{nilaiPersen}</Text>
-                                </View>
-                            </View>
-                            <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:5, marginBottom:0}}>{progressValue} dari {allValue} Orang</Text>
-                            <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10, marginBottom:0}}>Berikut ASN Belum Melaporkan Laporan :</Text>
-
-                            <View style={{width:"100%", marginTop:5, marginBottom:10, minHeight:WindowHeight*0.35}}>
-                                <View style={{width:"100%", alignItems:"center"}}>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
-                                    <View style={{width:"90%", height:30, borderWidth:0.5, borderColor:"#000", justifyContent:"center", backgroundColor:"#d9dcdf"}}>
-                                        <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Agus Supriyadin, S.T</Text>
-                                    </View>
+                                    <TouchableOpacity style={{minWidth:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={toggleModal}>
+                                        <Text style={{color:"#fff", fontSize:12, fontWeight:"600", marginHorizontal:5}}>{namaBulan[aktifBulan]} {aktifTahun}</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </View>
 
-                            <View style={{width:"100%", alignItems:"center"}}>
-                                <TouchableOpacity style={{width:"70%", height:40, borderRadius:15, backgroundColor:"#39a339", elevation:10, alignItems:"center", justifyContent:"center"}}>
-                                    <Text style={{color:"#fff", fontSize:14, fontWeight:"600"}}>Download Rekap Laporan</Text>
+                            <View style={{width:"95%", justifyContent:"center"}}>
+                                <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10, marginBottom:5}}>Rekap Kehadiran : </Text>
+                                <TouchableOpacity style={{width:"100%", minHeight:50}}>
+                                    <PieChart
+                                        data={dataKehadiran}
+                                        width={WindowWidth*0.9}
+                                        height={220}
+                                        chartConfig={chartConfigg}
+                                        accessor={"population"}
+                                        backgroundColor={"transparent"}
+                                        paddingLeft={"0"}
+                                        center={[0, 0]}
+                                        key={showContent}
+                                        // absolute
+                                    />
+                                </TouchableOpacity>
+
+                                <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10, marginBottom:5}}>Rekap Laporan : </Text>
+                                <TouchableOpacity style={{width:"100%", minHeight:50}}>
+                                    <PieChart
+                                        data={dataLaporan}
+                                        width={WindowWidth*0.9}
+                                        height={220}
+                                        chartConfig={chartConfigg}
+                                        accessor={"population"}
+                                        backgroundColor={"transparent"}
+                                        paddingLeft={"0"}
+                                        center={[0, 0]}
+                                        key={showContent}
+                                        // absolute
+                                    />
                                 </TouchableOpacity>
                             </View>
+
+                            
                         </View>
                     </View>
                 </View>
@@ -398,174 +444,6 @@ const Rekap = ({navigation}) => {
                 </View>
             </ReactNativeModal>
 
-            {/* modal filter */}
-            <ReactNativeModal isVisible={modalFilter} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">
-                <View style={{ width: "90%", height: "90%", backgroundColor: "#fff", borderRadius: 10,  padding:10,}}>
-                    <TouchableOpacity  style={{alignItems:'flex-end'}} onPress={()=>{setModalFilter(false)}} >
-                        <Image source={CloseIcont} style={{width:30, height:30}}/>
-                    </TouchableOpacity>
-                    
-                    <View style={{width:"100%", alignItems:"center"}}>
-                        <Text style={{fontWeight:'700', color:"black", textShadowColor:"#000", fontSize:18}}>Filter Option Kehadiran</Text>
-
-                        <View style={{width:"90%", marginTop:0}}>
-                            <Text style={{fontWeight:'900', color:"grey", textShadowColor:"#000", fontSize:12, marginVertical:10}}>Options Status :</Text>
-
-                            <View style={{width:"100%", flexDirection:"row", flexWrap:"wrap"}}>
-                                <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginRight:10, marginBottom:10}} onPress={()=>{setListStatus(0),setValueStatus("All")}}>
-                                    {listStatus==0? 
-                                        <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                    :
-                                        <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                    }
-                                    <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>All Status</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{width:"100%", flexDirection:"row", flexWrap:"wrap"}}>
-                                <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginRight:10, marginBottom:10}} onPress={()=>{setListStatus(1),setValueStatus("Hadir")}}>
-                                    {listStatus==1? 
-                                        <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                    :
-                                        <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                    }
-                                    <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Hadir</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{width:"100%", flexDirection:"row", flexWrap:"wrap"}}>
-                                <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginRight:10, marginBottom:10}} onPress={()=>{setListStatus(2),setValueStatus("Hadir Kegiatan")}}>
-                                    {listStatus==2? 
-                                        <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                    :
-                                        <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                    }
-                                    <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Hadir Kegiatan</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{width:"100%", flexDirection:"row", flexWrap:"wrap"}}>
-                                <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginRight:10, marginBottom:10}} onPress={()=>{setListStatus(3),setValueStatus("Sakit")}}>
-                                    {listStatus==3? 
-                                        <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                    :
-                                        <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                    }
-                                    <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Sakit</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{width:"100%", flexDirection:"row", flexWrap:"wrap"}}>
-                                <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginRight:10, marginBottom:10}} onPress={()=>{setListStatus(4),setValueStatus("Izin")}}>
-                                    {listStatus==4? 
-                                        <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                    :
-                                        <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                    }
-                                    <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Izin</Text>
-                                </TouchableOpacity>
-                            </View>
-
-                            <View style={{width:"100%", flexDirection:"row", flexWrap:"wrap"}}>
-                                <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginRight:10, marginBottom:10}} onPress={()=>{setListStatus(5),setValueStatus("Belum Absen")}}>
-                                    {listStatus==5? 
-                                        <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                    :
-                                        <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                    }
-                                    <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Belum Absen</Text>
-                                </TouchableOpacity>
-                            </View>
-                            
-                            <Text style={{fontWeight:'900', color:"grey", textShadowColor:"#000", fontSize:12, marginVertical:10}}>Options Jabatan :</Text>
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(0),setValueCheck("ASN")}}>
-                                {chechkList==0? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Seluruh ASN</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(1),setValueCheck("Tenaga Operator Komputer ")}}>
-                                {chechkList==1? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Tenaga Operator Komputer </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(2),setValueCheck("Operator Multimedia")}}>
-                                {chechkList==2? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Operator Multimedia</Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(3),setValueCheck("Operator Website")}}>
-                                {chechkList==3? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Operator Website</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(4),setValueCheck("Tenaga Supir")}}>
-                                {chechkList==4? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Tenaga Supir</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(5),setValueCheck("Tenaga Kebersihan")}}>
-                                {chechkList==5? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Tenaga Kebersihan</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(6),setValueCheck("Tenaga IT Jaringan")}}>
-                                {chechkList==6? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Tenaga IT Jaringan</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(7),setValueCheck("Tenaga IT Multimedia")}}>
-                                {chechkList==7? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Tenaga IT Multimedia</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{flexDirection:"row", alignItems:"center", marginBottom:10}} onPress={()=>{setChechkList(8),setValueCheck("Tenaga IT Programer")}}>
-                                {chechkList==8? 
-                                    <Image source={CheckBlue} style={{width:20, height:20}}/>
-                                :
-                                    <View style={{width:20, height:20, borderWidth:1,}}></View>
-                                }
-                                <Text style={{fontWeight:'500', color:"black", textShadowColor:"#000", fontSize:15, marginLeft:10}}>Tenaga IT Programer</Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity style={{width:"100%", height:30, alignItems:"center", justifyContent:"center", borderRadius:15, backgroundColor:"#39a339", marginTop:10}} onPress={asnValue}>
-                                <Text style={{ color: "#fff", fontWeight: "900", fontSize: 15, fontFamily: "Spartan", textShadowColor: '#000', textShadowOffset: { width: 0.5, height: 0.5 }, textShadowRadius: 1, }}>Check Kehadiran</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </ReactNativeModal>
 
             {/* modal kalender */}
             <ReactNativeModal isVisible={modalCalendar} style={{ alignItems: 'center', justifyContent:"center"  }} animationOutTiming={1000} animationInTiming={500} animationIn="zoomIn">

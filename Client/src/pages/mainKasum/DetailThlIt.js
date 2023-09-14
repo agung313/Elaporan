@@ -277,9 +277,16 @@ const DetailThlIt = ({route, navigation}) => {
             legendFontSize: 12
         },
         {
-            name: "Sakit & Izin",
-            population: myProfile.izinSakit,
+            name: "Sakit",
+            population: myProfile.sakit,
             color: "rgb(0, 0, 255)",
+            legendFontColor: "#000",
+            legendFontSize: 12
+        },
+        {
+            name: "Izin",
+            population: myProfile.izin,
+            color: "#0060cb",
             legendFontColor: "#000",
             legendFontSize: 12
         },
