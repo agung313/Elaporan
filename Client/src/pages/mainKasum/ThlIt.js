@@ -83,10 +83,10 @@ const ThlIt = ({navigation}) => {
         }
         else{
             return(
-                <TouchableOpacity key={index} style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt' ,{idUser:item.id})}>
+                <TouchableOpacity key={index} style={{width:WindowWidth*0.9, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} onPress={() => navigation.navigate('DetailThlIt' ,{idUser:item.id})}>
                     <Image source={item.URL ? {uri:item.URL}:PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                     <View style={{marginLeft:10}}>
-                        <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                        <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>{item.nama}</Text>
                         <Text style={{ color:"black",  fontSize:10}}>Jabatan : {item.jabatan}</Text>
                     </View>
                 </TouchableOpacity>            

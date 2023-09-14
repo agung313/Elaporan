@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataKehadiran, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailKehadiran, DetailKehadiranKasum, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, HariLibur, Kasum, KehadiranBulanan, Laporan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, Rekap, SplashLogin, Tambah, TambahCatatan, TambahHariLibur, ThlIt } from '../pages'
+import { Absensi, AbsensiPulang, Admin, Agenda, AllPengajuan, Allabsensi, DataAsn, DataKehadiran, DataPengajuan, Detail, DetailAsn, DetailDataPengajuan, DetailKehadiran, DetailKehadiranKasum, DetailLaporanKasum, DetailPengajuan, DetailThlIt, Edit, EditCatatan, HariLibur, Kasum, KehadiranBulanan, Laporan, LaporanBulanan, LaporanKasum, LoginSide, MainApp, MainSplash, MainUser, Notif, PassUsr, Pendahuluan, Pengajuan, PengajuanHadir, ProfileAdmin, ProfileKasum, Rekap, SplashLogin, Tambah, TambahCatatan, TambahHariLibur, ThlIt } from '../pages'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import BottomNavigation from '../components/BottomNavigation'
 import TambahLingkup from '../pages/mainUser/TambahLingkup'
@@ -68,6 +68,7 @@ const HomeKasum = () => {
             <Stack.Screen name='Rekap' component={Rekap} options={{headerShown:false}}/>
             <Stack.Screen name='DetailKehadiranKasum' component={DetailKehadiranKasum} options={{headerShown:false}}/>
             <Stack.Screen name='KehadiranBulanan' component={KehadiranBulanan} options={{headerShown:false}}/>
+            <Stack.Screen name='LaporanBulanan' component={LaporanBulanan} options={{headerShown:false}}/>
         </Stack.Navigator>
     )
 }

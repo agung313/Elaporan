@@ -94,7 +94,7 @@ const LaporanKasum = ({navigation}) => {
                     <View style={{flexDirection:"row", alignItems:"center"}}>
                         <Image source={ item.fotoProfile == null ? PasFoto : {uri:item.fotoProfile} } style={{width:40,height:55, marginLeft:15, borderRadius:2, marginVertical:5}}/>
                         <View style={{marginLeft:10, marginVertical:5}}>
-                            <Text style={{fontWeight:'900', color:"black",  fontSize:14, marginBottom:5}}>{item.nama}</Text>
+                            <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>{item.nama}</Text>
                             <Text style={{ color:"black",  fontSize:10, fontWeight:"500"}}>Laporan Diajukan : Bulan {namaBulan[item.bulan]+' '+item.tahun}</Text>
                         </View>
                     </View>

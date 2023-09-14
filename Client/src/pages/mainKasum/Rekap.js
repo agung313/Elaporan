@@ -343,7 +343,7 @@ const Rekap = ({navigation}) => {
 
                     <View style={showContent==2?{display:"flex", width:"100%", marginBottom:50}:{display:"none"}}>
                         <View style={{width:"100%", alignItems:"center"}}>
-                            <View style={{width:"95%", marginBottom:10, flexDirection:"row", marginTop:20, justifyContent:"center", alignItems:"center"}}>
+                            <View style={{width:"95%", marginBottom:20, flexDirection:"row", marginTop:20, justifyContent:"center", alignItems:"center"}}>
                                 <Text style={{ color: "#000", fontSize: 15,  fontFamily: "Spartan", fontWeight: "900", marginTop:0, marginBottom:0, textAlign:"center"}}>Rekap Bulan :</Text>
                                 <View style={{justifyContent:"center"}}>
                                     <TouchableOpacity style={{minWidth:100, height:20, backgroundColor:"#0060cb", alignItems:"center", justifyContent:"center", borderRadius:15, marginLeft:10}} onPress={toggleModal}>
@@ -353,8 +353,15 @@ const Rekap = ({navigation}) => {
                             </View>
 
                             <View style={{width:"95%", justifyContent:"center"}}>
-                                <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10, marginBottom:5}}>Rekap Kehadiran : </Text>
-                                <TouchableOpacity style={{width:"100%", minHeight:50}}>
+                                <View style={{flexDirection:"row", alignItems:"center",  marginBottom:5,}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10,}}>Rekap Kehadiran : </Text>
+                                    <View style={{width:"70%", alignItems:"flex-end"}}>
+                                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#39a339", borderRadius:15, marginLeft:5, marginTop:10, alignItems:"center", justifyContent:"center"}}>
+                                            <Text style={{fontWeight:'900', color:"#fff",  fontSize:10}}>Download File</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <TouchableOpacity style={{width:"100%", minHeight:50, borderBottomWidth:0.5, marginBottom:10}} onPress={()=>navigation.navigate('KehadiranBulanan')}>
                                     <PieChart
                                         data={dataKehadiran}
                                         width={WindowWidth*0.9}
@@ -369,8 +376,15 @@ const Rekap = ({navigation}) => {
                                     />
                                 </TouchableOpacity>
 
-                                <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10, marginBottom:5}}>Rekap Laporan : </Text>
-                                <TouchableOpacity style={{width:"100%", minHeight:50}}>
+                                <View style={{flexDirection:"row", alignItems:"center",  marginBottom:5,}}>
+                                    <Text style={{ color: "#000", fontSize: 12,  fontFamily: "Spartan", fontWeight: "600", marginTop:10,}}>Rekap Laporan :     </Text>
+                                    <View style={{width:"70%", alignItems:"flex-end"}}>
+                                        <TouchableOpacity style={{width:100, height:20, backgroundColor:"#39a339", borderRadius:15, marginLeft:5, marginTop:10, alignItems:"center", justifyContent:"center"}}>
+                                            <Text style={{fontWeight:'900', color:"#fff",  fontSize:10}}>Download File</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <TouchableOpacity style={{width:"100%", minHeight:50, borderBottomWidth:0.5, marginBottom:10}} onPress={()=>navigation.navigate('LaporanBulanan')}>
                                     <PieChart
                                         data={dataLaporan}
                                         width={WindowWidth*0.9}

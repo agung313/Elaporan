@@ -84,10 +84,10 @@ const DetailKehadiran = ({route, navigation}) => {
                     </View>
 
                     <View style={{width:"100%", alignItems:"center", marginTop:15,}}>
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                        <TouchableOpacity style={{width:WindowWidth*0.9, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
                             <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                             <View style={{marginLeft:10}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
                                 
                                 <View style={{justifyContent:"center",}}>
                                     <View style={{flexDirection:"row", alignItems:"center", width:190,marginRight:10}}>
@@ -103,10 +103,10 @@ const DetailKehadiran = ({route, navigation}) => {
                             </View>
                         </TouchableOpacity> 
 
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                        <TouchableOpacity style={{width:WindowWidth*0.9, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
                             <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                             <View style={{marginLeft:10}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
                                 
                                 <View style={{justifyContent:"center",}}>
                                     <View style={{flexDirection:"row", alignItems:"center", width:190,marginRight:10}}>
@@ -122,10 +122,10 @@ const DetailKehadiran = ({route, navigation}) => {
                             </View>
                         </TouchableOpacity> 
 
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                        <TouchableOpacity style={{width:WindowWidth*0.9, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
                             <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                             <View style={{marginLeft:10}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
                                 
                                 <View style={{justifyContent:"center",}}>
                                     <View style={{flexDirection:"row", alignItems:"center", width:190,marginRight:10}}>
@@ -141,10 +141,10 @@ const DetailKehadiran = ({route, navigation}) => {
                             </View>
                         </TouchableOpacity> 
 
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                        <TouchableOpacity style={{width:WindowWidth*0.9, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
                             <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                             <View style={{marginLeft:10}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
                                 
                                 <View style={{justifyContent:"center",}}>
                                     <View style={{flexDirection:"row", alignItems:"center", width:190,marginRight:10}}>
@@ -160,10 +160,10 @@ const DetailKehadiran = ({route, navigation}) => {
                             </View>
                         </TouchableOpacity> 
 
-                        <TouchableOpacity style={{width:WindowWidth*0.85, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
+                        <TouchableOpacity style={{width:WindowWidth*0.9, height:70, backgroundColor:'white', borderRadius:15, elevation:5, marginBottom:20, alignItems:"center", flexDirection:'row'}} >
                             <Image source={PasFoto} style={{width:40,height:55, marginLeft:15, borderRadius:2}}/>
                             <View style={{marginLeft:10}}>
-                                <Text style={{fontWeight:'500', color:"black",  fontSize:14, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
+                                <Text style={{fontWeight:'900', color:"black",  fontSize:12, marginBottom:5}}>Muhammad Agung Sholihhudin, S.T</Text>
                                 
                                 <View style={{justifyContent:"center",}}>
                                     <View style={{flexDirection:"row", alignItems:"center", width:190,marginRight:10}}>

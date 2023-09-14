@@ -168,11 +168,11 @@ const Laporan = ({route, navigation}) => {
         return(
             <View style={{flexDirection:"row", backgroundColor:"#FFF"}}>
                 <View style={{width:"7%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
-                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{index+1}</Text>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"center"}}>{index+1}</Text>
                 </View>
                 <View style={{width:"20%", minHeight:25, justifyContent:'center', borderWidth:0.5, borderColor:"#000", alignItems:'center'}}>
-                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.hari}</Text>
-                    <Text style={{color:"#000", fontSize:10, fontWeight:"500"}}>{item.tanggal}</Text>                    
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"center"}}>{item.hari}</Text>
+                    <Text style={{color:"#000", fontSize:10, fontWeight:"500", textAlign:"center"}}>{item.tanggal}</Text>                    
                 </View>
                 <View style={{width:"33%", minHeight:25, borderWidth:0.5, borderColor:"#000", padding:8 }}>
                     {
@@ -490,13 +490,13 @@ const Laporan = ({route, navigation}) => {
                         <View style={{width:"8%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                             <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>#</Text>
                         </View>
-                        <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                        <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                             <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Kendala</Text>
                         </View>
-                        <View style={{width:"41%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                        <View style={{width:"40%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                             <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Solusi</Text>
                         </View>
-                        <View style={{width:"10%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
+                        <View style={{width:"12%", minHeight:25, justifyContent:"center", borderWidth:0.5, borderColor:"#000", padding:5, alignItems:"center"}}>
                             <Text style={{color:"#000", fontSize:10, fontWeight:"900"}}>Aksi</Text>
                         </View>                        
                     </View>

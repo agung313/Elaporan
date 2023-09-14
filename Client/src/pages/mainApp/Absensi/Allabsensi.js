@@ -363,7 +363,7 @@ const Allabsensi = ({navigation}) => {
             </View>
             
             <View style={{alignItems:"center"}}>
-                <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center"}}>
+                <View style={{width:WindowWidth*0.9, minHeight:100, marginTop:0, alignItems:"center", marginBottom:50}}>
 
 
                     <SearchBar
